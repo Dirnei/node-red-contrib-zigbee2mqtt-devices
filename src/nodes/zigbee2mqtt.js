@@ -2,9 +2,44 @@ module.exports = function(RED) {
     
     function genericLamp(config) {
         RED.nodes.createNode(this,config);
+        var bridgeConfig = RED.nodes.getNode(config.bridge);
+        var deviceConfig = RED.nodes.getNode(config.device);
         var node = this;
+
         node.on('input', function(msg) {
-            msg.payload = msg.payload.toLowerCase();
+            if(msg.payload.devices === undefined)
+            {
+                msg.payload.devices = [];
+            }
+
+            device = {
+                topic: bridgeConfig.baseTopic + "/" + deviceConfig.deviceName,
+                state: config.state,
+                delay: config.delay,
+            };
+
+            if (deviceConfig.brightnessSupport)
+            {
+                device.brightness = config.brightness;
+                device.transition = config.transition;
+            }
+
+            if (deviceConfig.temperatureSupport)
+            {
+                device.temperature = config.temperature;
+            }
+
+            if (deviceConfig.colorSupport)
+            {
+                device.color = {
+                    r: config.red,
+                    g: config.green,
+                    b: config.blue 
+                };
+            }
+
+            msg.payload.devices.push(device);
+
             node.send(msg);
         });
     }
@@ -15,7 +50,9 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,config);
         this.name   = config.name;
         this.deviceName = config.deviceName;
-        this.model = config.model;
+        this.brightnessSupport = config.brightnessSupport;
+        this.temperatureSupport = config.temperatureSupport;
+        this.colorSupport = config.colorSupport;
     }
     
     RED.nodes.registerType("zigbee2mqtt-device-config", deviceConfig)

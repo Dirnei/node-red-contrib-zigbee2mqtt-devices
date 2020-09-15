@@ -30,7 +30,9 @@
         defaults: {
 			name:   { value: "", required: true },
 			deviceName: { value: "", required: true },
-			model: { value: "", required: true },
+            brightnessSupport: {value: false},
+            temperatureSupport: {value: false},
+            colorSupport: {value: false},
 		},
         label: function(){return this.name;},
 		paletteLabel: "Device config"
@@ -47,13 +49,16 @@
         <input type="text" id="node-config-input-deviceName" placeholder="Device name" />
     </div>
     <div class="form-row">
-        <label for="node-config-input-model"><i class="fa fa-tag"></i> Lamp Model</label>
-        <select id="node-config-input-model">
-            <option>Basic</option>
-            <option>Dimmable</option>
-            <option>RGB</option>
-            <option>Temperature</option>
-        </select>
+        <label for="node-config-input-brightnessSupport"><i class="fa fa-tag"></i> Dimmable</label>
+        <input type="checkbox" id="node-config-input-brightnessSupport" />
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-temperatureSupport"><i class="fa fa-tag"></i> Temperature Support</label>
+        <input type="checkbox" id="node-config-input-temperatureSupport" />
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-colorSupport"><i class="fa fa-tag"></i> Color Support</label>
+        <input type="checkbox" id="node-config-input-colorSupport" />
     </div>
 </script>
 
@@ -73,40 +78,40 @@
     {
         var config = RED.nodes.node($("#node-input-device").val());
         console.log("prepareView");
-        switch(config.model)
+
+        if (config.brightnessSupport)
         {
-            case "Basic":
-                hideInput("brightness");
-                hideInput("temperature");
-                hideInput("red");
-                hideInput("green");
-                hideInput("blue");
-                hideInput("transition");
-                break;
-            case "Dimmable":
-                showInput("brightness");
-                hideInput("temperature");
-                hideInput("red");
-                hideInput("green");
-                hideInput("blue");
-                showInput("transition");
-                break;
-            case "RGB":
-                showInput("brightness");
-                hideInput("temperature");
-                showInput("red");
-                showInput("green");
-                showInput("blue");
-                showInput("transition");
-                break;
-            case "Temperature":
-                showInput("brightness");
-                showInput("temperature");
-                hideInput("red");
-                hideInput("green");
-                hideInput("blue");
-                showInput("transition");
+            showInput("transition");
+            showInput("brightness");
         }
+        else
+        {
+            hideInput("brightness");
+            hideInput("transition");
+        }
+
+        if (config.temperatureSupport)
+        {
+            showInput("temperature");
+        }
+        else
+        {
+            hideInput("temperature");
+        }
+
+        if (config.colorSupport)
+        {
+            showInput("red");
+            showInput("green");
+            showInput("blue");
+        }
+        else
+        {
+            hideInput("red");
+            hideInput("green");
+            hideInput("blue");
+        }
+
         return true;
     }
 
@@ -123,13 +128,18 @@
                     return true;
                 }
             },
+
             name: {value: ""},
             state: {value:"ON" },
+
             brightness: {value:0, validate: function(v) { return isInRange(v, 0, 255); }},
+
             temperature: {value:50, validate: function(v) { return isInRange(v, 50, 450); }},
+
             red: {value:0, validate: function(v) { return isInRange(v, 0, 255); }},
             green: {value:0, validate: function(v) { return isInRange(v, 0, 255); }},
             blue: {value:0, validate: function(v) { return isInRange(v, 0, 255); }},
+
             transition: {value:2},
             delay: {value:0},
         },
