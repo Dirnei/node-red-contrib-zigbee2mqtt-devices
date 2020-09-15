@@ -1,0 +1,26 @@
+<script type="text/javascript">
+    RED.nodes.registerType('basic-lamp',{
+        category: 'zigbee2mqtt',
+        color: '#bada66',
+        defaults: {
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "light.png",
+        label: function() {
+            return this.name||"Basic Schlampe";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="basic-lamp">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="basic-lamp">
+    <p>Leberkas</p>
+</script>

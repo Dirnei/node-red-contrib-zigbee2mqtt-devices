@@ -1,0 +1,12 @@
+{
+    "name": "node-red-contrib-zigbee2mqtt",
+    "version": "0.0.1",
+    "description": "Nodes to interact with zigbee2mqtt for Node-RED",
+    "author": "Christian Dirnhofer",
+    "node-red": {
+        "nodes": {
+            "zigbee2mqtt": "nodes/zigbee2mqtt.js"
+        }
+    },
+    "dependencies": {}
+}
