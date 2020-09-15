@@ -1,26 +1,228 @@
+  
+<!--- BRIDGE CONFIG NODE --->
 <script type="text/javascript">
-    RED.nodes.registerType('basic-lamp',{
+    RED.nodes.registerType('zigbee2mqtt-bridge-config',{
+        category: 'config',
+        defaults: {
+			name:   { value: "zigbee2mqtt", required: true },
+			baseTopic: { value: "zigbee2mqtt", required: true }
+		},
+        label: function(){return this.name;},
+		paletteLabel: "bridge config"
+    });
+</script>
+
+<script type="text/html" data-template-name="zigbee2mqtt-bridge-config">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name" />
+    </div>	
+    <div class="form-row">
+        <label for="node-input-baseTopic"><i class="fa fa-tag"></i>Base MQTT Topic</label>
+        <input type="text" id="node-config-input-baseTopic" placeholder="topic" />
+    </div>
+</script>  
+
+<!--- DEVICE CONFIG NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('zigbee2mqtt-device-config',{
+        category: 'config',
+        defaults: {
+			name:   { value: "", required: true },
+			deviceName: { value: "", required: true },
+			model: { value: "", required: true },
+		},
+        label: function(){return this.name;},
+		paletteLabel: "Device config"
+    });
+</script>
+
+<script type="text/html" data-template-name="zigbee2mqtt-device-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name" />
+    </div>	
+    <div class="form-row">
+        <label for="node-config-input-deviceName"><i class="fa fa-tag"></i> Device name</label>
+        <input type="text" id="node-config-input-deviceName" placeholder="Device name" />
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-model"><i class="fa fa-tag"></i> Lamp Model</label>
+        <select id="node-config-input-model">
+            <option>Basic</option>
+            <option>Dimmable</option>
+            <option>RGB</option>
+            <option>Temperature</option>
+        </select>
+    </div>
+</script>
+
+<!--- GENERIC LAMP NODE --->
+<script type="text/javascript">
+    function showInput(name)
+    {
+        $("#node-input-" + name).parent().show();
+    }
+
+    function hideInput(name)
+    {
+        $("#node-input-" + name).parent().hide();
+    }
+
+    function prepareView(value)
+    {
+        var config = RED.nodes.node($("#node-input-device").val());
+        console.log("prepareView");
+        switch(config.model)
+        {
+            case "Basic":
+                hideInput("brightness");
+                hideInput("temperature");
+                hideInput("red");
+                hideInput("green");
+                hideInput("blue");
+                hideInput("transition");
+                break;
+            case "Dimmable":
+                showInput("brightness");
+                hideInput("temperature");
+                hideInput("red");
+                hideInput("green");
+                hideInput("blue");
+                showInput("transition");
+                break;
+            case "RGB":
+                showInput("brightness");
+                hideInput("temperature");
+                showInput("red");
+                showInput("green");
+                showInput("blue");
+                showInput("transition");
+                break;
+            case "Temperature":
+                showInput("brightness");
+                showInput("temperature");
+                hideInput("red");
+                hideInput("green");
+                hideInput("blue");
+                showInput("transition");
+        }
+        return true;
+    }
+
+    RED.nodes.registerType('generic-lamp',{
         category: 'zigbee2mqtt',
         color: '#bada66',
         defaults: {
-            name: {value:""}
+            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
+            device: {
+                value: "", 
+                type: "zigbee2mqtt-device-config", 
+                validate: function(value){
+                    prepareView(value);
+                    return true;
+                }
+            },
+            name: {value: ""},
+            state: {value:"ON" },
+            brightness: {value:0, validate: function(v) { return isInRange(v, 0, 255); }},
+            temperature: {value:50, validate: function(v) { return isInRange(v, 50, 450); }},
+            red: {value:0, validate: function(v) { return isInRange(v, 0, 255); }},
+            green: {value:0, validate: function(v) { return isInRange(v, 0, 255); }},
+            blue: {value:0, validate: function(v) { return isInRange(v, 0, 255); }},
+            transition: {value:2},
+            delay: {value:0},
         },
         inputs:1,
         outputs:1,
         icon: "light.png",
         label: function() {
-            return this.name||"Basic Schlampe";
-        }
+            return this.name||"generic device";
+        },
+        oneditprepare: function(){            
+			$("#node-input-brightness").typedInput({
+				type:"num",
+				types:["num"],
+            });
+			$("#node-input-red").typedInput({
+				type:"num",
+				types:["num"],
+            });
+			$("#node-input-green").typedInput({
+				type:"num",
+				types:["num"],
+            });
+			$("#node-input-blue").typedInput({
+				type:"num",
+				types:["num"],
+            });
+			$("#node-input-temperature").typedInput({
+				type:"num",
+				types:["num"],
+            });
+            
+            prepareView();
+        },
+        oneditsave: function(){
+            var config = RED.nodes.node($("#node-input-device").val());
+            $("#node-input-name").val(config.name);
+        },
     });
 </script>
 
-<script type="text/html" data-template-name="basic-lamp">
+<script type="text/html" data-template-name="generic-lamp">
+    
     <div class="form-row">
+        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-input-bridge" placeholder="bridge" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-device"><i class="fa fa-tag"></i> Device</label>
+        <input type="text" id="node-input-device" placeholder="device" />
+    </div>
+    <div class="form-row" style="display:none">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <input type="hidden" id="node-input-name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-state"><i class="fa fa-power-off"></i> State</label>
+        <select id="node-input-state">
+            <option value="ON">On</option>
+            <option value="OFF">Off</option>
+            <option value="TOGGLE">Toggle</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-brightness"><i class="fa fa-sun-o"></i> Brightness</label>
+        <input type="text" id="node-input-brightness">
+    </div>
+    <div class="form-row">
+        <label for="node-input-temperature"><i class="fa fa-thermometer-full"></i> Temperature</label>
+        <input type="text" id="node-input-temperature">
+    </div>
+    <div class="form-row">
+        <label for="node-input-red"><i class="fa fa-paint-brush"></i> Red</label>
+        <input type="text" id="node-input-red">
+    </div>
+    <div class="form-row">
+        <label for="node-input-green"><i class="fa fa-paint-brush"></i> Green</label>
+        <input type="text" id="node-input-green">
+    </div>
+    <div class="form-row">
+        <label for="node-input-blue"><i class="fa fa-paint-brush"></i> Blue</label>
+        <input type="text" id="node-input-blue">
+    </div>
+    <div class="form-row">
+        <label for="node-input-transition"><i class="fa fa-clock-o"></i> Transition</label>
+        <input type="text" id="node-input-transition">
+    </div>
+    <div class="form-row">
+        <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
+        <input type="text" id="node-input-delay" >
     </div>
 </script>
 
-<script type="text/html" data-help-name="basic-lamp">
+<script type="text/html" data-help-name="generic-lamp">
     <p>Leberkas</p>
 </script>

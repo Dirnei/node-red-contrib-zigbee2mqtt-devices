@@ -1,1 +1,1 @@
-# Node-red Zigbee2mqtt Node
+Zigbee2MQTT Nodes for Node-RED
