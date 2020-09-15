@@ -64,4 +64,42 @@ module.exports = function(RED) {
     }
     
     RED.nodes.registerType("zigbee2mqtt-bridge-config", bridgeConfig)
+    
+    function prepareMessages(config){
+        RED.nodes.createNode(this,config);
+        var node = this;
+
+        node.on('input', function(msg) {
+            var totalDelay = 0;
+            var messages = msg.payload.devices;
+            var i = 0;
+            enqueue();
+
+            function sendNextMessage()
+            {
+                node.send(messages[i]);
+                i++;
+
+                if(i<messages.length)
+                {
+                    enqueue();
+                }
+            }
+
+            function enqueue()
+            {
+                var delay = messages[i].delay;
+                if (delay > 0)
+                {
+                    setTimeout(sendNextMessage, delay);
+                }
+                else
+                {
+                    sendNextMessage();
+                }
+            }
+        });
+    }
+
+    RED.nodes.registerType("prepare-messages", prepareMessages);
 }
