@@ -71,7 +71,38 @@ module.exports = function(RED) {
 
         node.on('input', function(msg) {
             var totalDelay = 0;
-            var messages = msg.payload.devices;
+            var messages = [];
+            msg.payload.devices.forEach(element => {
+                if(msg.payload.override !== undefined)
+                {
+                    if (msg.payload.override.brightness !== undefined 
+                        && msg.payload.override.brightness !== ""
+                        && element.brightness !== undefined
+                        && element.brightness !== "")
+                    {
+                        element.brightness = msg.payload.override.brightness;
+                    }
+                    
+                    if (msg.payload.override.temperature !== undefined 
+                        && msg.payload.override.temperature !== ""
+                        && element.temperature !== undefined
+                        && element.temperature !== "")
+                    {
+                        element.temperature = msg.payload.override.temperature;
+                    }
+                    
+                    if (msg.payload.override.color !== undefined 
+                        && msg.payload.override.color !== ""
+                        && element.color !== undefined
+                        && element.color !== "")
+                    {
+                        element.color = msg.payload.override.color;
+                    }
+                }
+
+                messages.push(element);
+            });
+
             var i = 0;
             enqueue();
 
@@ -102,4 +133,62 @@ module.exports = function(RED) {
     }
 
     RED.nodes.registerType("prepare-messages", prepareMessages);
+    
+    function overrideBrightness(config){
+        RED.nodes.createNode(this,config);
+        var node = this;
+
+        node.on('input', function(msg) {
+            if(msg.payload.override === undefined)
+            {
+                msg.payload.override = {};
+            }
+
+            msg.payload.override.brightness = config.brightness;
+
+            node.send(msg);
+        });
+    }
+
+    RED.nodes.registerType("override-brightness", overrideBrightness);
+    
+    function overrideTemperature(config){
+        RED.nodes.createNode(this,config);
+        var node = this;
+
+        node.on('input', function(msg) {
+            if(msg.payload.override === undefined)
+            {
+                msg.payload.override = {};
+            }
+
+            msg.payload.override.temperature = config.temperature;
+
+            node.send(msg);
+        });
+    }
+
+    RED.nodes.registerType("override-temperature", overrideTemperature);
+    
+    function overrideColor(config){
+        RED.nodes.createNode(this,config);
+        var node = this;
+
+        node.on('input', function(msg) {
+            if(msg.payload.override === undefined)
+            {
+                msg.payload.override = {};
+            }
+
+            msg.payload.override.color = {
+                r : config.red,
+                g : config.green,
+                b : config.blue,
+            };
+
+            node.send(msg);
+        });
+    }
+
+    RED.nodes.registerType("override-color", overrideColor);
 }

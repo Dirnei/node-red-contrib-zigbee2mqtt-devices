@@ -1,4 +1,45 @@
-  
+<script type="text/javascript">
+    RED.bavaria = {
+        validators : {
+            range : function(min, max) {
+                return function(v) { 
+                    return v <= max && v >= min;
+                }   
+            }
+        },
+        ui : {
+            addNumInput: function(element){
+                $(element).typedInput({
+                    type:"num",
+                    types:["num"],
+                });
+            },
+            addNumInputs : function(elements){
+                elements.forEach(RED.bavaria.ui.addNumInput);
+            },
+            addNumRangeInput: function(element, min, max){
+                RED.bavaria.ui.addNumInput(element);
+                var validator = RED.bavaria.validators.range(min, max);
+
+                $(element).change(function(){
+                    var valid = validator($(this).val());
+                    var targetElement = $(this).parent().find('.red-ui-typedInput-container');
+                    if (!valid) {
+                        targetElement.addClass('input-error');
+                    } else {
+                        targetElement.removeClass('input-error');
+                    }
+                });
+            },
+            addNumRangeInputs : function(elements, min, max){
+                elements.forEach(element => {
+                    RED.bavaria.ui.addNumRangeInput(element, min, max);
+                });
+            }
+        }
+    }
+</script>
+
 <!--- BRIDGE CONFIG NODE --->
 <script type="text/javascript">
     RED.nodes.registerType('zigbee2mqtt-bridge-config',{
@@ -77,7 +118,6 @@
     function prepareView(value)
     {
         var config = RED.nodes.node($("#node-input-device").val());
-        console.log("prepareView");
 
         if (config.brightnessSupport)
         {
@@ -132,13 +172,13 @@
             name: {value: ""},
             state: {value:"ON" },
 
-            brightness: {value:0, validate: function(v) { return isInRange(v, 0, 255); }},
+            brightness: {value:0, validate: RED.bavaria.validators.range(0, 255) },
 
-            temperature: {value:50, validate: function(v) { return isInRange(v, 50, 450); }},
+            temperature: {value:50, validate: RED.bavaria.validators.range(0, 500) },
 
-            red: {value:0, validate: function(v) { return isInRange(v, 0, 255); }},
-            green: {value:0, validate: function(v) { return isInRange(v, 0, 255); }},
-            blue: {value:0, validate: function(v) { return isInRange(v, 0, 255); }},
+            red: {value:0, validate: RED.bavaria.validators.range(0, 255) },
+            green: {value:0, validate: RED.bavaria.validators.range(0, 255) },
+            blue: {value:0, validate: RED.bavaria.validators.range(0, 255) },
 
             transition: {value:2},
             delay: {value:0},
@@ -149,27 +189,20 @@
         label: function() {
             return this.name||"generic device";
         },
-        oneditprepare: function(){            
-			$("#node-input-brightness").typedInput({
-				type:"num",
-				types:["num"],
-            });
-			$("#node-input-red").typedInput({
-				type:"num",
-				types:["num"],
-            });
-			$("#node-input-green").typedInput({
-				type:"num",
-				types:["num"],
-            });
-			$("#node-input-blue").typedInput({
-				type:"num",
-				types:["num"],
-            });
-			$("#node-input-temperature").typedInput({
-				type:"num",
-				types:["num"],
-            });
+        oneditprepare: function(){           
+            var numInputs = [
+                "#node-input-brightness",
+                "#node-input-red",
+                "#node-input-green",
+                "#node-input-blue",
+            ]
+
+            RED.bavaria.ui.addNumRangeInput("#node-input-temperature", 0, 500);  
+            
+            RED.bavaria.ui.addNumRangeInputs(numInputs, 0, 255);   
+ 
+            RED.bavaria.ui.addNumInput("#node-input-delay");  
+            RED.bavaria.ui.addNumInput("#node-input-transition");  
             
             prepareView();
         },
@@ -259,11 +292,144 @@
     
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="hidden" id="node-input-name">
+        <input type="text" id="node-input-name">
     </div>
 
 </script>
 
-<script type="text/html" data-help-name="generic-lamp">
+<script type="text/html" data-help-name="prepare-messages">
+    <p>Leberkas</p>
+</script>
+
+<!--- OVERRIDE BRIGHTNESS NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('override-brightness',{
+        category: 'zigbee2mqtt',
+        color: '#bada66',
+        defaults: {
+            name: { value: "" },
+            brightness: { value: 255, validate: RED.bavaria.validators.range(0, 255) },
+        },
+        inputs:1,
+        outputs:1,
+        icon: "light.png",
+        label: function() {
+            return this.name || "override-brightness";
+        },
+        oneditprepare: function(){
+            RED.bavaria.ui.addNumRangeInput("#node-input-brightness", 0, 255);   
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="override-brightness">
+    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-brightness"><i class="fa fa-sun-o"></i> Brightness</label>
+        <input type="text" id="node-input-brightness">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="override-brightness">
+    <p>Leberkas</p>
+</script>
+
+<!--- OVERRIDE TEMPERATURE NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('override-temperature',{
+        category: 'zigbee2mqtt',
+        color: '#bada66',
+        defaults: {
+            name: { value: "" },
+            temperature: { value: 255, validate: RED.bavaria.validators.range(0, 500) },
+        },
+        inputs:1,
+        outputs:1,
+        icon: "light.png",
+        label: function() {
+            return this.name || "override-temperature";
+        },
+        oneditprepare: function(){   
+            RED.bavaria.ui.addNumRangeInput("#node-input-temperature", 0, 500);         
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="override-temperature">
+    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-temperature"><i class="fa fa-thermometer-full"></i> Temperature</label>
+        <input type="text" id="node-input-temperature">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="override-temperature">
+    <p>Leberkas</p>
+</script>
+
+<!--- OVERRIDE COLOR NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('override-color',{
+        category: 'zigbee2mqtt',
+        color: '#bada66',
+        defaults: {
+            name: { value: "" },
+            red: { value: 255, validate: RED.bavaria.validators.range(0,255) },
+            green: { value: 255, validate: RED.bavaria.validators.range(0,255) },
+            blue: { value: 255, validate: RED.bavaria.validators.range(0,255) },
+        },
+        inputs:1,
+        outputs:1,
+        icon: "light.png",
+        label: function() {
+            return this.name || "override-color";
+        },
+        oneditprepare: function(){   
+            var numInputs = ["#node-input-red", "#node-input-green", "#node-input-blue"];
+            RED.bavaria.ui.addNumRangeInputs(numInputs, 0, 255);
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="override-color">
+    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-temperature"><i class="fa fa-paint-brush"></i> Red</label>
+        <input type="text" id="node-input-red">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-temperature"><i class="fa fa-paint-brush"></i> Green</label>
+        <input type="text" id="node-input-green">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-temperature"><i class="fa fa-paint-brush"></i> Blue</label>
+        <input type="text" id="node-input-blue">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="override-temperature">
     <p>Leberkas</p>
 </script>
