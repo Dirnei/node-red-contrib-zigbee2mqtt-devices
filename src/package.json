@@ -1,5 +1,5 @@
 {
-    "name": "node-red-contrib-zigbee2mqtt",
+    "name": "node-red-contrib-zigbee2mqtt-devices",
     "version": "0.0.1",
     "description": "Nodes to interact with zigbee2mqtt for Node-RED",
     "author": "Christian Dirnhofer",
