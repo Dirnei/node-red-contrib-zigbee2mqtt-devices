@@ -1,40 +1,43 @@
 <script type="text/javascript">
-    RED.bavaria = {
-        validators : {
-            range : function(min, max) {
-                return function(v) { 
-                    return v <= max && v >= min;
-                }   
-            }
-        },
-        ui : {
-            addNumInput: function(element){
-                $(element).typedInput({
-                    type:"num",
-                    types:["num"],
-                });
+    if(RED.bavaria === undefined)
+    {
+        RED.bavaria = {
+            validators : {
+                range : function(min, max) {
+                    return function(v) { 
+                        return v <= max && v >= min;
+                    }   
+                }
             },
-            addNumInputs : function(elements){
-                elements.forEach(RED.bavaria.ui.addNumInput);
-            },
-            addNumRangeInput: function(element, min, max){
-                RED.bavaria.ui.addNumInput(element);
-                var validator = RED.bavaria.validators.range(min, max);
-
-                $(element).change(function(){
-                    var valid = validator($(this).val());
-                    var targetElement = $(this).parent().find('.red-ui-typedInput-container');
-                    if (!valid) {
-                        targetElement.addClass('input-error');
-                    } else {
-                        targetElement.removeClass('input-error');
-                    }
-                });
-            },
-            addNumRangeInputs : function(elements, min, max){
-                elements.forEach(element => {
-                    RED.bavaria.ui.addNumRangeInput(element, min, max);
-                });
+            ui : {
+                addNumInput: function(element){
+                    $(element).typedInput({
+                        type:"num",
+                        types:["num"],
+                    });
+                },
+                addNumInputs : function(elements){
+                    elements.forEach(RED.bavaria.ui.addNumInput);
+                },
+                addNumRangeInput: function(element, min, max){
+                    RED.bavaria.ui.addNumInput(element);
+                    var validator = RED.bavaria.validators.range(min, max);
+                    
+                    $(element).change(function(){
+                        var valid = validator($(this).val());
+                        var targetElement = $(this).parent().find('.red-ui-typedInput-container');
+                        if (!valid) {
+                            targetElement.addClass('input-error');
+                        } else {
+                            targetElement.removeClass('input-error');
+                        }
+                    });
+                },
+                addNumRangeInputs : function(elements, min, max){
+                    elements.forEach(element => {
+                        RED.bavaria.ui.addNumRangeInput(element, min, max);
+                    });
+                }
             }
         }
     }

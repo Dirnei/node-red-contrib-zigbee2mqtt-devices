@@ -5,8 +5,10 @@
     "author": "Christian Dirnhofer",
     "node-red": {
         "nodes": {
-            "generic-lamp": "nodes/zigbee2mqtt.js"
+            "generic-lamp": "src/zigbee2mqtt.js"
         }
     },
-    "dependencies": {}
+    "dependencies": {
+        "node-red-ext-bavaria-black" : "0.1.1"
+    }
 }

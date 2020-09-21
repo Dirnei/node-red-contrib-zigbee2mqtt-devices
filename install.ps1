@@ -46,7 +46,7 @@ $files = Get-ChildItem -Recurse ./src | Where-Object { ! $_.PSIsContainer }
 foreach($file in $files)
 {
     $relativeFile = $file.FullName.Substring($src.Path.Length)
-    $dest = Join-Path -Path $destRoot -ChildPath $relativeFile
+    $dest = Join-Path -Path $destRoot -ChildPath "src\$relativeFile"
 
     if($file.Name -eq "package.json")
     {
@@ -78,6 +78,8 @@ foreach($file in $files)
     Write-Output $dest
     [System.IO.File]::Copy($file.FullName, $dest, $true);
 }
+
+Copy-Item -Path ./package.json -Destination $destRoot/package.json
 
 Write-Output "Change location to: $destination"
 Set-Location $destination

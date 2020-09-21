@@ -1,4 +1,5 @@
 module.exports = function(RED) {
+    const bavaria = require("node-red-ext-bavaria-black");
     
     function genericLamp(config) {
         RED.nodes.createNode(this,config);
