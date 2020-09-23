@@ -118,9 +118,14 @@
         $("#node-input-" + name).parent().hide();
     }
 
-    function prepareView(value)
+    function prepareView()
     {
         var config = RED.nodes.node($("#node-input-device").val());
+
+        if(config === undefined || config === null)
+        {
+            return;
+        }
 
         if (config.brightnessSupport)
         {
@@ -167,7 +172,7 @@
                 value: "", 
                 type: "zigbee2mqtt-device-config", 
                 validate: function(value){
-                    prepareView(value);
+                    prepareView();
                     return true;
                 }
             },
