@@ -1,6 +1,52 @@
 module.exports = function(RED) {
     const bavaria = require("node-red-ext-bavaria-black");
-    
+
+    function ikeaDimmer(config) {
+        RED.nodes.createNode(this,config);
+        var mqtt = require("mqtt");
+        var bridgeConfig = RED.nodes.getNode(config.bridge);
+        var node = this;
+        
+        node.status({fill: "blue", text: "not connected"});
+        
+        if (bridgeConfig.requireLogin) {
+            options = {
+                username: bridgeConfig.credentials.username,
+                password: bridgeConfig.credentials.password
+            };
+        }
+                
+        var client  = mqtt.connect(bridgeConfig.broker, options);
+        client.on('message', function(topic, message){
+            message = JSON.parse(message);
+
+            switch(message.click){
+                case "on":
+                    node.send([{payload: "on"}, null, null, null, null]);
+                    break;
+                case "off":
+                    node.send([null, {payload: "off"}, null, null, null]);
+                    break;
+                case "brightness_up":
+                    node.send([null, null, {payload: "brightness_up"}, null, null]);
+                    break;
+                case "brightness_down":
+                    node.send([null, null, null, {payload: "brightness_down"}, null]);
+                    break;
+                case "brightness_stop":
+                    node.send([null, null, null, null, {payload: "brightness_stop"}]);
+                    break;
+            }
+        });
+
+        client.on('connect', function () {
+            node.status({fill: "green", text: "connected"});
+            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function(err){});
+        });
+
+    }
+    RED.nodes.registerType("ikea-dimmer", ikeaDimmer);
+
     function genericLamp(config) {
 
         RED.nodes.createNode(this,config);
@@ -115,7 +161,6 @@ module.exports = function(RED) {
             node.send(msg);
         });
     }
-
     RED.nodes.registerType("generic-lamp",genericLamp);
     
     function deviceConfig(config) {
@@ -126,7 +171,6 @@ module.exports = function(RED) {
         this.temperatureSupport = config.temperatureSupport;
         this.colorSupport = config.colorSupport;
     }
-    
     RED.nodes.registerType("zigbee2mqtt-device-config", deviceConfig)
 
     function bridgeConfig(config) {
@@ -136,7 +180,6 @@ module.exports = function(RED) {
         this.broker = config.broker;
         this.requireLogin = config.requireLogin;
     }
-    
     RED.nodes.registerType("zigbee2mqtt-bridge-config", bridgeConfig, {
         credentials: {
             username: {type:"text"},
@@ -283,7 +326,6 @@ module.exports = function(RED) {
             }
         });
     }
-
     RED.nodes.registerType("send-messages", sendMessages);
     
     function overrideBrightness(config){
@@ -301,7 +343,6 @@ module.exports = function(RED) {
             node.send(msg);
         });
     }
-
     RED.nodes.registerType("override-brightness", overrideBrightness);
     
     function overrideTemperature(config){
@@ -319,7 +360,6 @@ module.exports = function(RED) {
             node.send(msg);
         });
     }
-
     RED.nodes.registerType("override-temperature", overrideTemperature);
     
     function overrideColor(config){
@@ -341,6 +381,5 @@ module.exports = function(RED) {
             node.send(msg);
         });
     }
-
     RED.nodes.registerType("override-color", overrideColor);
 }

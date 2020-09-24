@@ -323,6 +323,49 @@
 <!--- PREPARE MESSAGES NODE --->
 <script type="text/javascript">
 
+    RED.nodes.registerType('ikea-dimmer',{
+        category: 'zigbee2mqtt',
+        color: '#fd0',
+        defaults: {
+            name: { value: "" },
+            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
+            deviceName: {value: "", required: true},
+        },
+        inputs:0,
+        outputs:5,
+        icon: "light.png",
+        label: function() {
+            return this.name || "Ikea Dimmer";
+        },
+        outputLabels: ["on","off","dimm up","dimm down","dimm stop"],
+    });
+
+</script>
+
+<script type="text/html" data-template-name="ikea-dimmer">
+    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-input-bridge" placeholder="bridge" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Devicename</label>
+        <input type="text" id="node-input-deviceName">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="ikea-dimmer">
+    <p>Leberkas</p>
+</script>
+
+<!--- PREPARE MESSAGES NODE --->
+<script type="text/javascript">
+
     RED.nodes.registerType('send-messages',{
         category: 'zigbee2mqtt',
         color: '#bada66',
