@@ -7,9 +7,16 @@ module.exports = function(RED) {
         var deviceConfig = RED.nodes.getNode(config.device);
         var node = this;
         var topic = deviceConfig.deviceName
-        bavaria.observer.register(topic, function(msg){
+
+        var nodeContext = this.context().global;
+        function getContextName() {
+            return ("z2mdevice_"+node.id).replace(".", "_");
+        }
+
+        function messageToStatus(msg) {
             var status = "grey";
             var text = "Lm: " + msg.brightness;
+
             switch(msg.state) {
                 case "ON":
                 case "1":
@@ -40,11 +47,35 @@ module.exports = function(RED) {
 
                 text += " RGB: (" + rgb.r + ", " + rgb.g +", " + rgb.b + ")";
             }
+            var status = {fill: status, shape: "dot", text: text};
+            nodeContext.set(getContextName(),{
+                status: status
+            });
 
-            node.status({fill: status, shape: "dot", text: text});
+            node.status(status);
+        }
+
+        bavaria.observer.register(topic, function(msg)
+        {
+            if(msg.bridgeLogReceived) {
+                bavaria.observer.notify("needs_refresh", topic);
+                return;
+            }
+
+            messageToStatus(msg);
         });
 
-        node.status({fill: "gray", shape: "dot", text: "pending"});
+        var status = nodeContext.get(getContextName());
+        if (status && status.status) {
+            node.status(status.status);
+        } else {
+            node.status({fill: "gray", shape: "dot", text: "pending"});
+        }
+
+        node.on('close', function(){
+            nodeContext.set(getContextName(), undefined);
+        });
+
         node.on('input', function(msg) {
             
             if(msg.payload.devices === undefined)
@@ -117,9 +148,16 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,config);
         
         var node = this;
+        var devicesContextName = "z2m_devices_" + config.bridge.replace(".", "_");
+        var knownDevices = [];
         var bridgeConfig = RED.nodes.getNode(config.bridge);
         var mqtt = require('mqtt')
         var options = undefined;
+        
+        var globalContext = this.context().global;
+
+        node.status({fill: "gray", text: "not connected"});
+        
         if (bridgeConfig.requireLogin) {
             options = {
                 username: bridgeConfig.credentials.username,
@@ -128,19 +166,49 @@ module.exports = function(RED) {
         }
                 
         var client  = mqtt.connect(bridgeConfig.broker, options);
-        client.on('connect', function () {
-            client.subscribe(bridgeConfig.baseTopic + "/+", function(err){
-                if(!err) {
+        client.on('message', function(topic, message){
+            try {
+                if(message.length == 0) {
+                    return;
                 }
-            });
+
+                var message = JSON.parse(message.toString());
+                message.topic = topic;
+
+                if (topic == bridgeConfig.baseTopic + "/bridge/log") {
+
+                    message.message.forEach(element => {
+                        if(!knownDevices.some(dev => { return dev.friendly_name == element.friendly_name; })) {
+                            knownDevices.push(element);
+                            bavaria.observer.notify(element.friendly_name, { bridgeLogReceived: true });
+                        }
+                    });
+
+                    globalContext.set(devicesContextName, knownDevices);
+                    return;
+                }
+
+                var deviceName = topic.substr(bridgeConfig.baseTopic.length+1);
+                bavaria.observer.notify(deviceName, message);
+            }
+            catch (err) {
+                node.error(err);
+            }
         });
 
-        client.on('message', function(topic, message){
-            var message = JSON.parse(message.toString());
-            message.topic = topic;
-            
-            var deviceName = topic.substr(bridgeConfig.baseTopic.length+1);
-            bavaria.observer.notify(deviceName, message);
+        client.on('connect', function () {
+            node.status({fill: "green", text: "connected"});
+
+            client.subscribe(bridgeConfig.baseTopic + "/+", function(err){
+                if(!err) {
+                    client.publish(bridgeConfig.baseTopic + "/bridge/config/devices", "");
+                }
+            });
+            client.subscribe(bridgeConfig.baseTopic + "/bridge/log", function(err){ });
+        });
+
+        bavaria.observer.register("needs_refresh", function(msg){
+            client.publish(bridgeConfig.baseTopic + "/" + msg + "/get", "");
         });
 
         node.on('close', function(){
