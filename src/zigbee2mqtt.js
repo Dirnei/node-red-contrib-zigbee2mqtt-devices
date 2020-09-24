@@ -4,10 +4,9 @@ module.exports = function(RED) {
     function genericLamp(config) {
 
         RED.nodes.createNode(this,config);
-        var bridgeConfig = RED.nodes.getNode(config.bridge);
         var deviceConfig = RED.nodes.getNode(config.device);
         var node = this;
-        var topic = bridgeConfig.baseTopic + "/" + deviceConfig.deviceName
+        var topic = deviceConfig.deviceName
         bavaria.observer.register(topic, function(msg){
             var status = "grey";
             var text = "Lm: " + msg.brightness;
@@ -54,7 +53,7 @@ module.exports = function(RED) {
             }
 
             device = {
-                topic: bridgeConfig.baseTopic + "/" + deviceConfig.deviceName,
+                topic: deviceConfig.deviceName,
                 state: config.state,
                 delay: config.delay,
             };
@@ -127,7 +126,7 @@ module.exports = function(RED) {
                 password: bridgeConfig.credentials.password
             };
         }
-        
+                
         var client  = mqtt.connect(bridgeConfig.broker, options);
         client.on('connect', function () {
             client.subscribe(bridgeConfig.baseTopic + "/+", function(err){
@@ -140,7 +139,8 @@ module.exports = function(RED) {
             var message = JSON.parse(message.toString());
             message.topic = topic;
             
-            bavaria.observer.notify(topic, message);
+            var deviceName = topic.substr(bridgeConfig.baseTopic.length+1);
+            bavaria.observer.notify(deviceName, message);
         });
 
         node.on('close', function(){
@@ -191,8 +191,7 @@ module.exports = function(RED) {
                     topic: messages[i].topic,
                 } 
                     
-                //bavaria.observer.notify(message.topic, message.payload);
-                client.publish(message.topic + "/set", JSON.stringify(message.payload));
+                client.publish(bridgeConfig.baseTopic + "/" + message.topic + "/set", JSON.stringify(message.payload));
 
                 i++;
 
