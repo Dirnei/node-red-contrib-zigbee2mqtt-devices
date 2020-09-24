@@ -48,27 +48,6 @@ foreach($file in $files)
     $relativeFile = $file.FullName.Substring($src.Path.Length)
     $dest = Join-Path -Path $destRoot -ChildPath "src\$relativeFile"
 
-    if($file.Name -eq "package.json")
-    {
-        if(Test-Path $dest)
-        {
-            Write-Output "Comparing package.json ..."
-            $packageModified = (Get-FileHash $file.FullName).hash  -ne (Get-FileHash $dest).hash
-            if($packageModified)
-            {
-                Write-Host "package.json was modified. Reinstall again after copy!" -ForegroundColor Red
-            }
-            else
-            {
-                Write-Host "Unmodified. No reinstallation needed!" -ForegroundColor Green
-            }
-        }
-        else 
-        {
-            $packageModified = $true;
-        }
-    }
-
     $folder = $dest.Substring(0, $dest.LastIndexOf("\"))
     if(-not (Test-Path $folder))
     {
@@ -79,6 +58,24 @@ foreach($file in $files)
     [System.IO.File]::Copy($file.FullName, $dest, $true);
 }
 
+# Check if package.json needs install
+if(Test-Path $destRoot/package.json)
+{
+    Write-Output "Comparing package.json ..."
+    $packageModified = (Get-FileHash ./package.json).hash  -ne (Get-FileHash $destRoot/package.json).hash
+    if($packageModified)
+    {
+        Write-Host "package.json was modified. Reinstall again after copy!" -ForegroundColor Red
+    }
+    else
+    {
+        Write-Host "Unmodified. No reinstallation needed!" -ForegroundColor Green
+    }
+}
+else 
+{
+    $packageModified = $true;
+}
 Copy-Item -Path ./package.json -Destination $destRoot/package.json
 
 Write-Output "Change location to: $destination"
