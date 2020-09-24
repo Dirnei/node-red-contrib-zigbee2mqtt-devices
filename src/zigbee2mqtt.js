@@ -22,19 +22,19 @@ module.exports = function(RED) {
 
             switch(message.click){
                 case "on":
-                    node.send([{payload: "on"}, null, null, null, null]);
+                    node.send([{payload: {button_type: "on"}}, null, null, null, null]);
                     break;
                 case "off":
-                    node.send([null, {payload: "off"}, null, null, null]);
+                    node.send([null, {payload: {button_type: "off"}}, null, null, null]);
                     break;
                 case "brightness_up":
-                    node.send([null, null, {payload: "brightness_up"}, null, null]);
+                    node.send([null, null, {payload: {button_type: "brightness_up"}}, null, null]);
                     break;
                 case "brightness_down":
-                    node.send([null, null, null, {payload: "brightness_down"}, null]);
+                    node.send([null, null, null, {payload: {button_type: "brightness_down"}}, null]);
                     break;
                 case "brightness_stop":
-                    node.send([null, null, null, null, {payload: "brightness_stop"}]);
+                    node.send([null, null, null, null, {payload: {button_type: "brightness_stop"}}]);
                     break;
             }
         });
