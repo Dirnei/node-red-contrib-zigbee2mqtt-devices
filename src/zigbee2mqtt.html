@@ -375,18 +375,12 @@
             deviceName: {value: "", required: true},
         },
         inputs:0,
-        outputs:14,
+        outputs:5,
         icon: "inject.png",
         label: function() {
             return this.name || "Ikea Remote";
         },
-        outputLabels: [
-            "toggle","toggle_hold",
-            "up_press","up_hold","up_release",
-            "down_press","down_hold","down_release",
-            "left_press","left_hold","left_release",
-            "right_press","right_hold","right_release",
-        ],
+        outputLabels: ["toggle","up","down","left","right"],
     });
 
 </script>
@@ -409,6 +403,84 @@
 </script>
 
 <script type="text/html" data-help-name="ikea-remote">
+    <p>Leberkas</p>
+</script>
+
+<!--- SCENIC FOH SWITCH NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('scenic-foh-switch',{
+        category: 'zigbee2mqtt-scenic-foh',
+        color: '#f5f5f5',
+        defaults: {
+            name: { value: "" },
+            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
+            deviceName: {value: "", required: true},
+        },
+        inputs:0,
+        outputs:6,
+        icon: "inject.png",
+        label: function() {
+            return this.name || "Scenic FoH Switch";
+        },
+        outputLabels: ["A0","A1","B0","B1","UP","DOWN",],
+    });
+
+</script>
+
+<script type="text/html" data-template-name="scenic-foh-switch">
+    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-input-bridge" placeholder="bridge" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Devicename</label>
+        <input type="text" id="node-input-deviceName">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="scenic-foh-switch">
+    <p>Leberkas</p>
+</script>
+
+<!--- BUTTON SWITCH NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('button-switch',{
+        category: 'zigbee2mqtt-utils',
+        color: '#97f798',
+        defaults: {
+            name: { value: "" },
+        },
+        inputs:1,
+        outputs:3,
+        icon: "function.png",
+        label: function() {
+            return this.name || "button-switch";
+        },
+        outputLabels: ["pressed","released","hold"],
+        oneditprepare: function(){
+            RED.bavaria.ui.addNumRangeInput("#node-input-brightness", 0, 255);   
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="button-switch">
+    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="button-switch">
     <p>Leberkas</p>
 </script>
 

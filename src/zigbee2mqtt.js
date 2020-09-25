@@ -1,6 +1,24 @@
 module.exports = function(RED) {
     const bavaria = require("node-red-ext-bavaria-black");
 
+    function sendAt(node, index, msg){
+        var output = [];
+        for (var i = 0; i < index; i++) {
+            output.push(null);
+        }
+        
+        output.push(msg);
+        node.send(output);
+    }
+
+    function createButtonOutput(output, name, type) {
+        return {
+            index: output,
+            button_name: name,
+            button_type: type,
+        };
+    }
+
     function ikeaDimmer(config) {
         RED.nodes.createNode(this,config);
         var mqtt = require("mqtt");
@@ -19,24 +37,22 @@ module.exports = function(RED) {
         var client  = mqtt.connect(bridgeConfig.broker, options);
         client.on('message', function(topic, message){
             message = JSON.parse(message);
+            
+            const ioMap = {
+                on: createButtonOutput(0, "on", "pressed"),
+                off: createButtonOutput(0, "off", "pressed"),
+                brightness_up: createButtonOutput(1, "dimm_up", "hold"),
+                brightness_down: createButtonOutput(2, "dimm_down", "hold"),
+                brightness_stop: createButtonOutput(2, "dimm_stop", "released"),
+            };
 
-            switch(message.click){
-                case "on":
-                    node.send([{payload: {button_type: "on"}}, null, null, null, null]);
-                    break;
-                case "off":
-                    node.send([null, {payload: {button_type: "off"}}, null, null, null]);
-                    break;
-                case "brightness_up":
-                    node.send([null, null, {payload: {button_type: "brightness_up"}}, null, null]);
-                    break;
-                case "brightness_down":
-                    node.send([null, null, null, {payload: {button_type: "brightness_down"}}, null]);
-                    break;
-                case "brightness_stop":
-                    node.send([null, null, null, null, {payload: {button_type: "brightness_stop"}}]);
-                    break;
-            }
+            var output = ioMap[message.click];
+            sendAt(node, output.index, {
+                payload: {
+                    button_name: output.button_name,
+                    button_type: output.button_type,
+                }
+            });
         });
 
         client.on('connect', function () {
@@ -65,36 +81,30 @@ module.exports = function(RED) {
         var client  = mqtt.connect(bridgeConfig.broker, options);
         client.on('message', function(topic, message){
             message = JSON.parse(message);
-            const inputs = [
-                "toggle","toggle_hold",
-                "brightness_up_click","brightness_up_hold","brightness_up_release",
-                "brightness_down_click","brightness_down_hold","brightness_down_release",
-                "arrow_left_click","arrow_left_hold","arrow_left_release",
-                "arrow_right_click","arrow_right_hold","arrow_right_release",
-            ];
+            const ioMap = {
+                toggle: createButtonOutput(0, "toggle", "pressed"),
+                toggle_hold: createButtonOutput(0, "toggle", "hold"),
+                brightness_up_click: createButtonOutput(1, "brightness_up", "pressed"),
+                brightness_up_hold: createButtonOutput(1, "brightness_up", "hold"),
+                brightness_up_release: createButtonOutput(1, "brightness_up", "released",),
+                brightness_down_click: createButtonOutput(2, "brightness_down", "pressed"),
+                brightness_down_hold: createButtonOutput(2, "brightness_down", "hold"),
+                brightness_down_release: createButtonOutput(2, "brightness_down", "released"),
+                arrow_left_click: createButtonOutput(3, "arrow_left", "pressed"),
+                arrow_left_hold: createButtonOutput(3, "arrow_left", "hold"),
+                arrow_left_release: createButtonOutput(3, "arrow_left", "released"),
+                arrow_right_click: createButtonOutput(4, "arrow_right", "pressed"),
+                arrow_right_hold: createButtonOutput(4, "arrow_right", "hold"),
+                arrow_right_release: createButtonOutput(4, "arrow_right", "released")
+            };
 
-            const outputs = [
-                "toggle","toggle_hold",
-                "up_press","up_hold","up_release",
-                "down_press","down_hold","down_release",
-                "left_press","left_hold","left_release",
-                "right_press","right_hold","right_release",
-            ];
-
-            var output = [];
-            for (var i = 0; i < inputs.length; i++) {
-                if (inputs[i] === message.action) {
-                    output.push({
-                        payload: {
-                            button_type: outputs[i]
-                        }
-                    });
-                } else {
-                    output.push(null);
+            var output = ioMap[message.action];
+            sendAt(node, output.index, {
+                payload: {
+                    button_name: output.button_name,
+                    button_type: output.button_type,
                 }
-            }
-            
-            node.send(output);
+            });
         });
 
         client.on('connect', function () {
@@ -104,6 +114,76 @@ module.exports = function(RED) {
 
     }
     RED.nodes.registerType("ikea-remote", ikeaRemote);
+    
+    function scenicSwitch(config) {
+        RED.nodes.createNode(this,config);
+        var mqtt = require("mqtt");
+        var bridgeConfig = RED.nodes.getNode(config.bridge);
+        var node = this;
+        
+        node.status({fill: "blue", text: "not connected"});
+        
+        if (bridgeConfig.requireLogin) {
+            options = {
+                username: bridgeConfig.credentials.username,
+                password: bridgeConfig.credentials.password
+            };
+        }
+                
+        var client  = mqtt.connect(bridgeConfig.broker, options);
+        client.on('message', function(topic, message){
+            message = JSON.parse(message);
+            var inputs = {
+                recall_scene_0: createButtonOutput(0, "A0", "pressed"),
+                recall_scene_4: createButtonOutput(0, "A0", "released"),
+                recall_scene_1: createButtonOutput(1, "A1", "pressed"),
+                recall_scene_5: createButtonOutput(1, "A1", "released"),
+                recall_scene_3: createButtonOutput(2, "B0", "pressed"),
+                recall_scene_7: createButtonOutput(2, "B0", "released"),
+                recall_scene_2: createButtonOutput(3, "B1", "pressed"),
+                recall_scene_6: createButtonOutput(3, "B1", "released"),
+                press_2_of_2: createButtonOutput(4, "UP", "pressed"),
+                release_2_of_2: createButtonOutput(4, "UP", "released"),
+                press_1_of_2: createButtonOutput(5, "DOWN", "pressed"),
+                release_1_of_2: createButtonOutput(5, "DOWN", "released"),
+            }
+
+            var output = inputs[message.action];
+            sendAt(node, output.index, {
+                payload: {
+                    button_name: output.button_name,
+                    button_type: output.button_type,
+                }
+            });
+        });
+
+        client.on('connect', function () {
+            node.status({fill: "green", text: "connected"});
+            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function(err){});
+        });
+
+    }
+    RED.nodes.registerType("scenic-foh-switch", scenicSwitch);
+    
+    function buttonSwitch(config) {
+        RED.nodes.createNode(this,config);
+        var node = this;
+
+        node.on('input', function(msg){
+            switch (msg.payload.button_type) {
+                case "pressed":
+                    node.send([msg, null, null]);
+                    break;
+                case "hold":
+                    node.send([null, msg, null]);
+                    break;
+                case "released":
+                    node.send([null, null, msg]);
+                    break;
+            }
+        });
+    }
+    RED.nodes.registerType("button-switch", buttonSwitch);
 
     function genericLamp(config) {
 
