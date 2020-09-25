@@ -214,7 +214,7 @@ module.exports = function(RED) {
                 case 0:
                 case "false":
                 case false:
-                    status = "red";
+                    status = "gray";
                     break;
             }
 
@@ -247,6 +247,16 @@ module.exports = function(RED) {
             }
 
             messageToStatus(msg);
+        });
+        
+        bavaria.observer.register(topic + "_routeError", function(msg)
+        {
+            var status = {fill: "red", shape: "dot", text: "route error"};
+            nodeContext.set(getContextName(),{
+                status: status
+            });
+
+            node.status(status);
         });
 
         var status = nodeContext.get(getContextName());
@@ -359,6 +369,15 @@ module.exports = function(RED) {
                 if (topic == bridgeConfig.baseTopic + "/bridge/log") {
                     if(message.type !== "devices")
                     {
+                        switch(message.type) {
+                            case "zigbee_publish_error":
+                                if (message.message.endsWith("'No network route' (205))'")) {
+                                    var name = message.message.substr(0, message.message.indexOf("failed:")-2);
+                                    name = name.substr(name.lastIndexOf("'")+1);
+                                    bavaria.observer.notify(name + "_routeError", {});
+                                }
+                                break;
+                        }
                         return;
                     }
                     
