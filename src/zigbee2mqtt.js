@@ -40,10 +40,10 @@ module.exports = function(RED) {
             
             const ioMap = {
                 on: createButtonOutput(0, "on", "pressed"),
-                off: createButtonOutput(0, "off", "pressed"),
-                brightness_up: createButtonOutput(1, "dimm_up", "hold"),
-                brightness_down: createButtonOutput(2, "dimm_down", "hold"),
-                brightness_stop: createButtonOutput(2, "dimm_stop", "released"),
+                off: createButtonOutput(1, "off", "pressed"),
+                brightness_up: createButtonOutput(2, "dimm_up", "hold"),
+                brightness_down: createButtonOutput(3, "dimm_down", "hold"),
+                brightness_stop: createButtonOutput(4, "dimm_stop", "released"),
             };
 
             var output = ioMap[message.click];
