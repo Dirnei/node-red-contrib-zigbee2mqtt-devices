@@ -46,6 +46,64 @@ module.exports = function(RED) {
 
     }
     RED.nodes.registerType("ikea-dimmer", ikeaDimmer);
+    
+    function ikeaRemote(config) {
+        RED.nodes.createNode(this,config);
+        var mqtt = require("mqtt");
+        var bridgeConfig = RED.nodes.getNode(config.bridge);
+        var node = this;
+        
+        node.status({fill: "blue", text: "not connected"});
+        
+        if (bridgeConfig.requireLogin) {
+            options = {
+                username: bridgeConfig.credentials.username,
+                password: bridgeConfig.credentials.password
+            };
+        }
+                
+        var client  = mqtt.connect(bridgeConfig.broker, options);
+        client.on('message', function(topic, message){
+            message = JSON.parse(message);
+            const inputs = [
+                "toggle","toggle_hold",
+                "brightness_up_click","brightness_up_hold","brightness_up_release",
+                "brightness_down_click","brightness_down_hold","brightness_down_release",
+                "arrow_left_click","arrow_left_hold","arrow_left_release",
+                "arrow_right_click","arrow_right_hold","arrow_right_release",
+            ];
+
+            const outputs = [
+                "toggle","toggle_hold",
+                "up_press","up_hold","up_release",
+                "down_press","down_hold","down_release",
+                "left_press","left_hold","left_release",
+                "right_press","right_hold","right_release",
+            ];
+
+            var output = [];
+            for (var i = 0; i < inputs.length; i++) {
+                if (inputs[i] === message.action) {
+                    output.push({
+                        payload: {
+                            button_type: outputs[i]
+                        }
+                    });
+                } else {
+                    output.push(null);
+                }
+            }
+            
+            node.send(output);
+        });
+
+        client.on('connect', function () {
+            node.status({fill: "green", text: "connected"});
+            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function(err){});
+        });
+
+    }
+    RED.nodes.registerType("ikea-remote", ikeaRemote);
 
     function genericLamp(config) {
 

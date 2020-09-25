@@ -320,11 +320,11 @@
     <p>Leberkas</p>
 </script>
 
-<!--- PREPARE MESSAGES NODE --->
+<!--- IKEA DIMMER NODE --->
 <script type="text/javascript">
 
     RED.nodes.registerType('ikea-dimmer',{
-        category: 'zigbee2mqtt',
+        category: 'zigbee2mqtt-ikea',
         color: '#fd0',
         defaults: {
             name: { value: "" },
@@ -333,7 +333,7 @@
         },
         inputs:0,
         outputs:5,
-        icon: "light.png",
+        icon: "inject.png",
         label: function() {
             return this.name || "Ikea Dimmer";
         },
@@ -363,6 +363,55 @@
     <p>Leberkas</p>
 </script>
 
+<!--- IKEA REMOTE NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('ikea-remote',{
+        category: 'zigbee2mqtt-ikea',
+        color: '#fd0',
+        defaults: {
+            name: { value: "" },
+            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
+            deviceName: {value: "", required: true},
+        },
+        inputs:0,
+        outputs:14,
+        icon: "inject.png",
+        label: function() {
+            return this.name || "Ikea Remote";
+        },
+        outputLabels: [
+            "toggle","toggle_hold",
+            "up_press","up_hold","up_release",
+            "down_press","down_hold","down_release",
+            "left_press","left_hold","left_release",
+            "right_press","right_hold","right_release",
+        ],
+    });
+
+</script>
+
+<script type="text/html" data-template-name="ikea-remote">
+    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-input-bridge" placeholder="bridge" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Devicename</label>
+        <input type="text" id="node-input-deviceName">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="ikea-remote">
+    <p>Leberkas</p>
+</script>
+
 <!--- PREPARE MESSAGES NODE --->
 <script type="text/javascript">
 
@@ -375,7 +424,7 @@
         },
         inputs:1,
         outputs:0,
-        icon: "light.png",
+        icon: "bridge.svg",
         label: function() {
             return this.name || "send messages";
         },
@@ -411,7 +460,7 @@
         },
         inputs:1,
         outputs:1,
-        icon: "light.png",
+        icon: "template.png",
         label: function() {
             return this.name || "override-brightness";
         },
@@ -451,7 +500,7 @@
         },
         inputs:1,
         outputs:1,
-        icon: "light.png",
+        icon: "template.png",
         label: function() {
             return this.name || "override-temperature";
         },
@@ -493,7 +542,7 @@
         },
         inputs:1,
         outputs:1,
-        icon: "light.png",
+        icon: "template.png",
         label: function() {
             return this.name || "override-color";
         },
