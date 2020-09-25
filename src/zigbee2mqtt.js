@@ -172,6 +172,7 @@ module.exports = function(RED) {
             pressed: createButtonOutput(0, "", ""),
             hold: createButtonOutput(1, "", ""),
             released: createButtonOutput(2, "", ""),
+            double: createButtonOutput(3, "", ""),
         }
 
         node.on('input', function(msg){
