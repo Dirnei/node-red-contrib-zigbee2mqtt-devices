@@ -168,19 +168,14 @@ module.exports = function(RED) {
     function buttonSwitch(config) {
         RED.nodes.createNode(this,config);
         var node = this;
+        const inputs = {
+            pressed: createButtonOutput(0, "", ""),
+            hold: createButtonOutput(1, "", ""),
+            released: createButtonOutput(2, "", ""),
+        }
 
         node.on('input', function(msg){
-            switch (msg.payload.button_type) {
-                case "pressed":
-                    node.send([msg, null, null]);
-                    break;
-                case "hold":
-                    node.send([null, msg, null]);
-                    break;
-                case "released":
-                    node.send([null, null, msg]);
-                    break;
-            }
+            sendAt(node, inputs[msg.payload.button_type].index, msg);
         });
     }
     RED.nodes.registerType("button-switch", buttonSwitch);
