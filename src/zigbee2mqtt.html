@@ -313,6 +313,48 @@
     <p>Node for generic lamp devices</p>
 </script>
 
+<!--- SONOFF BUTTON NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('sonoff-button',{
+        category: 'zigbee2mqtt-sonoff',
+        color: '#fd0',
+        defaults: {
+            name: { value: "" },
+            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
+            deviceName: {value: "", required: true},
+        },
+        inputs:0,
+        outputs:1,
+        icon: "inject.png",
+        label: function() {
+            return this.name || "Sonoff Button";
+        },
+    });
+
+</script>
+
+<script type="text/html" data-template-name="sonoff-button">
+    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-input-bridge" placeholder="bridge" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Devicename</label>
+        <input type="text" id="node-input-deviceName">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="sonoff-button">
+    <p>Node for sonoff button input device</p>
+</script>
+
 <!--- IKEA DIMMER NODE --->
 <script type="text/javascript">
 
@@ -538,7 +580,7 @@
             name: { value: "" },
         },
         inputs:1,
-        outputs:3,
+        outputs:4,
         icon: "function.png",
         label: function() {
             return this.name || "button-switch";

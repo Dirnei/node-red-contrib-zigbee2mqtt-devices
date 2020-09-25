@@ -19,6 +19,48 @@ module.exports = function(RED) {
         };
     }
 
+    function sonoffButton(config) {
+        RED.nodes.createNode(this,config);
+        var mqtt = require("mqtt");
+        var bridgeConfig = RED.nodes.getNode(config.bridge);
+        var node = this;
+        
+        node.status({fill: "blue", text: "not connected"});
+        
+        if (bridgeConfig.requireLogin) {
+            options = {
+                username: bridgeConfig.credentials.username,
+                password: bridgeConfig.credentials.password
+            };
+        }
+                
+        var client  = mqtt.connect(bridgeConfig.broker, options);
+        client.on('message', function(topic, message){
+            message = JSON.parse(message);
+            
+            const ioMap = {
+                single: createButtonOutput(0, "button", "pressed"),
+                long: createButtonOutput(0, "button", "released"),
+                double: createButtonOutput(0, "button", "double"),
+            };
+
+            var output = ioMap[message.action];
+            sendAt(node, output.index, {
+                payload: {
+                    button_name: output.button_name,
+                    button_type: output.button_type,
+                }
+            });
+        });
+
+        client.on('connect', function () {
+            node.status({fill: "green", text: "connected"});
+            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function(err){});
+        });
+
+    }
+    RED.nodes.registerType("sonoff-button", sonoffButton);
+
     function ikeaDimmer(config) {
         RED.nodes.createNode(this,config);
         var mqtt = require("mqtt");
