@@ -1,22 +1,15 @@
 <script type="text/javascript">
     function refresh(){
         RED.nodes.eachNode(function(node) {
-            console.log(node);
+            
         });
-    }
-
-    var blubs = [];
-
-    if(RED.nodes.eachNode === undefined)
-    {
-        blubs.push("leberkas");
     }
 
     RED.sidebar.addTab({
         id: "zigbee2mqtt",
         label: "Zigbee 2 MQTT",
         name: "zigbee2mqtt",
-        content: "<div class=\"nr-db-sb\">" + blubs.length + "</div>",
+        content: "<div class=\"nr-db-sb\">TODO: Add overview of all devices</div>",
         closeable: true,
         pinned: true,
         iconClass: "fa fa-cloud",
@@ -317,7 +310,7 @@
 </script>
 
 <script type="text/html" data-help-name="generic-lamp">
-    <p>Leberkas</p>
+    <p>Node for generic lamp devices</p>
 </script>
 
 <!--- IKEA DIMMER NODE --->
@@ -360,7 +353,7 @@
 </script>
 
 <script type="text/html" data-help-name="ikea-dimmer">
-    <p>Leberkas</p>
+    <p>Node for Ikea dimmer input device</p>
 </script>
 
 <!--- IKEA REMOTE NODE --->
@@ -403,7 +396,7 @@
 </script>
 
 <script type="text/html" data-help-name="ikea-remote">
-    <p>Leberkas</p>
+    <p>Node for Ikea remote input device</p>
 </script>
 
 <!--- SCENIC FOH SWITCH NODE --->
@@ -446,7 +439,7 @@
 </script>
 
 <script type="text/html" data-help-name="scenic-foh-switch">
-    <p>Leberkas</p>
+    <p>Node for Scenic Friend of Hue Smartswitch input device</p>
 </script>
 
 <!--- BUTTON SWITCH NODE --->
@@ -481,7 +474,7 @@
 </script>
 
 <script type="text/html" data-help-name="button-switch">
-    <p>Leberkas</p>
+    <p>Node to switch button press types</p>
 </script>
 
 <!--- PREPARE MESSAGES NODE --->
@@ -517,7 +510,7 @@
 </script>
 
 <script type="text/html" data-help-name="send-messages">
-    <p>Leberkas</p>
+    <p>Node to send messages to devices</p>
 </script>
 
 <!--- OVERRIDE BRIGHTNESS NODE --->
@@ -557,7 +550,7 @@
 </script>
 
 <script type="text/html" data-help-name="override-brightness">
-    <p>Leberkas</p>
+    <p>Node to override brightness</p>
 </script>
 
 <!--- OVERRIDE TEMPERATURE NODE --->
@@ -597,7 +590,7 @@
 </script>
 
 <script type="text/html" data-help-name="override-temperature">
-    <p>Leberkas</p>
+    <p>Node to overrite color temperature</p>
 </script>
 
 <!--- OVERRIDE COLOR NODE --->
@@ -650,5 +643,5 @@
 </script>
 
 <script type="text/html" data-help-name="override-temperature">
-    <p>Leberkas</p>
+    <p>Node to override color</p>
 </script>
