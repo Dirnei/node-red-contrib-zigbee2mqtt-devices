@@ -442,6 +442,92 @@
     <p>Node for Scenic Friend of Hue Smartswitch input device</p>
 </script>
 
+<!--- CONTACT SENSOR NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('contact-sensor',{
+        category: 'zigbee2mqtt-sensor',
+        color: '#fcba03',
+        defaults: {
+            name: { value: "" },
+            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
+            deviceName: {value: "", required: true},
+        },
+        inputs:0,
+        outputs:2,
+        icon: "feed.png",
+        label: function() {
+            return this.name || "Contact sensor";
+        },
+        outputLabels: ["closed","open"],
+    });
+
+</script>
+
+<script type="text/html" data-template-name="contact-sensor">
+    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-input-bridge" placeholder="bridge" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Devicename</label>
+        <input type="text" id="node-input-deviceName">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="contact-sensor">
+    <p>Node for contact sensor input device</p>
+</script>
+
+<!--- OCCUPANCY SENSOR NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('occupancy-sensor',{
+        category: 'zigbee2mqtt-sensor',
+        color: '#fcba03',
+        defaults: {
+            name: { value: "" },
+            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
+            deviceName: {value: "", required: true},
+        },
+        inputs:0,
+        outputs:2,
+        icon: "feed.png",
+        label: function() {
+            return this.name || "Occupancy sensor";
+        },
+        outputLabels: ["occupied","no motion"],
+    });
+
+</script>
+
+<script type="text/html" data-template-name="occupancy-sensor">
+    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-input-bridge" placeholder="bridge" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Devicename</label>
+        <input type="text" id="node-input-deviceName">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="occupancy-sensor">
+    <p>Node for occupancy sensor input device</p>
+</script>
+
 <!--- BUTTON SWITCH NODE --->
 <script type="text/javascript">
 
