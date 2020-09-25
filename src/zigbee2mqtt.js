@@ -357,7 +357,11 @@ module.exports = function(RED) {
                 message.topic = topic;
 
                 if (topic == bridgeConfig.baseTopic + "/bridge/log") {
-
+                    if(message.type !== "devices")
+                    {
+                        return;
+                    }
+                    
                     message.message.forEach(element => {
                         if(!knownDevices.some(dev => { return dev.friendly_name == element.friendly_name; })) {
                             knownDevices.push(element);
