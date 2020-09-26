@@ -161,51 +161,37 @@ module.exports = function (RED) {
 
     function scenicSwitch(config) {
         RED.nodes.createNode(this, config);
-        var mqtt = require("mqtt");
-        var bridgeConfig = RED.nodes.getNode(config.bridge);
+        var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
         node.status({ fill: "blue", text: "not connected" });
-
-        if (bridgeConfig.requireLogin) {
-            options = {
-                username: bridgeConfig.credentials.username,
-                password: bridgeConfig.credentials.password
-            };
-        }
-
-        var client = mqtt.connect(bridgeConfig.broker, options);
-        client.on('message', function (topic, message) {
-            message = JSON.parse(message);
-            var inputs = {
-                recall_scene_0: createButtonOutput(0, "A0", "pressed"),
-                recall_scene_4: createButtonOutput(0, "A0", "released"),
-                recall_scene_1: createButtonOutput(1, "A1", "pressed"),
-                recall_scene_5: createButtonOutput(1, "A1", "released"),
-                recall_scene_3: createButtonOutput(2, "B0", "pressed"),
-                recall_scene_7: createButtonOutput(2, "B0", "released"),
-                recall_scene_2: createButtonOutput(3, "B1", "pressed"),
-                recall_scene_6: createButtonOutput(3, "B1", "released"),
-                press_2_of_2: createButtonOutput(4, "UP", "pressed"),
-                release_2_of_2: createButtonOutput(4, "UP", "released"),
-                press_1_of_2: createButtonOutput(5, "DOWN", "pressed"),
-                release_1_of_2: createButtonOutput(5, "DOWN", "released"),
-            }
-
-            var output = inputs[message.action];
-            sendAt(node, output.index, {
-                payload: {
-                    button_name: output.button_name,
-                    button_type: output.button_type,
+        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+            node.status({ fill: "green", text: "connected" });
+            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
+                var ioMap = {
+                    recall_scene_0: createButtonOutput(0, "A0", "pressed"),
+                    recall_scene_4: createButtonOutput(0, "A0", "released"),
+                    recall_scene_1: createButtonOutput(1, "A1", "pressed"),
+                    recall_scene_5: createButtonOutput(1, "A1", "released"),
+                    recall_scene_3: createButtonOutput(2, "B0", "pressed"),
+                    recall_scene_7: createButtonOutput(2, "B0", "released"),
+                    recall_scene_2: createButtonOutput(3, "B1", "pressed"),
+                    recall_scene_6: createButtonOutput(3, "B1", "released"),
+                    press_2_of_2: createButtonOutput(4, "UP", "pressed"),
+                    release_2_of_2: createButtonOutput(4, "UP", "released"),
+                    press_1_of_2: createButtonOutput(5, "DOWN", "pressed"),
+                    release_1_of_2: createButtonOutput(5, "DOWN", "released"),
                 }
+
+                var output = ioMap[message.action];
+                sendAt(node, output.index, {
+                    payload: {
+                        button_name: output.button_name,
+                        button_type: output.button_type,
+                    }
+                });
             });
         });
-
-        client.on('connect', function () {
-            node.status({ fill: "green", text: "connected" });
-            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function (err) { });
-        });
-
     }
     RED.nodes.registerType("scenic-foh-switch", scenicSwitch);
 
