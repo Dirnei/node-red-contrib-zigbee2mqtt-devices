@@ -46,8 +46,6 @@ module.exports = function(RED) {
                 };
                 
                 var output = ioMap[message.action];
-
-                
                 sendAt(node, output.index, {
                     payload: {
                         button_name: output.button_name,
@@ -462,19 +460,28 @@ module.exports = function(RED) {
         
         var globalContext = this.context().global;
         
-        RED.httpAdmin.get('/z2m/devices/' + config.bridge.replace(".", "_") + "/:deviceType/:vendor", function(req, res){
+        RED.httpAdmin.get('/z2m/devices/' + config.bridge.replace(".", "_") + "/:deviceType/:vendor/:model", function(req, res){
             var type = req.params.deviceType.toLowerCase();
-            var vendor =  req.params.vendor.toLowerCase();
+            var vendor = req.params.vendor.toLowerCase();
+            var model = req.params.model.toLowerCase();
 
             res.end(JSON.stringify({
                 devices: globalContext.get(devicesContextName).filter(e=>{
                     var dt = e.type.toLowerCase();
                     var dv = "all";
+                    var dm = "all";
+
                     if(e.vendor){
                         dv = e.vendor.toLowerCase();
                     }
+
+                    if(e.model){
+                        dm = e.model.toLowerCase();
+                    }
+
                     return  (dt == type || (type == "enddevice" && dt == "greenpower")) &&
-                            (dv == vendor || (vendor == "all"));
+                            (dv == vendor || (vendor == "all")) &&
+                            (dm == model || (model == "all"));
                 })
             }));
         });

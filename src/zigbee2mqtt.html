@@ -333,12 +333,11 @@
         oneditprepare: function(){
             var node = this;
             var deviceName = node.deviceName;
-            console.log(node);
+            
             $("#node-input-bridge").change(function(){
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/'+bridgeId+'/endDevice/sonoff',function(data) {
+                $.getJSON('/z2m/devices/'+bridgeId+'/endDevice/sonoff/SNZB-01',function(data) {
                     $("#node-input-deviceName").empty();
-                    console.log(data.devices);
                     data.devices.forEach(e=>{
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
                     });
@@ -369,7 +368,22 @@
 </script>
 
 <script type="text/html" data-help-name="sonoff-button">
-    <p>Node for sonoff button input device</p>
+    <p>Sends a new message when a sonoff touch button is pressed.</p>
+    <p>It is only compatible with SONOFF touch button (Model: SNZB-01)</p>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt> button_name <span class="property-type"> string </span> </dt>
+        <dd> The name of the button that was pressed </dd>
+        <dt> button_type  <span class="property-type"> string </span> </dt>
+        <dd>
+            The type in wich way the button was pressed. Following types are available:
+            <ul>
+                <li><code>pressed</code></li>
+                <li><code>released</code></li>
+                <li><code>double</code></li>
+            </ul>
+        </dd>
+    </dl>
 </script>
 
 <!--- IKEA DIMMER NODE --->
