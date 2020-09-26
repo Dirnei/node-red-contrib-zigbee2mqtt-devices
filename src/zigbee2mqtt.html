@@ -112,14 +112,31 @@
     RED.nodes.registerType('zigbee2mqtt-device-config',{
         category: 'config',
         defaults: {
-			name:   { value: "", required: true },
+            name:   { value: "", required: true },
+            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
 			deviceName: { value: "", required: true },
             brightnessSupport: {value: false},
             temperatureSupport: {value: false},
             colorSupport: {value: false},
 		},
         label: function(){return this.name;},
-		paletteLabel: "Device config"
+		paletteLabel: "Device config",
+        oneditprepare: function(){
+            var node = this;
+            var deviceName = node.deviceName;
+            
+            $("#node-config-input-bridge").change(function(){
+                var bridgeId = $("#node-config-input-bridge").val().replace(".", "_");
+                $.getJSON('/z2m/devices/'+bridgeId+'/router/all/all',function(data) {
+                    $("#node-config-input-deviceName").empty();
+                    data.devices.forEach(e=>{
+                        $("#node-config-input-deviceName").append("<option>" + e.friendly_name + "</option>");
+                    });
+
+                    $("#node-config-input-deviceName").val(deviceName);
+                });
+            });
+        }
     });
 </script>
 
@@ -129,8 +146,12 @@
         <input type="text" id="node-config-input-name" placeholder="Name" />
     </div>	
     <div class="form-row">
-        <label for="node-config-input-deviceName"><i class="fa fa-tag"></i> Device name</label>
-        <input type="text" id="node-config-input-deviceName" placeholder="Device name" />
+        <label for="node-config-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-config-input-bridge"  />
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-deviceName"><i class="fa fa-tag"></i> Device</label>
+        <select id="node-config-input-deviceName"></select>
     </div>
     <div class="form-row">
         <label for="node-config-input-brightnessSupport"><i class="fa fa-tag"></i> Dimmable</label>

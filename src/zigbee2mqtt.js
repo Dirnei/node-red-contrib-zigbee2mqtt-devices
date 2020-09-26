@@ -4,6 +4,7 @@ module.exports = function (RED) {
         try {
             var broker = RED.nodes.getNode(req.params.broker.replace("_", "."));
             var devices = broker.getDeviceList();
+
             handleDeviceListRequest(devices, req, res);
         } catch (err) {
             console.log(err);
@@ -257,7 +258,7 @@ module.exports = function (RED) {
         var deviceConfig = RED.nodes.getNode(config.device);
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
-        var topic = deviceConfig.deviceName
+        var topic = deviceConfig.deviceName;
 
         var nodeContext = this.context().global;
         function getContextName() {
@@ -305,9 +306,17 @@ module.exports = function (RED) {
             node.status(status);
         }
 
-        bridgeNode.subscribeDevice(node.id, deviceConfig.deviceName, function(msg){
+        var subId = bridgeNode.subscribeDevice(node.id, deviceConfig.deviceName, function (msg) {
             messageToStatus(msg);
         });
+
+        bavaria.observer.register(bridgeNode.id + "_connected", function (msg) {
+            bridgeNode.refreshDevice(deviceConfig.deviceName);
+        });
+
+        if (bridgeNode.isConnected) {
+            bridgeNode.refreshDevice(deviceConfig.deviceName);
+        }
 
         bavaria.observer.register(topic + "_routeError", function (msg) {
             var status = { fill: "red", shape: "dot", text: "route error" };
@@ -327,6 +336,7 @@ module.exports = function (RED) {
 
         node.on('close', function () {
             nodeContext.set(getContextName(), undefined);
+            bridgeNode.unsubscribeDevice(subId);
         });
 
         node.on('input', function (msg) {
@@ -372,6 +382,7 @@ module.exports = function (RED) {
         this.brightnessSupport = config.brightnessSupport;
         this.temperatureSupport = config.temperatureSupport;
         this.colorSupport = config.colorSupport;
+        this.bridge = config.bridge;
     }
     RED.nodes.registerType("zigbee2mqtt-device-config", deviceConfig)
 
@@ -397,9 +408,12 @@ module.exports = function (RED) {
 
         var client = mqtt.connect(this.broker, options);
 
-        this.isConnected = function () { return client.isConnected; };
-        this.isReconnecting = function () { return client.isReconnecting; };
-        this.publish = function(topic, message) { client.publish(topic, message); };
+        this.isConnected = function () { return client.connected; };
+        this.isReconnecting = function () { return client.reconnecting; };
+        this.publish = function (topic, message) { client.publish(topic, message); };
+        this.refreshDevice = function (deviceName) {
+            client.publish(node.baseTopic + "/" + deviceName + "/get", "");
+        };
         this.getDeviceList = function () {
             return globalContext.get(devicesContextName) || [];
         };
@@ -408,16 +422,13 @@ module.exports = function (RED) {
 
             var sub = _subs.find(e => e.nodeId == nodeId);
             if (sub) {
-                console.log("sub found");
-                console.log(sub);
                 if (sub.topic !== topic) {
-                    client.unsubribe(sub.topic);
+                    client.unsubscribe(sub.topic);
                 }
 
                 sub.topic = topic;
                 sub.callback = callback;
             } else {
-                console.log("leberkas");
                 sub = {
                     nodeId: nodeId,
                     topic: topic,
@@ -430,8 +441,11 @@ module.exports = function (RED) {
             client.subscribe(topic);
             return true;
         };
-        this.unsubscribeDevice = function (device) {
-            client.unsubribe(node.baseTopic + "/" + device);
+        this.unsubscribeDevice = function (nodeId) {
+            var sub = _subs.find(e => e.nodeId == nodeId);
+            if (sub) {
+                client.unsubscribe(sub.topic);
+            }
         };
 
         client.on('message', function (topic, message) {
@@ -468,7 +482,7 @@ module.exports = function (RED) {
                             console.log(err);
                         }
                     });
-                    
+
                     var deviceName = topic.substr(node.baseTopic.length + 1);
                     bavaria.observer.notify(deviceName, message);
                 }
@@ -486,10 +500,6 @@ module.exports = function (RED) {
 
             bavaria.observer.notify(node.id + "_connected", {});
         });
-
-        bavaria.observer.register("needs_refresh", function (msg) {
-            client.publish(node.baseTopic + "/" + msg + "/get", "");
-        });
     }
     RED.nodes.registerType("zigbee2mqtt-bridge-config", bridgeConfig, {
         credentials: {
@@ -503,8 +513,21 @@ module.exports = function (RED) {
         var node = this;
         var bridgeNode = RED.nodes.getNode(config.bridge);
 
-        node.status({ fill: "gray", text: "not connected" });
-        
+        if(!bridgeNode)
+        {
+            node.status({ fill: "red", text: "no bridge configured" });
+            return;
+        }
+        node.status({ fill: "blue", text: "not connected" });
+
+        bavaria.observer.register(bridgeNode.id + "_connected", function (msg) {
+            node.status({ fill: "green", text: "connected" });
+        });
+
+        if (bridgeNode.isConnected) {
+            node.status({ fill: "green", text: "connected" });
+        }
+
         node.on('input', function (msg) {
             var messages = [];
             msg.payload.devices.forEach(element => {
@@ -541,10 +564,13 @@ module.exports = function (RED) {
             function sendNextMessage() {
                 var message = {
                     payload: messages[i],
-                    topic: messages[i].topic,
+                    topic: bridgeNode.baseTopic + "/" + messages[i].topic + "/set",
                 }
 
-                bridgeNode.publish(bridgeConfig.baseTopic + "/" + message.topic + "/set", JSON.stringify(message.payload));
+                message.payload.topic = undefined;
+
+                node.warn(message);
+                bridgeNode.publish(message.topic, JSON.stringify(message.payload));
 
                 if (++i < messages.length) {
                     enqueue();
