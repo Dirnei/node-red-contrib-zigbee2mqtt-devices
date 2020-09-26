@@ -330,6 +330,23 @@
         label: function() {
             return this.name || "Sonoff Button";
         },
+        oneditprepare: function(){
+            var node = this;
+            var deviceName = node.deviceName;
+            console.log(node);
+            $("#node-input-bridge").change(function(){
+                var bridgeId = $("#node-input-bridge").val().replace(".", "_");
+                $.getJSON('/z2m/devices/'+bridgeId+'/endDevice/sonoff',function(data) {
+                    $("#node-input-deviceName").empty();
+                    console.log(data.devices);
+                    data.devices.forEach(e=>{
+                        $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
+                    });
+
+                    $("#node-input-deviceName").val(deviceName);
+                });
+            });
+        }
     });
 
 </script>
@@ -345,8 +362,8 @@
         <input type="text" id="node-input-bridge" placeholder="bridge" />
     </div>
     <div class="form-row">
-        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Devicename</label>
-        <input type="text" id="node-input-deviceName">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
+        <select id="node-input-deviceName"></select>
     </div>
 
 </script>

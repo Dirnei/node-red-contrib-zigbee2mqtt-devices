@@ -36,21 +36,32 @@ module.exports = function(RED) {
                 
         var client  = mqtt.connect(bridgeConfig.broker, options);
         client.on('message', function(topic, message){
-            message = JSON.parse(message);
-            
-            const ioMap = {
-                single: createButtonOutput(0, "button", "pressed"),
-                long: createButtonOutput(0, "button", "released"),
-                double: createButtonOutput(0, "button", "double"),
-            };
+            try {
+                message = JSON.parse(message);
+                
+                const ioMap = {
+                    single: createButtonOutput(0, "button", "pressed"),
+                    long: createButtonOutput(0, "button", "released"),
+                    double: createButtonOutput(0, "button", "double"),
+                };
+                
+                var output = ioMap[message.action];
 
-            var output = ioMap[message.action];
-            sendAt(node, output.index, {
-                payload: {
-                    button_name: output.button_name,
-                    button_type: output.button_type,
-                }
-            });
+                
+                sendAt(node, output.index, {
+                    payload: {
+                        button_name: output.button_name,
+                        button_type: output.button_type,
+                    }
+                });
+                
+                node.status({ fill: "green", "text": "Last action: " + output.button_type});
+                setTimeout(function(){
+                    node.status({fill: "green", text: "connected"});
+                }, 2000);
+            } catch (err) {
+                node.status({ fill: "red", "text": "error"});
+            }
         });
 
         client.on('connect', function () {
@@ -450,6 +461,23 @@ module.exports = function(RED) {
         var options = undefined;
         
         var globalContext = this.context().global;
+        
+        RED.httpAdmin.get('/z2m/devices/' + config.bridge.replace(".", "_") + "/:deviceType/:vendor", function(req, res){
+            var type = req.params.deviceType.toLowerCase();
+            var vendor =  req.params.vendor.toLowerCase();
+
+            res.end(JSON.stringify({
+                devices: globalContext.get(devicesContextName).filter(e=>{
+                    var dt = e.type.toLowerCase();
+                    var dv = "all";
+                    if(e.vendor){
+                        dv = e.vendor.toLowerCase();
+                    }
+                    return  (dt == type || (type == "enddevice" && dt == "greenpower")) &&
+                            (dv == vendor || (vendor == "all"));
+                })
+            }));
+        });
 
         node.status({fill: "gray", text: "not connected"});
         
