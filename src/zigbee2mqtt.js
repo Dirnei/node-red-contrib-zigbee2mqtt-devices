@@ -1,5 +1,40 @@
 module.exports = function(RED) {
     const bavaria = require("node-red-ext-bavaria-black");
+    RED.httpAdmin.get('/z2m/devices/:broker/:deviceType/:vendor/:model',function(req, res){
+        try {
+            var broker = RED.nodes.getNode(req.params.broker.replace("_", "."));
+            var devices = broker.getDeviceList();
+            handleDeviceListRequest(devices, req, res);
+        } catch (err) {
+            console.log(err);
+        }
+    });
+
+    function handleDeviceListRequest(devices, req, res) {
+        var type = req.params.deviceType.toLowerCase();
+        var vendor = decodeURI(req.params.vendor).toLowerCase();
+        var model = decodeURI(req.params.model).toLowerCase();
+
+        res.end(JSON.stringify({
+            devices: devices.filter(e => {
+                var dt = e.type.toLowerCase();
+                var dv = "all";
+                var dm = "all";
+
+                if(e.vendor){
+                    dv = e.vendor.toLowerCase();
+                }
+
+                if(e.model){
+                    dm = e.model.toLowerCase();
+                }
+
+                return (dt == type || (type == "enddevice" && dt == "greenpower")) &&
+                       (dv == vendor || (vendor == "all")) &&
+                       (dm == model || (model == "all"));
+            })
+        }));
+    }
 
     function sendAt(node, index, msg){
         var output = [];
@@ -38,7 +73,6 @@ module.exports = function(RED) {
         client.on('message', function(topic, message){
             try {
                 message = JSON.parse(message);
-                
                 const ioMap = {
                     single: createButtonOutput(0, "button", "pressed"),
                     long: createButtonOutput(0, "button", "released"),
@@ -66,7 +100,6 @@ module.exports = function(RED) {
             node.status({fill: "green", text: "connected"});
             client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function(err){});
         });
-
     }
     RED.nodes.registerType("sonoff-button", sonoffButton);
 
@@ -436,10 +469,55 @@ module.exports = function(RED) {
 
     function bridgeConfig(config) {
         RED.nodes.createNode(this,config);
+        var mqtt = require('mqtt')
         this.name   = config.name;
         this.baseTopic = config.baseTopic;
         this.broker = config.broker;
         this.requireLogin = config.requireLogin;
+        var knownDevices = [];
+        var node = this;
+        var devicesContextName = "z2m_devices_" + node.id.replace(".", "_");
+        var globalContext = node.context().global;
+
+        this.getDeviceList = function() {
+            return globalContext.get(devicesContextName) || [];
+        }
+
+        if (node.requireLogin) {
+            options = {
+                username: this.credentials.username,
+                password: this.credentials.password
+            };
+        }
+
+        var client  = mqtt.connect(this.broker, options);
+        client.on('message', function(topic, message){
+            try {
+                message = JSON.parse(message);
+                if (message.type === "devices") {
+                    message.message.forEach(element => {
+                        if(!knownDevices.some(dev => { return dev.friendly_name == element.friendly_name; })) {
+                            knownDevices.push(element);
+                            bavaria.observer.notify(element.friendly_name, { bridgeLogReceived: true });
+                        }
+                    });
+
+                    globalContext.set(devicesContextName, knownDevices);
+                }
+            } catch (err) {
+                node.error(err);
+            }
+        });
+
+        client.on('connect', function () {
+            client.subscribe(node.baseTopic + "/bridge/log", function(err){
+                node.error(err);
+            });
+            
+            if(node.getDeviceList().length == 0){
+                client.publish("zigbee2mqtt/bridge/config/devices", "");
+            }
+        });
     }
     RED.nodes.registerType("zigbee2mqtt-bridge-config", bridgeConfig, {
         credentials: {
@@ -453,42 +531,12 @@ module.exports = function(RED) {
         
         var node = this;
         var devicesContextName = "z2m_devices_" + config.bridge.replace(".", "_");
-        var knownDevices = [];
         var bridgeConfig = RED.nodes.getNode(config.bridge);
         var mqtt = require('mqtt')
         var options = undefined;
         
         var globalContext = this.context().global;
         
-        RED.httpAdmin.get('/z2m/devices/' + config.bridge.replace(".", "_") + "/:deviceType/:vendor/:model", function(req, res){
-            var type = req.params.deviceType.toLowerCase();
-            var vendor = decodeURI(req.params.vendor).toLowerCase();
-            var model = decodeURI(req.params.model).toLowerCase();
-
-            console.log(vendor);
-            console.log(model);
-
-            res.end(JSON.stringify({
-                devices: globalContext.get(devicesContextName).filter(e=>{
-                    var dt = e.type.toLowerCase();
-                    var dv = "all";
-                    var dm = "all";
-
-                    if(e.vendor){
-                        dv = e.vendor.toLowerCase();
-                    }
-
-                    if(e.model){
-                        dm = e.model.toLowerCase();
-                    }
-
-                    return  (dt == type || (type == "enddevice" && dt == "greenpower")) &&
-                            (dv == vendor || (vendor == "all")) &&
-                            (dm == model || (model == "all"));
-                })
-            }));
-        });
-
         node.status({fill: "gray", text: "not connected"});
         
         if (bridgeConfig.requireLogin) {
@@ -509,28 +557,15 @@ module.exports = function(RED) {
                 message.topic = topic;
 
                 if (topic == bridgeConfig.baseTopic + "/bridge/log") {
-                    if(message.type !== "devices")
-                    {
-                        switch(message.type) {
-                            case "zigbee_publish_error":
-                                if (message.message.endsWith("'No network route' (205))'")) {
-                                    var name = message.message.substr(0, message.message.indexOf("failed:")-2);
-                                    name = name.substr(name.lastIndexOf("'")+1);
-                                    bavaria.observer.notify(name + "_routeError", {});
-                                }
-                                break;
-                        }
-                        return;
+                    switch(message.type) {
+                        case "zigbee_publish_error":
+                            if (message.message.endsWith("'No network route' (205))'")) {
+                                var name = message.message.substr(0, message.message.indexOf("failed:")-2);
+                                name = name.substr(name.lastIndexOf("'")+1);
+                                bavaria.observer.notify(name + "_routeError", {});
+                            }
+                            break;
                     }
-                    
-                    message.message.forEach(element => {
-                        if(!knownDevices.some(dev => { return dev.friendly_name == element.friendly_name; })) {
-                            knownDevices.push(element);
-                            bavaria.observer.notify(element.friendly_name, { bridgeLogReceived: true });
-                        }
-                    });
-
-                    globalContext.set(devicesContextName, knownDevices);
                     return;
                 }
 
@@ -545,11 +580,7 @@ module.exports = function(RED) {
         client.on('connect', function () {
             node.status({fill: "green", text: "connected"});
 
-            client.subscribe(bridgeConfig.baseTopic + "/+", function(err){
-                if(!err) {
-                    client.publish(bridgeConfig.baseTopic + "/bridge/config/devices", "");
-                }
-            });
+            client.subscribe(bridgeConfig.baseTopic + "/+", function(err){});
             client.subscribe(bridgeConfig.baseTopic + "/bridge/log", function(err){ });
         });
 
