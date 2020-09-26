@@ -1,6 +1,6 @@
-module.exports = function(RED) {
+module.exports = function (RED) {
     const bavaria = require("node-red-ext-bavaria-black");
-    RED.httpAdmin.get('/z2m/devices/:broker/:deviceType/:vendor/:model',function(req, res){
+    RED.httpAdmin.get('/z2m/devices/:broker/:deviceType/:vendor/:model', function (req, res) {
         try {
             var broker = RED.nodes.getNode(req.params.broker.replace("_", "."));
             var devices = broker.getDeviceList();
@@ -21,27 +21,27 @@ module.exports = function(RED) {
                 var dv = "all";
                 var dm = "all";
 
-                if(e.vendor){
+                if (e.vendor) {
                     dv = e.vendor.toLowerCase();
                 }
 
-                if(e.model){
+                if (e.model) {
                     dm = e.model.toLowerCase();
                 }
 
                 return (dt == type || (type == "enddevice" && dt == "greenpower")) &&
-                       (dv == vendor || (vendor == "all")) &&
-                       (dm == model || (model == "all"));
+                    (dv == vendor || (vendor == "all")) &&
+                    (dm == model || (model == "all"));
             })
         }));
     }
 
-    function sendAt(node, index, msg){
+    function sendAt(node, index, msg) {
         var output = [];
         for (var i = 0; i < index; i++) {
             output.push(null);
         }
-        
+
         output.push(msg);
         node.send(output);
     }
@@ -55,73 +55,63 @@ module.exports = function(RED) {
     }
 
     function sonoffButton(config) {
-        RED.nodes.createNode(this,config);
+        RED.nodes.createNode(this, config);
         var mqtt = require("mqtt");
         var bridgeConfig = RED.nodes.getNode(config.bridge);
         var node = this;
-        
-        node.status({fill: "blue", text: "not connected"});
-        
-        if (bridgeConfig.requireLogin) {
-            options = {
-                username: bridgeConfig.credentials.username,
-                password: bridgeConfig.credentials.password
-            };
-        }
-                
-        var client  = mqtt.connect(bridgeConfig.broker, options);
-        client.on('message', function(topic, message){
-            try {
-                message = JSON.parse(message);
-                const ioMap = {
-                    single: createButtonOutput(0, "button", "pressed"),
-                    long: createButtonOutput(0, "button", "released"),
-                    double: createButtonOutput(0, "button", "double"),
-                };
-                
-                var output = ioMap[message.action];
-                sendAt(node, output.index, {
-                    payload: {
-                        button_name: output.button_name,
-                        button_type: output.button_type,
-                    }
-                });
-                
-                node.status({ fill: "green", "text": "Last action: " + output.button_type});
-                setTimeout(function(){
-                    node.status({fill: "green", text: "connected"});
-                }, 2000);
-            } catch (err) {
-                node.status({ fill: "red", "text": "error"});
-            }
+
+        node.status({ fill: "blue", text: "not connected" });
+        bavaria.observer.register(bridgeConfig.id + "_connected", function (message) {
+            node.status({ fill: "green", text: "connected" });
+            bridgeConfig.subscribeDevice(node.id, config.deviceName, function (message) {
+                try {
+                    const ioMap = {
+                        single: createButtonOutput(0, "button", "pressed"),
+                        long: createButtonOutput(0, "button", "released"),
+                        double: createButtonOutput(0, "button", "double"),
+                    };
+
+                    var output = ioMap[message.action];
+                    sendAt(node, output.index, {
+                        payload: {
+                            button_name: output.button_name,
+                            button_type: output.button_type,
+                        }
+                    });
+
+                    node.status({ fill: "green", "text": "Last action: " + output.button_type });
+                    setTimeout(function () {
+                        node.status({ fill: "green", text: "connected" });
+                    }, 2000);
+                } catch (err) {
+                    node.error(err);
+                    node.status({ fill: "red", "text": "error" });
+                }
+            });
         });
 
-        client.on('connect', function () {
-            node.status({fill: "green", text: "connected"});
-            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function(err){});
-        });
     }
     RED.nodes.registerType("sonoff-button", sonoffButton);
 
     function ikeaDimmer(config) {
-        RED.nodes.createNode(this,config);
+        RED.nodes.createNode(this, config);
         var mqtt = require("mqtt");
         var bridgeConfig = RED.nodes.getNode(config.bridge);
         var node = this;
-        
-        node.status({fill: "blue", text: "not connected"});
-        
+
+        node.status({ fill: "blue", text: "not connected" });
+
         if (bridgeConfig.requireLogin) {
             options = {
                 username: bridgeConfig.credentials.username,
                 password: bridgeConfig.credentials.password
             };
         }
-                
-        var client  = mqtt.connect(bridgeConfig.broker, options);
-        client.on('message', function(topic, message){
+
+        var client = mqtt.connect(bridgeConfig.broker, options);
+        client.on('message', function (topic, message) {
             message = JSON.parse(message);
-            
+
             const ioMap = {
                 on: createButtonOutput(0, "on", "pressed"),
                 off: createButtonOutput(1, "off", "pressed"),
@@ -140,30 +130,30 @@ module.exports = function(RED) {
         });
 
         client.on('connect', function () {
-            node.status({fill: "green", text: "connected"});
-            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function(err){});
+            node.status({ fill: "green", text: "connected" });
+            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function (err) { });
         });
 
     }
     RED.nodes.registerType("ikea-dimmer", ikeaDimmer);
-    
+
     function ikeaRemote(config) {
-        RED.nodes.createNode(this,config);
+        RED.nodes.createNode(this, config);
         var mqtt = require("mqtt");
         var bridgeConfig = RED.nodes.getNode(config.bridge);
         var node = this;
-        
-        node.status({fill: "blue", text: "not connected"});
-        
+
+        node.status({ fill: "blue", text: "not connected" });
+
         if (bridgeConfig.requireLogin) {
             options = {
                 username: bridgeConfig.credentials.username,
                 password: bridgeConfig.credentials.password
             };
         }
-                
-        var client  = mqtt.connect(bridgeConfig.broker, options);
-        client.on('message', function(topic, message){
+
+        var client = mqtt.connect(bridgeConfig.broker, options);
+        client.on('message', function (topic, message) {
             message = JSON.parse(message);
             const ioMap = {
                 toggle: createButtonOutput(0, "toggle", "pressed"),
@@ -192,30 +182,30 @@ module.exports = function(RED) {
         });
 
         client.on('connect', function () {
-            node.status({fill: "green", text: "connected"});
-            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function(err){});
+            node.status({ fill: "green", text: "connected" });
+            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function (err) { });
         });
 
     }
     RED.nodes.registerType("ikea-remote", ikeaRemote);
-    
+
     function scenicSwitch(config) {
-        RED.nodes.createNode(this,config);
+        RED.nodes.createNode(this, config);
         var mqtt = require("mqtt");
         var bridgeConfig = RED.nodes.getNode(config.bridge);
         var node = this;
-        
-        node.status({fill: "blue", text: "not connected"});
-        
+
+        node.status({ fill: "blue", text: "not connected" });
+
         if (bridgeConfig.requireLogin) {
             options = {
                 username: bridgeConfig.credentials.username,
                 password: bridgeConfig.credentials.password
             };
         }
-                
-        var client  = mqtt.connect(bridgeConfig.broker, options);
-        client.on('message', function(topic, message){
+
+        var client = mqtt.connect(bridgeConfig.broker, options);
+        client.on('message', function (topic, message) {
             message = JSON.parse(message);
             var inputs = {
                 recall_scene_0: createButtonOutput(0, "A0", "pressed"),
@@ -242,15 +232,15 @@ module.exports = function(RED) {
         });
 
         client.on('connect', function () {
-            node.status({fill: "green", text: "connected"});
-            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function(err){});
+            node.status({ fill: "green", text: "connected" });
+            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function (err) { });
         });
 
     }
     RED.nodes.registerType("scenic-foh-switch", scenicSwitch);
-    
+
     function buttonSwitch(config) {
-        RED.nodes.createNode(this,config);
+        RED.nodes.createNode(this, config);
         var node = this;
         const inputs = {
             pressed: createButtonOutput(0, "", ""),
@@ -259,95 +249,95 @@ module.exports = function(RED) {
             double: createButtonOutput(3, "", ""),
         }
 
-        node.on('input', function(msg){
+        node.on('input', function (msg) {
             sendAt(node, inputs[msg.payload.button_type].index, msg);
         });
     }
     RED.nodes.registerType("button-switch", buttonSwitch);
-    
+
     function contactSensor(config) {
-        RED.nodes.createNode(this,config);
+        RED.nodes.createNode(this, config);
         var mqtt = require("mqtt");
         var bridgeConfig = RED.nodes.getNode(config.bridge);
         var node = this;
-        
-        node.status({fill: "blue", text: "not connected"});
-        
+
+        node.status({ fill: "blue", text: "not connected" });
+
         if (bridgeConfig.requireLogin) {
             options = {
                 username: bridgeConfig.credentials.username,
                 password: bridgeConfig.credentials.password
             };
         }
-                
-        var client  = mqtt.connect(bridgeConfig.broker, options);
-        client.on('message', function(topic, message){
+
+        var client = mqtt.connect(bridgeConfig.broker, options);
+        client.on('message', function (topic, message) {
             message = JSON.parse(message);
 
-            if(message.contact) {
-                node.send({payload:message});
+            if (message.contact) {
+                node.send({ payload: message });
             } else {
-                node.send([null, {payload: message}]);
+                node.send([null, { payload: message }]);
             }
         });
 
         client.on('connect', function () {
-            node.status({fill: "green", text: "connected"});
-            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function(err){});
+            node.status({ fill: "green", text: "connected" });
+            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function (err) { });
         });
     }
     RED.nodes.registerType("contact-sensor", contactSensor);
-    
+
     function occupancySensor(config) {
-        RED.nodes.createNode(this,config);
+        RED.nodes.createNode(this, config);
         var mqtt = require("mqtt");
         var bridgeConfig = RED.nodes.getNode(config.bridge);
         var node = this;
-        
-        node.status({fill: "blue", text: "not connected"});
-        
+
+        node.status({ fill: "blue", text: "not connected" });
+
         if (bridgeConfig.requireLogin) {
             options = {
                 username: bridgeConfig.credentials.username,
                 password: bridgeConfig.credentials.password
             };
         }
-                
-        var client  = mqtt.connect(bridgeConfig.broker, options);
-        client.on('message', function(topic, message){
+
+        var client = mqtt.connect(bridgeConfig.broker, options);
+        client.on('message', function (topic, message) {
             message = JSON.parse(message);
 
-            if(message.occupancy) {
-                node.send({payload:message});
+            if (message.occupancy) {
+                node.send({ payload: message });
             } else {
-                node.send([null, {payload: message}]);
+                node.send([null, { payload: message }]);
             }
         });
 
         client.on('connect', function () {
-            node.status({fill: "green", text: "connected"});
-            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function(err){});
+            node.status({ fill: "green", text: "connected" });
+            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function (err) { });
         });
     }
     RED.nodes.registerType("occupancy-sensor", occupancySensor);
 
     function genericLamp(config) {
 
-        RED.nodes.createNode(this,config);
+        RED.nodes.createNode(this, config);
         var deviceConfig = RED.nodes.getNode(config.device);
         var node = this;
         var topic = deviceConfig.deviceName
 
         var nodeContext = this.context().global;
         function getContextName() {
-            return ("z2mdevice_"+node.id).replace(".", "_");
+            return ("z2mdevice_" + node.id).replace(".", "_");
         }
 
         function messageToStatus(msg) {
             var status = "grey";
             var text = "Lm: " + msg.brightness;
 
-            switch(msg.state) {
+            switch (msg.state) {
                 case "ON":
                 case "1":
                 case 1:
@@ -364,41 +354,38 @@ module.exports = function(RED) {
                     break;
             }
 
-            if(msg.color_temp !== undefined) {
+            if (msg.color_temp !== undefined) {
                 text += " T: " + msg.color_temp;
             }
 
-            if(msg.color !== undefined)
-            {
+            if (msg.color !== undefined) {
                 var rgb = msg.color;
                 if (rgb.x !== undefined) {
                     rgb = bavaria.converter.xyToRgb(msg.color.x, msg.color.y);
                 }
 
-                text += " RGB: (" + rgb.r + ", " + rgb.g +", " + rgb.b + ")";
+                text += " RGB: (" + rgb.r + ", " + rgb.g + ", " + rgb.b + ")";
             }
-            var status = {fill: status, shape: "dot", text: text};
-            nodeContext.set(getContextName(),{
+            var status = { fill: status, shape: "dot", text: text };
+            nodeContext.set(getContextName(), {
                 status: status
             });
 
             node.status(status);
         }
 
-        bavaria.observer.register(topic, function(msg)
-        {
-            if(msg.bridgeLogReceived) {
+        bavaria.observer.register(topic, function (msg) {
+            if (msg.bridgeLogReceived) {
                 bavaria.observer.notify("needs_refresh", topic);
                 return;
             }
 
             messageToStatus(msg);
         });
-        
-        bavaria.observer.register(topic + "_routeError", function(msg)
-        {
-            var status = {fill: "red", shape: "dot", text: "route error"};
-            nodeContext.set(getContextName(),{
+
+        bavaria.observer.register(topic + "_routeError", function (msg) {
+            var status = { fill: "red", shape: "dot", text: "route error" };
+            nodeContext.set(getContextName(), {
                 status: status
             });
 
@@ -409,17 +396,16 @@ module.exports = function(RED) {
         if (status && status.status) {
             node.status(status.status);
         } else {
-            node.status({fill: "gray", shape: "dot", text: "pending"});
+            node.status({ fill: "gray", shape: "dot", text: "pending" });
         }
 
-        node.on('close', function(){
+        node.on('close', function () {
             nodeContext.set(getContextName(), undefined);
         });
 
-        node.on('input', function(msg) {
-            
-            if(msg.payload.devices === undefined)
-            {
+        node.on('input', function (msg) {
+
+            if (msg.payload.devices === undefined) {
                 msg.payload.devices = [];
             }
 
@@ -429,23 +415,20 @@ module.exports = function(RED) {
                 delay: config.delay,
             };
 
-            if (deviceConfig.brightnessSupport)
-            {
+            if (deviceConfig.brightnessSupport) {
                 device.brightness = config.brightness;
                 device.transition = config.transition;
             }
 
-            if (deviceConfig.temperatureSupport)
-            {
+            if (deviceConfig.temperatureSupport) {
                 device.temperature = config.temperature;
             }
 
-            if (deviceConfig.colorSupport)
-            {
+            if (deviceConfig.colorSupport) {
                 device.color = {
                     r: config.red,
                     g: config.green,
-                    b: config.blue 
+                    b: config.blue
                 };
             }
 
@@ -455,11 +438,11 @@ module.exports = function(RED) {
             node.send(msg);
         });
     }
-    RED.nodes.registerType("generic-lamp",genericLamp);
-    
+    RED.nodes.registerType("generic-lamp", genericLamp);
+
     function deviceConfig(config) {
-        RED.nodes.createNode(this,config);
-        this.name   = config.name;
+        RED.nodes.createNode(this, config);
+        this.name = config.name;
         this.deviceName = config.deviceName;
         this.brightnessSupport = config.brightnessSupport;
         this.temperatureSupport = config.temperatureSupport;
@@ -468,20 +451,17 @@ module.exports = function(RED) {
     RED.nodes.registerType("zigbee2mqtt-device-config", deviceConfig)
 
     function bridgeConfig(config) {
-        RED.nodes.createNode(this,config);
+        RED.nodes.createNode(this, config);
         var mqtt = require('mqtt')
-        this.name   = config.name;
+        this.name = config.name;
         this.baseTopic = config.baseTopic;
         this.broker = config.broker;
         this.requireLogin = config.requireLogin;
+        var _subs = [];
         var knownDevices = [];
         var node = this;
         var devicesContextName = "z2m_devices_" + node.id.replace(".", "_");
         var globalContext = node.context().global;
-
-        this.getDeviceList = function() {
-            return globalContext.get(devicesContextName) || [];
-        }
 
         if (node.requireLogin) {
             options = {
@@ -490,19 +470,68 @@ module.exports = function(RED) {
             };
         }
 
-        var client  = mqtt.connect(this.broker, options);
-        client.on('message', function(topic, message){
+        var client = mqtt.connect(this.broker, options);
+
+        this.isConnected = function () { return client.isConnected; };
+        this.isReconnecting = function () { return client.isReconnecting; };
+        this.getDeviceList = function () {
+            return globalContext.get(devicesContextName) || [];
+        };
+        this.subscribeDevice = function (nodeId, device, callback) {
+            var topic = node.baseTopic + "/" + device;
+
+            var sub = _subs.find(e => e.nodeId == nodeId);
+            if (sub) {
+                console.log("sub found");
+                console.log(sub);
+                if (sub.topic !== topic) {
+                    client.unsubribe(sub.topic);
+                }
+
+                sub.topic = topic;
+                sub.callback = callback;
+            } else {
+                console.log("leberkas");
+                sub = {
+                    nodeId: nodeId,
+                    topic: topic,
+                    callback: callback
+                }
+
+                _subs.push(sub);
+            }
+
+            client.subscribe(topic);
+            return true;
+        };
+        this.unsubscribeDevice = function (device) {
+            client.unsubribe(node.baseTopic + "/" + device);
+        };
+
+        client.on('message', function (topic, message) {
             try {
                 message = JSON.parse(message);
-                if (message.type === "devices") {
-                    message.message.forEach(element => {
-                        if(!knownDevices.some(dev => { return dev.friendly_name == element.friendly_name; })) {
-                            knownDevices.push(element);
-                            bavaria.observer.notify(element.friendly_name, { bridgeLogReceived: true });
+
+                if (topic === node.baseTopic + "/bridge/log") {
+                    if (message.type === "devices") {
+                        message.message.forEach(element => {
+                            if (!knownDevices.some(dev => { return dev.friendly_name == element.friendly_name; })) {
+                                knownDevices.push(element);
+                                bavaria.observer.notify(element.friendly_name, { bridgeLogReceived: true });
+                            }
+                        });
+
+                        globalContext.set(devicesContextName, knownDevices);
+                    }
+                } else {
+                    var subs = _subs.filter(e => e.topic === topic);
+                    subs.forEach(e => {
+                        try {
+                            e.callback(message);
+                        } catch (err) {
+                            console.log(err);
                         }
                     });
-
-                    globalContext.set(devicesContextName, knownDevices);
                 }
             } catch (err) {
                 node.error(err);
@@ -510,46 +539,46 @@ module.exports = function(RED) {
         });
 
         client.on('connect', function () {
-            client.subscribe(node.baseTopic + "/bridge/log", function(err){
-                node.error(err);
-            });
-            
-            if(node.getDeviceList().length == 0){
-                client.publish("zigbee2mqtt/bridge/config/devices", "");
+            client.subscribe(node.baseTopic + "/bridge/log");
+
+            if (node.getDeviceList().length == 0) {
+                client.publish(node.baseTopic + "/bridge/config/devices", "");
             }
+
+            bavaria.observer.notify(node.id + "_connected", {});
         });
     }
     RED.nodes.registerType("zigbee2mqtt-bridge-config", bridgeConfig, {
         credentials: {
-            username: {type:"text"},
-            password: {type:"password"}
+            username: { type: "text" },
+            password: { type: "password" }
         }
     });
-    
-    function sendMessages(config){
-        RED.nodes.createNode(this,config);
-        
+
+    function sendMessages(config) {
+        RED.nodes.createNode(this, config);
+
         var node = this;
         var devicesContextName = "z2m_devices_" + config.bridge.replace(".", "_");
         var bridgeConfig = RED.nodes.getNode(config.bridge);
         var mqtt = require('mqtt')
         var options = undefined;
-        
+
         var globalContext = this.context().global;
-        
-        node.status({fill: "gray", text: "not connected"});
-        
+
+        node.status({ fill: "gray", text: "not connected" });
+
         if (bridgeConfig.requireLogin) {
             options = {
                 username: bridgeConfig.credentials.username,
                 password: bridgeConfig.credentials.password
             };
         }
-                
-        var client  = mqtt.connect(bridgeConfig.broker, options);
-        client.on('message', function(topic, message){
+
+        var client = mqtt.connect(bridgeConfig.broker, options);
+        client.on('message', function (topic, message) {
             try {
-                if(message.length == 0) {
+                if (message.length == 0) {
                     return;
                 }
 
@@ -557,11 +586,11 @@ module.exports = function(RED) {
                 message.topic = topic;
 
                 if (topic == bridgeConfig.baseTopic + "/bridge/log") {
-                    switch(message.type) {
+                    switch (message.type) {
                         case "zigbee_publish_error":
                             if (message.message.endsWith("'No network route' (205))'")) {
-                                var name = message.message.substr(0, message.message.indexOf("failed:")-2);
-                                name = name.substr(name.lastIndexOf("'")+1);
+                                var name = message.message.substr(0, message.message.indexOf("failed:") - 2);
+                                name = name.substr(name.lastIndexOf("'") + 1);
                                 bavaria.observer.notify(name + "_routeError", {});
                             }
                             break;
@@ -569,7 +598,7 @@ module.exports = function(RED) {
                     return;
                 }
 
-                var deviceName = topic.substr(bridgeConfig.baseTopic.length+1);
+                var deviceName = topic.substr(bridgeConfig.baseTopic.length + 1);
                 bavaria.observer.notify(deviceName, message);
             }
             catch (err) {
@@ -578,47 +607,43 @@ module.exports = function(RED) {
         });
 
         client.on('connect', function () {
-            node.status({fill: "green", text: "connected"});
+            node.status({ fill: "green", text: "connected" });
 
-            client.subscribe(bridgeConfig.baseTopic + "/+", function(err){});
-            client.subscribe(bridgeConfig.baseTopic + "/bridge/log", function(err){ });
+            client.subscribe(bridgeConfig.baseTopic + "/+", function (err) { });
+            client.subscribe(bridgeConfig.baseTopic + "/bridge/log", function (err) { });
         });
 
-        bavaria.observer.register("needs_refresh", function(msg){
+        bavaria.observer.register("needs_refresh", function (msg) {
             client.publish(bridgeConfig.baseTopic + "/" + msg + "/get", "");
         });
 
-        node.on('close', function(){
+        node.on('close', function () {
             client.end();
         })
-        node.on('input', function(msg) {
+        node.on('input', function (msg) {
             var totalDelay = 0;
             var messages = [];
             msg.payload.devices.forEach(element => {
-                if(msg.payload.override !== undefined)
-                {
-                    if (msg.payload.override.brightness !== undefined 
+                if (msg.payload.override !== undefined) {
+                    if (msg.payload.override.brightness !== undefined
                         && msg.payload.override.brightness !== ""
                         && element.brightness !== undefined
-                        && element.brightness !== "")
-                    {
+                        && element.brightness !== "") {
                         element.brightness = msg.payload.override.brightness;
                     }
-                    
-                    if (msg.payload.override.temperature !== undefined 
+
+                    if (msg.payload.override.temperature !== undefined
                         && msg.payload.override.temperature !== ""
                         && element.temperature !== undefined
-                        && element.temperature !== "")
-                    {
+                        && element.temperature !== "") {
                         element.temperature = undefined;
                         element.color_temp = msg.payload.override.temperature;
                     }
-                    
-                    if (msg.payload.override.color !== undefined 
+
+                    if (msg.payload.override.color !== undefined
                         && msg.payload.override.color !== ""
                         && element.color !== undefined
-                        && element.color !== "")
-                    {
+                        && element.color !== "") {
                         element.color = msg.payload.override.color;
                     }
                 }
@@ -629,46 +654,40 @@ module.exports = function(RED) {
             var i = 0;
             enqueue();
 
-            function sendNextMessage()
-            {
+            function sendNextMessage() {
                 var message = {
                     payload: messages[i],
                     topic: messages[i].topic,
-                } 
-                    
+                }
+
                 client.publish(bridgeConfig.baseTopic + "/" + message.topic + "/set", JSON.stringify(message.payload));
 
                 i++;
 
-                if(i<messages.length)
-                {
+                if (i < messages.length) {
                     enqueue();
                 }
             }
 
-            function enqueue()
-            {
+            function enqueue() {
                 var delay = messages[i].delay;
-                if (delay > 0)
-                {
+                if (delay > 0) {
                     setTimeout(sendNextMessage, delay);
                 }
-                else
-                {
+                else {
                     sendNextMessage();
                 }
             }
         });
     }
     RED.nodes.registerType("send-messages", sendMessages);
-    
-    function overrideBrightness(config){
-        RED.nodes.createNode(this,config);
+
+    function overrideBrightness(config) {
+        RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on('input', function(msg) {
-            if(msg.payload.override === undefined)
-            {
+        node.on('input', function (msg) {
+            if (msg.payload.override === undefined) {
                 msg.payload.override = {};
             }
 
@@ -678,14 +697,13 @@ module.exports = function(RED) {
         });
     }
     RED.nodes.registerType("override-brightness", overrideBrightness);
-    
-    function overrideTemperature(config){
-        RED.nodes.createNode(this,config);
+
+    function overrideTemperature(config) {
+        RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on('input', function(msg) {
-            if(msg.payload.override === undefined)
-            {
+        node.on('input', function (msg) {
+            if (msg.payload.override === undefined) {
                 msg.payload.override = {};
             }
 
@@ -695,21 +713,20 @@ module.exports = function(RED) {
         });
     }
     RED.nodes.registerType("override-temperature", overrideTemperature);
-    
-    function overrideColor(config){
-        RED.nodes.createNode(this,config);
+
+    function overrideColor(config) {
+        RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on('input', function(msg) {
-            if(msg.payload.override === undefined)
-            {
+        node.on('input', function (msg) {
+            if (msg.payload.override === undefined) {
                 msg.payload.override = {};
             }
 
             msg.payload.override.color = {
-                r : config.red,
-                g : config.green,
-                b : config.blue,
+                r: config.red,
+                g: config.green,
+                b: config.blue,
             };
 
             node.send(msg);
