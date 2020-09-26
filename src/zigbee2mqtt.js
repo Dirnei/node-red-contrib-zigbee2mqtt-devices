@@ -462,8 +462,11 @@ module.exports = function(RED) {
         
         RED.httpAdmin.get('/z2m/devices/' + config.bridge.replace(".", "_") + "/:deviceType/:vendor/:model", function(req, res){
             var type = req.params.deviceType.toLowerCase();
-            var vendor = req.params.vendor.toLowerCase();
-            var model = req.params.model.toLowerCase();
+            var vendor = decodeURI(req.params.vendor).toLowerCase();
+            var model = decodeURI(req.params.model).toLowerCase();
+
+            console.log(vendor);
+            console.log(model);
 
             res.end(JSON.stringify({
                 devices: globalContext.get(devicesContextName).filter(e=>{
