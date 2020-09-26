@@ -625,6 +625,22 @@
             return this.name || "Contact sensor";
         },
         outputLabels: ["closed","open"],
+        oneditprepare: function(){
+            var node = this;
+            var deviceName = node.deviceName;
+            
+            $("#node-input-bridge").change(function(){
+                var bridgeId = $("#node-input-bridge").val().replace(".", "_");
+                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/all/all',function(data) {
+                    $("#node-input-deviceName").empty();
+                    data.devices.forEach(e=>{
+                        $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
+                    });
+
+                    $("#node-input-deviceName").val(deviceName);
+                });
+            });
+        }
     });
 
 </script>
@@ -640,14 +656,19 @@
         <input type="text" id="node-input-bridge" placeholder="bridge" />
     </div>
     <div class="form-row">
-        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Devicename</label>
-        <input type="text" id="node-input-deviceName">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
+        <select id="node-input-deviceName"></select>
     </div>
 
 </script>
 
 <script type="text/html" data-help-name="contact-sensor">
-    <p>Node for contact sensor input device</p>
+    <p>Sends a new message when a contact sensor state changes.</p>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt> payload <span class="property-type"> object </span> </dt>
+        <dd> The MQTT payload of the device </dd>
+    </dl>
 </script>
 
 <!--- OCCUPANCY SENSOR NODE --->

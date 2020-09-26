@@ -213,33 +213,20 @@ module.exports = function (RED) {
 
     function contactSensor(config) {
         RED.nodes.createNode(this, config);
-        var mqtt = require("mqtt");
-        var bridgeConfig = RED.nodes.getNode(config.bridge);
+        var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
-
+        
         node.status({ fill: "blue", text: "not connected" });
-
-        if (bridgeConfig.requireLogin) {
-            options = {
-                username: bridgeConfig.credentials.username,
-                password: bridgeConfig.credentials.password
-            };
-        }
-
-        var client = mqtt.connect(bridgeConfig.broker, options);
-        client.on('message', function (topic, message) {
-            message = JSON.parse(message);
-
-            if (message.contact) {
-                node.send({ payload: message });
-            } else {
-                node.send([null, { payload: message }]);
-            }
-        });
-
-        client.on('connect', function () {
+        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
-            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function (err) { });
+
+            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
+                if (message.contact) {
+                    node.send({ payload: message });
+                } else {
+                    node.send([null, { payload: message }]);
+                }
+            });
         });
     }
     RED.nodes.registerType("contact-sensor", contactSensor);
