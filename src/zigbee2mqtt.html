@@ -404,6 +404,22 @@
             return this.name || "Ikea Dimmer";
         },
         outputLabels: ["on","off","dimm up","dimm down","dimm stop"],
+        oneditprepare: function(){
+            var node = this;
+            var deviceName = node.deviceName;
+            
+            $("#node-input-bridge").change(function(){
+                var bridgeId = $("#node-input-bridge").val().replace(".", "_");
+                $.getJSON('/z2m/devices/'+bridgeId+'/endDevice/IKEA/E1743',function(data) {
+                    $("#node-input-deviceName").empty();
+                    data.devices.forEach(e=>{
+                        $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
+                    });
+
+                    $("#node-input-deviceName").val(deviceName);
+                });
+            });
+        }
     });
 
 </script>
@@ -419,14 +435,29 @@
         <input type="text" id="node-input-bridge" placeholder="bridge" />
     </div>
     <div class="form-row">
-        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Devicename</label>
-        <input type="text" id="node-input-deviceName">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
+        <select id="node-input-deviceName"></select>
     </div>
 
 </script>
 
 <script type="text/html" data-help-name="ikea-dimmer">
-    <p>Node for Ikea dimmer input device</p>
+    <p>Sends a new message when a Ikea remote button is pressed.</p>
+    <p>It is only compatible with Ikea remotes (Model: E1743)</p>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt> button_name <span class="property-type"> string </span> </dt>
+        <dd> The name of the button that was pressed </dd>
+        <dt> button_type  <span class="property-type"> string </span> </dt>
+        <dd>
+            The type in wich way the button was pressed. Following types are available:
+            <ul>
+                <li><code>pressed</code> - single press</li>
+                <li><code>hold</code> - when a button is hold down for a bit</li>
+                <li><code>released</code> - when a hold down button was being released</li>
+            </ul>
+        </dd>
+    </dl>
 </script>
 
 <!--- IKEA REMOTE NODE --->
