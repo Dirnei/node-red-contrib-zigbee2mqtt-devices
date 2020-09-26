@@ -56,14 +56,13 @@ module.exports = function (RED) {
 
     function sonoffButton(config) {
         RED.nodes.createNode(this, config);
-        var mqtt = require("mqtt");
-        var bridgeConfig = RED.nodes.getNode(config.bridge);
+        var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
         node.status({ fill: "blue", text: "not connected" });
-        bavaria.observer.register(bridgeConfig.id + "_connected", function (message) {
+        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
-            bridgeConfig.subscribeDevice(node.id, config.deviceName, function (message) {
+            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
                 try {
                     const ioMap = {
                         single: createButtonOutput(0, "button", "pressed"),
@@ -95,45 +94,29 @@ module.exports = function (RED) {
 
     function ikeaDimmer(config) {
         RED.nodes.createNode(this, config);
-        var mqtt = require("mqtt");
-        var bridgeConfig = RED.nodes.getNode(config.bridge);
+        var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
         node.status({ fill: "blue", text: "not connected" });
-
-        if (bridgeConfig.requireLogin) {
-            options = {
-                username: bridgeConfig.credentials.username,
-                password: bridgeConfig.credentials.password
-            };
-        }
-
-        var client = mqtt.connect(bridgeConfig.broker, options);
-        client.on('message', function (topic, message) {
-            message = JSON.parse(message);
-
-            const ioMap = {
-                on: createButtonOutput(0, "on", "pressed"),
-                off: createButtonOutput(1, "off", "pressed"),
-                brightness_up: createButtonOutput(2, "dimm_up", "hold"),
-                brightness_down: createButtonOutput(3, "dimm_down", "hold"),
-                brightness_stop: createButtonOutput(4, "dimm_stop", "released"),
-            };
-
-            var output = ioMap[message.click];
-            sendAt(node, output.index, {
-                payload: {
-                    button_name: output.button_name,
-                    button_type: output.button_type,
-                }
+        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+            node.status({ fill: "green", text: "connected" });
+            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
+                const ioMap = {
+                    on: createButtonOutput(0, "on", "pressed"),
+                    off: createButtonOutput(1, "off", "pressed"),
+                    brightness_up: createButtonOutput(2, "dimm_up", "hold"),
+                    brightness_down: createButtonOutput(3, "dimm_down", "hold"),
+                    brightness_stop: createButtonOutput(4, "dimm_stop", "released"),
+                };
+    
+                var output = ioMap[message.click];
+                sendAt(node, output.index, {
+                    payload: {
+                        button_name: output.button_name,
+                        button_type: output.button_type,
+                }});
             });
         });
-
-        client.on('connect', function () {
-            node.status({ fill: "green", text: "connected" });
-            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function (err) { });
-        });
-
     }
     RED.nodes.registerType("ikea-dimmer", ikeaDimmer);
 
