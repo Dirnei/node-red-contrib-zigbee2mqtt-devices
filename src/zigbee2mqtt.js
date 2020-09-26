@@ -108,13 +108,14 @@ module.exports = function (RED) {
                     brightness_down: createButtonOutput(3, "dimm_down", "hold"),
                     brightness_stop: createButtonOutput(4, "dimm_stop", "released"),
                 };
-    
+
                 var output = ioMap[message.click];
                 sendAt(node, output.index, {
                     payload: {
                         button_name: output.button_name,
                         button_type: output.button_type,
-                }});
+                    }
+                });
             });
         });
     }
@@ -122,53 +123,39 @@ module.exports = function (RED) {
 
     function ikeaRemote(config) {
         RED.nodes.createNode(this, config);
-        var mqtt = require("mqtt");
-        var bridgeConfig = RED.nodes.getNode(config.bridge);
+        var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
         node.status({ fill: "blue", text: "not connected" });
+        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+            node.status({ fill: "green", text: "connected" });
+            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
+                const ioMap = {
+                    toggle: createButtonOutput(0, "toggle", "pressed"),
+                    toggle_hold: createButtonOutput(0, "toggle", "hold"),
+                    brightness_up_click: createButtonOutput(1, "brightness_up", "pressed"),
+                    brightness_up_hold: createButtonOutput(1, "brightness_up", "hold"),
+                    brightness_up_release: createButtonOutput(1, "brightness_up", "released",),
+                    brightness_down_click: createButtonOutput(2, "brightness_down", "pressed"),
+                    brightness_down_hold: createButtonOutput(2, "brightness_down", "hold"),
+                    brightness_down_release: createButtonOutput(2, "brightness_down", "released"),
+                    arrow_left_click: createButtonOutput(3, "arrow_left", "pressed"),
+                    arrow_left_hold: createButtonOutput(3, "arrow_left", "hold"),
+                    arrow_left_release: createButtonOutput(3, "arrow_left", "released"),
+                    arrow_right_click: createButtonOutput(4, "arrow_right", "pressed"),
+                    arrow_right_hold: createButtonOutput(4, "arrow_right", "hold"),
+                    arrow_right_release: createButtonOutput(4, "arrow_right", "released")
+                };
 
-        if (bridgeConfig.requireLogin) {
-            options = {
-                username: bridgeConfig.credentials.username,
-                password: bridgeConfig.credentials.password
-            };
-        }
-
-        var client = mqtt.connect(bridgeConfig.broker, options);
-        client.on('message', function (topic, message) {
-            message = JSON.parse(message);
-            const ioMap = {
-                toggle: createButtonOutput(0, "toggle", "pressed"),
-                toggle_hold: createButtonOutput(0, "toggle", "hold"),
-                brightness_up_click: createButtonOutput(1, "brightness_up", "pressed"),
-                brightness_up_hold: createButtonOutput(1, "brightness_up", "hold"),
-                brightness_up_release: createButtonOutput(1, "brightness_up", "released",),
-                brightness_down_click: createButtonOutput(2, "brightness_down", "pressed"),
-                brightness_down_hold: createButtonOutput(2, "brightness_down", "hold"),
-                brightness_down_release: createButtonOutput(2, "brightness_down", "released"),
-                arrow_left_click: createButtonOutput(3, "arrow_left", "pressed"),
-                arrow_left_hold: createButtonOutput(3, "arrow_left", "hold"),
-                arrow_left_release: createButtonOutput(3, "arrow_left", "released"),
-                arrow_right_click: createButtonOutput(4, "arrow_right", "pressed"),
-                arrow_right_hold: createButtonOutput(4, "arrow_right", "hold"),
-                arrow_right_release: createButtonOutput(4, "arrow_right", "released")
-            };
-
-            var output = ioMap[message.action];
-            sendAt(node, output.index, {
-                payload: {
-                    button_name: output.button_name,
-                    button_type: output.button_type,
-                }
+                var output = ioMap[message.action];
+                sendAt(node, output.index, {
+                    payload: {
+                        button_name: output.button_name,
+                        button_type: output.button_type,
+                    }
+                });
             });
         });
-
-        client.on('connect', function () {
-            node.status({ fill: "green", text: "connected" });
-            client.subscribe(bridgeConfig.baseTopic + "/" + config.deviceName, function (err) { });
-        });
-
     }
     RED.nodes.registerType("ikea-remote", ikeaRemote);
 
