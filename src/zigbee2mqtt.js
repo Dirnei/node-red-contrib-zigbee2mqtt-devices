@@ -215,7 +215,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
-        
+
         node.status({ fill: "blue", text: "not connected" });
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
@@ -235,7 +235,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
-        
+
         node.status({ fill: "blue", text: "not connected" });
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
@@ -255,6 +255,7 @@ module.exports = function (RED) {
 
         RED.nodes.createNode(this, config);
         var deviceConfig = RED.nodes.getNode(config.device);
+        var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
         var topic = deviceConfig.deviceName
 
@@ -304,12 +305,7 @@ module.exports = function (RED) {
             node.status(status);
         }
 
-        bavaria.observer.register(topic, function (msg) {
-            if (msg.bridgeLogReceived) {
-                bavaria.observer.notify("needs_refresh", topic);
-                return;
-            }
-
+        bridgeNode.subscribeDevice(node.id, deviceConfig.deviceName, function(msg){
             messageToStatus(msg);
         });
 
@@ -364,7 +360,6 @@ module.exports = function (RED) {
 
             msg.payload.devices.push(device);
 
-
             node.send(msg);
         });
     }
@@ -404,6 +399,7 @@ module.exports = function (RED) {
 
         this.isConnected = function () { return client.isConnected; };
         this.isReconnecting = function () { return client.isReconnecting; };
+        this.publish = function(topic, message) { client.publish(topic, message); };
         this.getDeviceList = function () {
             return globalContext.get(devicesContextName) || [];
         };
@@ -452,6 +448,16 @@ module.exports = function (RED) {
                         });
 
                         globalContext.set(devicesContextName, knownDevices);
+                    } else if (topic == node.baseTopic + "/bridge/log") {
+                        switch (message.type) {
+                            case "zigbee_publish_error":
+                                if (message.message.endsWith("'No network route' (205))'")) {
+                                    var name = message.message.substr(0, message.message.indexOf("failed:") - 2);
+                                    name = name.substr(name.lastIndexOf("'") + 1);
+                                    bavaria.observer.notify(name + "_routeError", {});
+                                }
+                                break;
+                        }
                     }
                 } else {
                     var subs = _subs.filter(e => e.topic === topic);
@@ -462,6 +468,9 @@ module.exports = function (RED) {
                             console.log(err);
                         }
                     });
+                    
+                    var deviceName = topic.substr(node.baseTopic.length + 1);
+                    bavaria.observer.notify(deviceName, message);
                 }
             } catch (err) {
                 node.error(err);
@@ -477,6 +486,10 @@ module.exports = function (RED) {
 
             bavaria.observer.notify(node.id + "_connected", {});
         });
+
+        bavaria.observer.register("needs_refresh", function (msg) {
+            client.publish(node.baseTopic + "/" + msg + "/get", "");
+        });
     }
     RED.nodes.registerType("zigbee2mqtt-bridge-config", bridgeConfig, {
         credentials: {
@@ -487,71 +500,12 @@ module.exports = function (RED) {
 
     function sendMessages(config) {
         RED.nodes.createNode(this, config);
-
         var node = this;
-        var devicesContextName = "z2m_devices_" + config.bridge.replace(".", "_");
-        var bridgeConfig = RED.nodes.getNode(config.bridge);
-        var mqtt = require('mqtt')
-        var options = undefined;
-
-        var globalContext = this.context().global;
+        var bridgeNode = RED.nodes.getNode(config.bridge);
 
         node.status({ fill: "gray", text: "not connected" });
-
-        if (bridgeConfig.requireLogin) {
-            options = {
-                username: bridgeConfig.credentials.username,
-                password: bridgeConfig.credentials.password
-            };
-        }
-
-        var client = mqtt.connect(bridgeConfig.broker, options);
-        client.on('message', function (topic, message) {
-            try {
-                if (message.length == 0) {
-                    return;
-                }
-
-                var message = JSON.parse(message.toString());
-                message.topic = topic;
-
-                if (topic == bridgeConfig.baseTopic + "/bridge/log") {
-                    switch (message.type) {
-                        case "zigbee_publish_error":
-                            if (message.message.endsWith("'No network route' (205))'")) {
-                                var name = message.message.substr(0, message.message.indexOf("failed:") - 2);
-                                name = name.substr(name.lastIndexOf("'") + 1);
-                                bavaria.observer.notify(name + "_routeError", {});
-                            }
-                            break;
-                    }
-                    return;
-                }
-
-                var deviceName = topic.substr(bridgeConfig.baseTopic.length + 1);
-                bavaria.observer.notify(deviceName, message);
-            }
-            catch (err) {
-                node.error(err);
-            }
-        });
-
-        client.on('connect', function () {
-            node.status({ fill: "green", text: "connected" });
-
-            client.subscribe(bridgeConfig.baseTopic + "/+", function (err) { });
-            client.subscribe(bridgeConfig.baseTopic + "/bridge/log", function (err) { });
-        });
-
-        bavaria.observer.register("needs_refresh", function (msg) {
-            client.publish(bridgeConfig.baseTopic + "/" + msg + "/get", "");
-        });
-
-        node.on('close', function () {
-            client.end();
-        })
+        
         node.on('input', function (msg) {
-            var totalDelay = 0;
             var messages = [];
             msg.payload.devices.forEach(element => {
                 if (msg.payload.override !== undefined) {
@@ -590,11 +544,9 @@ module.exports = function (RED) {
                     topic: messages[i].topic,
                 }
 
-                client.publish(bridgeConfig.baseTopic + "/" + message.topic + "/set", JSON.stringify(message.payload));
+                bridgeNode.publish(bridgeConfig.baseTopic + "/" + message.topic + "/set", JSON.stringify(message.payload));
 
-                i++;
-
-                if (i < messages.length) {
+                if (++i < messages.length) {
                     enqueue();
                 }
             }

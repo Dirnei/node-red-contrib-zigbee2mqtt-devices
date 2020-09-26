@@ -216,6 +216,8 @@
                 }
             },
 
+            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
+
             name: {value: ""},
             state: {value:"ON" },
 
@@ -264,7 +266,11 @@
     
     <div class="form-row">
         <label for="node-input-device"><i class="fa fa-tag"></i> Device</label>
-        <input type="text" id="node-input-device" placeholder="device" />
+        <input type="text" id="node-input-device" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-input-bridge"  />
     </div>
     <div class="form-row" style="display:none">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
