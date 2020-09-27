@@ -16,7 +16,7 @@ module.exports = function (RED) {
             var scenes = [];
             RED.nodes.eachNode(n => {
                 if (n.type === "scene-in") {
-                    if(scenes.every(s => s != n.scene)){
+                    if (scenes.every(s => s != n.scene)) {
                         scenes.push(n.scene);
                     }
                 }
@@ -686,6 +686,12 @@ module.exports = function (RED) {
     function sceneSelector(config) {
         RED.nodes.createNode(this, config);
         var node = this;
+
+        if (config.scenes.length === 0) {
+            node.status({fill: "red", text: "no scenes configured"});
+            return;
+        }
+
         var nodeContext = this.context();
         if (!nodeContext.get("index")) {
             nodeContext.set("index", - 1);
@@ -720,9 +726,9 @@ module.exports = function (RED) {
                         index = msg.scene;
                     } else if (typeof msg.scene === "string") {
                         index = config.scenes.indexOf(msg.scene);
-                        if(index < 0) {
+                        if (index < 0) {
                             node.error("invalid scene");
-                            return ;
+                            return;
                         }
                     } else {
                         node.error("invalid scene");
