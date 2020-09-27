@@ -74,12 +74,20 @@ module.exports = function (RED) {
         };
     }
 
+    function setConnectionState(bridgeNode, node) {
+        if (bridgeNode.isConnected() === true) {
+            node.status({ fill: "green", text: "connected" });
+        } else {
+            node.status({ fill: "blue", text: "not connected" });
+        }
+    }
+
     function sonoffButton(config) {
         RED.nodes.createNode(this, config);
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
-        node.status({ fill: "blue", text: "not connected" });
+        setConnectionState(bridgeNode, node);
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
@@ -117,7 +125,7 @@ module.exports = function (RED) {
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
-        node.status({ fill: "blue", text: "not connected" });
+        setConnectionState(bridgeNode, node);
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
@@ -146,7 +154,7 @@ module.exports = function (RED) {
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
-        node.status({ fill: "blue", text: "not connected" });
+        setConnectionState(bridgeNode, node);
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
@@ -184,7 +192,7 @@ module.exports = function (RED) {
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
-        node.status({ fill: "blue", text: "not connected" });
+        setConnectionState(bridgeNode, node);
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
@@ -236,7 +244,7 @@ module.exports = function (RED) {
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
-        node.status({ fill: "blue", text: "not connected" });
+        setConnectionState(bridgeNode, node);
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
 
@@ -256,7 +264,7 @@ module.exports = function (RED) {
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
-        node.status({ fill: "blue", text: "not connected" });
+        setConnectionState(bridgeNode, node);
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
 
@@ -438,7 +446,6 @@ module.exports = function (RED) {
         };
         this.subscribeDevice = function (nodeId, device, callback) {
             var topic = node.baseTopic + "/" + device;
-
             var sub = _subs.find(e => e.nodeId == nodeId);
             if (sub) {
                 if (sub.topic !== topic) {
@@ -460,10 +467,16 @@ module.exports = function (RED) {
             client.subscribe(topic);
             return true;
         };
+
         this.unsubscribeDevice = function (nodeId) {
             var sub = _subs.find(e => e.nodeId == nodeId);
             if (sub) {
-                client.unsubscribe(sub.topic);
+                var topic = sub.topic;
+                var index = _subs.indexOf(sub);
+                _subs.splice(index, 1);
+                if (!_subs.some(s => s.topic == topic)) {
+                    client.unsubscribe(sub.topic);
+                }
             }
         };
 
@@ -688,7 +701,7 @@ module.exports = function (RED) {
         var node = this;
 
         if (config.scenes.length === 0) {
-            node.status({fill: "red", text: "no scenes configured"});
+            node.status({ fill: "red", text: "no scenes configured" });
             return;
         }
 
@@ -753,4 +766,48 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("scene-selector", sceneSelector);
+
+    function climateSensor(config) {
+        RED.nodes.createNode(this, config);
+        var bridgeNode = RED.nodes.getNode(config.bridge);
+        var node = this;
+        setConnectionState(bridgeNode, node);
+
+        function messageReceived(message) {
+            var text = "";
+            if (config.temperature === true) {
+                text += "T: " + message.temperature + "C° ";
+            }
+
+            if (config.pressure === true) {
+                text += "P: " + message.pressure + "mBar ";
+            }
+
+            if (config.humidity === true) {
+                text += "H: " + message.humidity + "%";
+            }
+
+            node.status({ fill: "green", text: text });
+            node.send({ payload: message });
+        };
+
+        function subscribe(){
+            node.status({ fill: "green", text: "connected" });
+            bridgeNode.subscribeDevice(node.id, config.deviceName, messageReceived);
+        }
+
+        if (bridgeNode.isConnected() === true){
+            subscribe();
+        }
+
+        var observerId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+            subscribe();
+        });
+
+        node.on('close', function () {
+            bridgeNode.unsubscribeDevice(node.id);
+            bavaria.observer.unregister(observerId);
+        });
+    }
+    RED.nodes.registerType("climate-sensor", climateSensor);
 }
