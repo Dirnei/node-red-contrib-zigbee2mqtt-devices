@@ -954,50 +954,6 @@
     <p>Node to override color</p>
 </script>
 
-<!--- SCENE OUT NODE --->
-<script type="text/javascript">
-    RED.nodes.registerType('scene-out', {
-        category: 'zigbee2mqtt-scene',
-        color: '#bada66',
-        defaults: {
-            name: { value: "" },
-            scene: { value: "" },
-        },
-        inputs: 1,
-        outputs: 0,
-        icon: "arrow-in.png",
-        label: function () {
-            return this.name || this.scene || "scene out";
-        },
-        oneditprepare: function () {
-            var node = this;
-            $.getJSON('/z2m/scenes', function (data) {
-                $("#node-input-scene").empty();
-                $("#node-input-scene").append("<option></option>");
-                
-                data.scenes.forEach(scene => {
-                    $("#node-input-scene").append("<option>" + scene + "</option>");
-                });
-                
-                $("#node-input-scene").val(node.scene);
-            });
-        }
-    });
-</script>
-
-<script type="text/html" data-template-name="scene-out">
-
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-scene"><i class="fa fa-tag"></i> Device</label>
-        <select id="node-input-scene"></select>
-    </div>
-
-</script>
-
 <script type="text/html" data-help-name="scene-out">
     <p>Node to trigger scenes</p>
 </script>
@@ -1034,5 +990,105 @@
 </script>
 
 <script type="text/html" data-help-name="scene-in">
+    <p>Node to trigger scenes</p>
+</script>
+
+<!--- SCENE SELECTOR NODE --->
+<script type="text/javascript">
+
+    function getSelection() {
+        return $("#selected-scenes li").map(function () { return $(this).text() }).get();
+    }
+
+    function initSelection(scenes) {
+        scenes.forEach(scene => {
+            $("#selected-scenes").append("<li><span>" + scene + "</span></li>");
+        });
+    }
+
+    RED.nodes.registerType('scene-selector', {
+        category: 'zigbee2mqtt-scene',
+        color: '#bada66',
+        defaults: {
+            name: { value: "" },
+            scenes: { value: [], required: true },
+        },
+        inputs: 1,
+        outputs: 0,
+        icon: "debug.png",
+        label: function () {
+            return this.name || this.scene || "scene selector";
+        },
+        oneditprepare: function () {
+            initSelection(this.scenes);
+            function refreshScenes() {
+                $.getJSON('/z2m/scenes', function (data) {
+                    var selection = getSelection();
+                    console.log(selection);
+                    var scenes = data.scenes.filter(f => {
+                        var a = selection.length === 0;
+                        var b = selection.every(s =>{
+                            return s != f;
+                        });
+                        var c = selection.length < data.scenes.length;
+
+                        console.log("(" + a + " || " + b + ") && " + c);
+                        return (a || b) && c;
+                    });
+
+                    $("#available-scenes").empty();
+
+                    console.log(scenes);
+                    scenes.forEach(scene => {
+                        $("#available-scenes").append("<option>" + scene + "</option>");
+                    });
+                });
+            }
+
+            $("#scene-add-button").click(function () {
+                var scene = $("#available-scenes").val();
+                if (!scene) {
+                    return;
+                }
+
+                var scenes = getSelection();
+                if (scenes.some(s => s == scene)) {
+                    return;
+                }
+
+                $("#selected-scenes").append("<li><span>" + scene + "</span></li>");
+                refreshScenes();
+            });
+
+            refreshScenes();
+        },
+        oneditsave: function () {
+            console.log(this.scenes);
+            this.scenes = getSelection();
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="scene-selector">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-scene"><i class="fa fa-tag"></i> Scenes</label>
+        <div id="input-scenes" style="display:inline;">
+            <select id="available-scenes">
+            </select>
+            <button type="button" class="red-ui-button" id="scene-add-button">add scene</button>
+            <div>
+                <ul id="selected-scenes"></ul>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="scene-selector">
     <p>Node to trigger scenes</p>
 </script>
