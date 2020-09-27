@@ -11,6 +11,23 @@ module.exports = function (RED) {
         }
     });
 
+    RED.httpAdmin.get('/z2m/scenes', function (req, res) {
+        try {
+            var scenes = [];
+            RED.nodes.eachNode(n => {
+                if(n.type === "scene-in") {
+                    scenes.push(n.scene);
+                }
+            });
+
+            res.end(JSON.stringify({
+                scenes: scenes
+            }));
+        } catch (err) {
+            console.log(err);
+        }
+    });
+
     function handleDeviceListRequest(devices, req, res) {
         var type = req.params.deviceType.toLowerCase();
         var vendor = decodeURI(req.params.vendor).toLowerCase();
@@ -513,8 +530,7 @@ module.exports = function (RED) {
         var node = this;
         var bridgeNode = RED.nodes.getNode(config.bridge);
 
-        if(!bridgeNode)
-        {
+        if (!bridgeNode) {
             node.status({ fill: "red", text: "no bridge configured" });
             return;
         }
@@ -641,4 +657,38 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("override-color", overrideColor);
+
+    function sceneOut(config) {
+        RED.nodes.createNode(this, config);
+        var node = this;
+
+        node.on('input', function (msg) {
+            var scene = msg.scene || config.scene;
+            if (!scene) {
+                return;
+            }
+
+            RED.nodes.eachNode(n => {
+                try {
+                    if (n.type === "scene-in" && n.scene === scene) {
+                        RED.nodes.getNode(n.id).trigger(msg);
+                    }
+                } catch (err) {
+                    node.error(err);
+                }
+            });
+        });
+    }
+    RED.nodes.registerType("scene-out", sceneOut);
+
+    function sceneIn(config) {
+        RED.nodes.createNode(this, config);
+        var node = this;
+
+        this.trigger = function (msg) {
+            msg.scene = config.scene;
+            node.send(msg);
+        }
+    }
+    RED.nodes.registerType("scene-in", sceneIn);
 }

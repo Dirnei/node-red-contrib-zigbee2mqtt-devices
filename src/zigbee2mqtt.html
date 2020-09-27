@@ -1,7 +1,7 @@
 <script type="text/javascript">
-    function refresh(){
-        RED.nodes.eachNode(function(node) {
-            
+    function refresh() {
+        RED.nodes.eachNode(function (node) {
+
         });
     }
 
@@ -14,34 +14,33 @@
         pinned: true,
         iconClass: "fa fa-cloud",
         disableOnEdit: true,
-        onchange: function() { refresh(); }
+        onchange: function () { refresh(); }
     });
 
-    if(RED.bavaria === undefined)
-    {
+    if (RED.bavaria === undefined) {
         RED.bavaria = {
-            validators : {
-                range : function(min, max) {
-                    return function(v) { 
+            validators: {
+                range: function (min, max) {
+                    return function (v) {
                         return v <= max && v >= min;
-                    }   
+                    }
                 }
             },
-            ui : {
-                addNumInput: function(element){
+            ui: {
+                addNumInput: function (element) {
                     $(element).typedInput({
-                        type:"num",
-                        types:["num"],
+                        type: "num",
+                        types: ["num"],
                     });
                 },
-                addNumInputs : function(elements){
+                addNumInputs: function (elements) {
                     elements.forEach(RED.bavaria.ui.addNumInput);
                 },
-                addNumRangeInput: function(element, min, max){
+                addNumRangeInput: function (element, min, max) {
                     RED.bavaria.ui.addNumInput(element);
                     var validator = RED.bavaria.validators.range(min, max);
-                    
-                    $(element).change(function(){
+
+                    $(element).change(function () {
                         var valid = validator($(this).val());
                         var targetElement = $(this).parent().find('.red-ui-typedInput-container');
                         if (!valid) {
@@ -51,7 +50,7 @@
                         }
                     });
                 },
-                addNumRangeInputs : function(elements, min, max){
+                addNumRangeInputs: function (elements, min, max) {
                     elements.forEach(element => {
                         RED.bavaria.ui.addNumRangeInput(element, min, max);
                     });
@@ -63,20 +62,20 @@
 
 <!--- BRIDGE CONFIG NODE --->
 <script type="text/javascript">
-    RED.nodes.registerType('zigbee2mqtt-bridge-config',{
+    RED.nodes.registerType('zigbee2mqtt-bridge-config', {
         category: 'config',
         defaults: {
-			name:   { value: "zigbee2mqtt", required: true },
+            name: { value: "zigbee2mqtt", required: true },
             baseTopic: { value: "zigbee2mqtt", required: true },
-            broker: {value: "", required: true },
-            requireLogin: {value: false},
+            broker: { value: "", required: true },
+            requireLogin: { value: false },
         },
         credentials: {
-            username: {type: "text"},
-            password: {type: "password"},
+            username: { type: "text" },
+            password: { type: "password" },
         },
-        label: function(){return this.name;},
-		paletteLabel: "bridge config"
+        label: function () { return this.name; },
+        paletteLabel: "bridge config"
     });
 </script>
 
@@ -105,31 +104,31 @@
         <label for="node-input-password"><i class="fa fa-tag"></i>Base MQTT Topic</label>
         <input type="password" id="node-config-input-password" />
     </div>
-</script>  
+</script>
 
 <!--- DEVICE CONFIG NODE --->
 <script type="text/javascript">
-    RED.nodes.registerType('zigbee2mqtt-device-config',{
+    RED.nodes.registerType('zigbee2mqtt-device-config', {
         category: 'config',
         defaults: {
-            name:   { value: "", required: true },
-            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
-			deviceName: { value: "", required: true },
-            brightnessSupport: {value: false},
-            temperatureSupport: {value: false},
-            colorSupport: {value: false},
-		},
-        label: function(){return this.name;},
-		paletteLabel: "Device config",
-        oneditprepare: function(){
+            name: { value: "", required: true },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
+            brightnessSupport: { value: false },
+            temperatureSupport: { value: false },
+            colorSupport: { value: false },
+        },
+        label: function () { return this.name; },
+        paletteLabel: "Device config",
+        oneditprepare: function () {
             var node = this;
             var deviceName = node.deviceName;
-            
-            $("#node-config-input-bridge").change(function(){
+
+            $("#node-config-input-bridge").change(function () {
                 var bridgeId = $("#node-config-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/'+bridgeId+'/router/all/all',function(data) {
+                $.getJSON('/z2m/devices/' + bridgeId + '/router/all/all', function (data) {
                     $("#node-config-input-deviceName").empty();
-                    data.devices.forEach(e=>{
+                    data.devices.forEach(e => {
                         $("#node-config-input-deviceName").append("<option>" + e.friendly_name + "</option>");
                     });
 
@@ -169,53 +168,43 @@
 
 <!--- GENERIC LAMP NODE --->
 <script type="text/javascript">
-    function showInput(name)
-    {
+    function showInput(name) {
         $("#node-input-" + name).parent().show();
     }
 
-    function hideInput(name)
-    {
+    function hideInput(name) {
         $("#node-input-" + name).parent().hide();
     }
 
-    function prepareView()
-    {
+    function prepareView() {
         var config = RED.nodes.node($("#node-input-device").val());
 
-        if(config === undefined || config === null)
-        {
+        if (config === undefined || config === null) {
             return;
         }
 
-        if (config.brightnessSupport)
-        {
+        if (config.brightnessSupport) {
             showInput("transition");
             showInput("brightness");
         }
-        else
-        {
+        else {
             hideInput("brightness");
             hideInput("transition");
         }
 
-        if (config.temperatureSupport)
-        {
+        if (config.temperatureSupport) {
             showInput("temperature");
         }
-        else
-        {
+        else {
             hideInput("temperature");
         }
 
-        if (config.colorSupport)
-        {
+        if (config.colorSupport) {
             showInput("red");
             showInput("green");
             showInput("blue");
         }
-        else
-        {
+        else {
             hideInput("red");
             hideInput("green");
             hideInput("blue");
@@ -224,42 +213,42 @@
         return true;
     }
 
-    RED.nodes.registerType('generic-lamp',{
+    RED.nodes.registerType('generic-lamp', {
         category: 'zigbee2mqtt',
         color: '#bada66',
         defaults: {
             device: {
-                value: "", 
-                type: "zigbee2mqtt-device-config", 
-                validate: function(value){
+                value: "",
+                type: "zigbee2mqtt-device-config",
+                validate: function (value) {
                     prepareView();
                     return true;
                 }
             },
 
-            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
 
-            name: {value: ""},
-            state: {value:"ON" },
+            name: { value: "" },
+            state: { value: "ON" },
 
-            brightness: {value:0, validate: RED.bavaria.validators.range(0, 255) },
+            brightness: { value: 0, validate: RED.bavaria.validators.range(0, 255) },
 
-            temperature: {value:50, validate: RED.bavaria.validators.range(0, 500) },
+            temperature: { value: 50, validate: RED.bavaria.validators.range(0, 500) },
 
-            red: {value:0, validate: RED.bavaria.validators.range(0, 255) },
-            green: {value:0, validate: RED.bavaria.validators.range(0, 255) },
-            blue: {value:0, validate: RED.bavaria.validators.range(0, 255) },
+            red: { value: 0, validate: RED.bavaria.validators.range(0, 255) },
+            green: { value: 0, validate: RED.bavaria.validators.range(0, 255) },
+            blue: { value: 0, validate: RED.bavaria.validators.range(0, 255) },
 
-            transition: {value:2},
-            delay: {value:0},
+            transition: { value: 2 },
+            delay: { value: 0 },
         },
-        inputs:1,
-        outputs:1,
+        inputs: 1,
+        outputs: 1,
         icon: "light.png",
-        label: function() {
-            return this.name||"generic device";
+        label: function () {
+            return this.name || "generic device";
         },
-        oneditprepare: function(){           
+        oneditprepare: function () {
             var numInputs = [
                 "#node-input-brightness",
                 "#node-input-red",
@@ -267,16 +256,16 @@
                 "#node-input-blue",
             ]
 
-            RED.bavaria.ui.addNumRangeInput("#node-input-temperature", 0, 500);  
-            
-            RED.bavaria.ui.addNumRangeInputs(numInputs, 0, 255);   
- 
-            RED.bavaria.ui.addNumInput("#node-input-delay");  
-            RED.bavaria.ui.addNumInput("#node-input-transition");  
-            
+            RED.bavaria.ui.addNumRangeInput("#node-input-temperature", 0, 500);
+
+            RED.bavaria.ui.addNumRangeInputs(numInputs, 0, 255);
+
+            RED.bavaria.ui.addNumInput("#node-input-delay");
+            RED.bavaria.ui.addNumInput("#node-input-transition");
+
             prepareView();
         },
-        oneditsave: function(){
+        oneditsave: function () {
             var config = RED.nodes.node($("#node-input-device").val());
             $("#node-input-name").val(config.name);
         },
@@ -284,7 +273,7 @@
 </script>
 
 <script type="text/html" data-template-name="generic-lamp">
-    
+
     <div class="form-row">
         <label for="node-input-device"><i class="fa fa-tag"></i> Device</label>
         <input type="text" id="node-input-device" />
@@ -343,29 +332,29 @@
 <!--- SONOFF BUTTON NODE --->
 <script type="text/javascript">
 
-    RED.nodes.registerType('sonoff-button',{
+    RED.nodes.registerType('sonoff-button', {
         category: 'zigbee2mqtt-sonoff',
         color: '#fd0',
         defaults: {
             name: { value: "" },
-            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
-            deviceName: {value: "", required: true},
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
         },
-        inputs:0,
-        outputs:1,
+        inputs: 0,
+        outputs: 1,
         icon: "inject.png",
-        label: function() {
+        label: function () {
             return this.name || "Sonoff Button";
         },
-        oneditprepare: function(){
+        oneditprepare: function () {
             var node = this;
             var deviceName = node.deviceName;
-            
-            $("#node-input-bridge").change(function(){
+
+            $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/'+bridgeId+'/endDevice/sonoff/SNZB-01',function(data) {
+                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/sonoff/SNZB-01', function (data) {
                     $("#node-input-deviceName").empty();
-                    data.devices.forEach(e=>{
+                    data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
                     });
 
@@ -378,7 +367,7 @@
 </script>
 
 <script type="text/html" data-template-name="sonoff-button">
-    
+
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
@@ -416,30 +405,30 @@
 <!--- IKEA DIMMER NODE --->
 <script type="text/javascript">
 
-    RED.nodes.registerType('ikea-dimmer',{
+    RED.nodes.registerType('ikea-dimmer', {
         category: 'zigbee2mqtt-ikea',
         color: '#fd0',
         defaults: {
             name: { value: "" },
-            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
-            deviceName: {value: "", required: true},
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
         },
-        inputs:0,
-        outputs:5,
+        inputs: 0,
+        outputs: 5,
         icon: "inject.png",
-        label: function() {
+        label: function () {
             return this.name || "Ikea Dimmer";
         },
-        outputLabels: ["on","off","dimm up","dimm down","dimm stop"],
-        oneditprepare: function(){
+        outputLabels: ["on", "off", "dimm up", "dimm down", "dimm stop"],
+        oneditprepare: function () {
             var node = this;
             var deviceName = node.deviceName;
-            
-            $("#node-input-bridge").change(function(){
+
+            $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/IKEA/E1743',function(data) {
+                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/IKEA/E1743', function (data) {
                     $("#node-input-deviceName").empty();
-                    data.devices.forEach(e=>{
+                    data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
                     });
 
@@ -452,7 +441,7 @@
 </script>
 
 <script type="text/html" data-template-name="ikea-dimmer">
-    
+
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
@@ -490,30 +479,30 @@
 <!--- IKEA REMOTE NODE --->
 <script type="text/javascript">
 
-    RED.nodes.registerType('ikea-remote',{
+    RED.nodes.registerType('ikea-remote', {
         category: 'zigbee2mqtt-ikea',
         color: '#fd0',
         defaults: {
             name: { value: "" },
-            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
-            deviceName: {value: "", required: true},
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
         },
-        inputs:0,
-        outputs:5,
+        inputs: 0,
+        outputs: 5,
         icon: "inject.png",
-        label: function() {
+        label: function () {
             return this.name || "Ikea Remote";
         },
-        outputLabels: ["toggle","up","down","left","right"],
-        oneditprepare: function(){
+        outputLabels: ["toggle", "up", "down", "left", "right"],
+        oneditprepare: function () {
             var node = this;
             var deviceName = node.deviceName;
-            
-            $("#node-input-bridge").change(function(){
+
+            $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/'+bridgeId+'/endDevice/IKEA/E1524%2FE1810',function(data) {
+                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/IKEA/E1524%2FE1810', function (data) {
                     $("#node-input-deviceName").empty();
-                    data.devices.forEach(e=>{
+                    data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
                     });
 
@@ -526,7 +515,7 @@
 </script>
 
 <script type="text/html" data-template-name="ikea-remote">
-    
+
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
@@ -564,30 +553,30 @@
 <!--- SCENIC FOH SWITCH NODE --->
 <script type="text/javascript">
 
-    RED.nodes.registerType('scenic-foh-switch',{
+    RED.nodes.registerType('scenic-foh-switch', {
         category: 'zigbee2mqtt-scenic-foh',
         color: '#f5f5f5',
         defaults: {
             name: { value: "" },
-            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
-            deviceName: {value: "", required: true},
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
         },
-        inputs:0,
-        outputs:6,
+        inputs: 0,
+        outputs: 6,
         icon: "inject.png",
-        label: function() {
+        label: function () {
             return this.name || "Scenic FoH Switch";
         },
-        outputLabels: ["A0","A1","B0","B1","UP","DOWN",],
-        oneditprepare: function(){
+        outputLabels: ["A0", "A1", "B0", "B1", "UP", "DOWN",],
+        oneditprepare: function () {
             var node = this;
             var deviceName = node.deviceName;
-            
-            $("#node-input-bridge").change(function(){
+
+            $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/'+bridgeId+'/endDevice/GreenPower/GreenPower_On_Off_Switch',function(data) {
+                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/GreenPower/GreenPower_On_Off_Switch', function (data) {
                     $("#node-input-deviceName").empty();
-                    data.devices.forEach(e=>{
+                    data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
                     });
 
@@ -600,7 +589,7 @@
 </script>
 
 <script type="text/html" data-template-name="scenic-foh-switch">
-    
+
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
@@ -637,30 +626,30 @@
 <!--- CONTACT SENSOR NODE --->
 <script type="text/javascript">
 
-    RED.nodes.registerType('contact-sensor',{
+    RED.nodes.registerType('contact-sensor', {
         category: 'zigbee2mqtt-sensor',
         color: '#fcba03',
         defaults: {
             name: { value: "" },
-            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
-            deviceName: {value: "", required: true},
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
         },
-        inputs:0,
-        outputs:2,
+        inputs: 0,
+        outputs: 2,
         icon: "feed.png",
-        label: function() {
+        label: function () {
             return this.name || "Contact sensor";
         },
-        outputLabels: ["closed","open"],
-        oneditprepare: function(){
+        outputLabels: ["closed", "open"],
+        oneditprepare: function () {
             var node = this;
             var deviceName = node.deviceName;
-            
-            $("#node-input-bridge").change(function(){
+
+            $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/all/all',function(data) {
+                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/all/all', function (data) {
                     $("#node-input-deviceName").empty();
-                    data.devices.forEach(e=>{
+                    data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
                     });
 
@@ -673,7 +662,7 @@
 </script>
 
 <script type="text/html" data-template-name="contact-sensor">
-    
+
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
@@ -701,30 +690,30 @@
 <!--- OCCUPANCY SENSOR NODE --->
 <script type="text/javascript">
 
-    RED.nodes.registerType('occupancy-sensor',{
+    RED.nodes.registerType('occupancy-sensor', {
         category: 'zigbee2mqtt-sensor',
         color: '#fcba03',
         defaults: {
             name: { value: "" },
-            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
-            deviceName: {value: "", required: true},
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
         },
-        inputs:0,
-        outputs:2,
+        inputs: 0,
+        outputs: 2,
         icon: "feed.png",
-        label: function() {
+        label: function () {
             return this.name || "Occupancy sensor";
         },
-        outputLabels: ["occupied","no motion"],
-        oneditprepare: function(){
+        outputLabels: ["occupied", "no motion"],
+        oneditprepare: function () {
             var node = this;
             var deviceName = node.deviceName;
-            
-            $("#node-input-bridge").change(function(){
+
+            $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/all/all',function(data) {
+                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/all/all', function (data) {
                     $("#node-input-deviceName").empty();
-                    data.devices.forEach(e=>{
+                    data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
                     });
 
@@ -737,7 +726,7 @@
 </script>
 
 <script type="text/html" data-template-name="occupancy-sensor">
-    
+
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
@@ -765,27 +754,27 @@
 <!--- BUTTON SWITCH NODE --->
 <script type="text/javascript">
 
-    RED.nodes.registerType('button-switch',{
+    RED.nodes.registerType('button-switch', {
         category: 'zigbee2mqtt-utils',
         color: '#97f798',
         defaults: {
             name: { value: "" },
         },
-        inputs:1,
-        outputs:4,
+        inputs: 1,
+        outputs: 4,
         icon: "function.png",
-        label: function() {
+        label: function () {
             return this.name || "button-switch";
         },
-        outputLabels: ["pressed","hold","released","double"],
-        oneditprepare: function(){
-            RED.bavaria.ui.addNumRangeInput("#node-input-brightness", 0, 255);   
+        outputLabels: ["pressed", "hold", "released", "double"],
+        oneditprepare: function () {
+            RED.bavaria.ui.addNumRangeInput("#node-input-brightness", 0, 255);
         },
     });
 </script>
 
 <script type="text/html" data-template-name="button-switch">
-    
+
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
@@ -800,24 +789,24 @@
 <!--- PREPARE MESSAGES NODE --->
 <script type="text/javascript">
 
-    RED.nodes.registerType('send-messages',{
+    RED.nodes.registerType('send-messages', {
         category: 'zigbee2mqtt',
         color: '#bada66',
         defaults: {
             name: { value: "" },
-            bridge: {value: "", type: "zigbee2mqtt-bridge-config"},
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
         },
-        inputs:1,
-        outputs:0,
+        inputs: 1,
+        outputs: 0,
         icon: "bridge.svg",
-        label: function() {
+        label: function () {
             return this.name || "send messages";
         },
     });
 </script>
 
 <script type="text/html" data-template-name="send-messages">
-    
+
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
@@ -835,27 +824,27 @@
 
 <!--- OVERRIDE BRIGHTNESS NODE --->
 <script type="text/javascript">
-    RED.nodes.registerType('override-brightness',{
+    RED.nodes.registerType('override-brightness', {
         category: 'zigbee2mqtt',
         color: '#bada66',
         defaults: {
             name: { value: "" },
             brightness: { value: 255, validate: RED.bavaria.validators.range(0, 255) },
         },
-        inputs:1,
-        outputs:1,
+        inputs: 1,
+        outputs: 1,
         icon: "template.png",
-        label: function() {
+        label: function () {
             return this.name || "override-brightness";
         },
-        oneditprepare: function(){
-            RED.bavaria.ui.addNumRangeInput("#node-input-brightness", 0, 255);   
+        oneditprepare: function () {
+            RED.bavaria.ui.addNumRangeInput("#node-input-brightness", 0, 255);
         },
     });
 </script>
 
 <script type="text/html" data-template-name="override-brightness">
-    
+
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
@@ -875,27 +864,27 @@
 <!--- OVERRIDE TEMPERATURE NODE --->
 <script type="text/javascript">
 
-    RED.nodes.registerType('override-temperature',{
+    RED.nodes.registerType('override-temperature', {
         category: 'zigbee2mqtt',
         color: '#bada66',
         defaults: {
             name: { value: "" },
             temperature: { value: 255, validate: RED.bavaria.validators.range(0, 500) },
         },
-        inputs:1,
-        outputs:1,
+        inputs: 1,
+        outputs: 1,
         icon: "template.png",
-        label: function() {
+        label: function () {
             return this.name || "override-temperature";
         },
-        oneditprepare: function(){   
-            RED.bavaria.ui.addNumRangeInput("#node-input-temperature", 0, 500);         
+        oneditprepare: function () {
+            RED.bavaria.ui.addNumRangeInput("#node-input-temperature", 0, 500);
         },
     });
 </script>
 
 <script type="text/html" data-template-name="override-temperature">
-    
+
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
@@ -915,22 +904,22 @@
 <!--- OVERRIDE COLOR NODE --->
 <script type="text/javascript">
 
-    RED.nodes.registerType('override-color',{
+    RED.nodes.registerType('override-color', {
         category: 'zigbee2mqtt',
         color: '#bada66',
         defaults: {
             name: { value: "" },
-            red: { value: 255, validate: RED.bavaria.validators.range(0,255) },
-            green: { value: 255, validate: RED.bavaria.validators.range(0,255) },
-            blue: { value: 255, validate: RED.bavaria.validators.range(0,255) },
+            red: { value: 255, validate: RED.bavaria.validators.range(0, 255) },
+            green: { value: 255, validate: RED.bavaria.validators.range(0, 255) },
+            blue: { value: 255, validate: RED.bavaria.validators.range(0, 255) },
         },
-        inputs:1,
-        outputs:1,
+        inputs: 1,
+        outputs: 1,
         icon: "template.png",
-        label: function() {
+        label: function () {
             return this.name || "override-color";
         },
-        oneditprepare: function(){   
+        oneditprepare: function () {
             var numInputs = ["#node-input-red", "#node-input-green", "#node-input-blue"];
             RED.bavaria.ui.addNumRangeInputs(numInputs, 0, 255);
         },
@@ -938,7 +927,7 @@
 </script>
 
 <script type="text/html" data-template-name="override-color">
-    
+
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
@@ -963,4 +952,87 @@
 
 <script type="text/html" data-help-name="override-temperature">
     <p>Node to override color</p>
+</script>
+
+<!--- SCENE OUT NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('scene-out', {
+        category: 'zigbee2mqtt-scene',
+        color: '#bada66',
+        defaults: {
+            name: { value: "" },
+            scene: { value: "" },
+        },
+        inputs: 1,
+        outputs: 0,
+        icon: "arrow-in.png",
+        label: function () {
+            return this.name || this.scene || "scene out";
+        },
+        oneditprepare: function () {
+            var node = this;
+            $.getJSON('/z2m/scenes', function (data) {
+                $("#node-input-scene").empty();
+                $("#node-input-scene").append("<option></option>");
+                
+                data.scenes.forEach(scene => {
+                    $("#node-input-scene").append("<option>" + scene + "</option>");
+                });
+                
+                $("#node-input-scene").val(node.scene);
+            });
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="scene-out">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-scene"><i class="fa fa-tag"></i> Device</label>
+        <select id="node-input-scene"></select>
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="scene-out">
+    <p>Node to trigger scenes</p>
+</script>
+
+<!--- SCENE IN NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('scene-in', {
+        category: 'zigbee2mqtt-scene',
+        color: '#bada66',
+        defaults: {
+            name: { value: "" },
+            scene: { value: "", required: true },
+        },
+        inputs: 0,
+        outputs: 1,
+        icon: "inject.png",
+        label: function () {
+            return this.name || this.scene || "scene in";
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="scene-in">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-scene"><i class="fa fa-tag"></i> Scene</label>
+        <input type="text" id="node-input-scene">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="scene-in">
+    <p>Node to trigger scenes</p>
 </script>
