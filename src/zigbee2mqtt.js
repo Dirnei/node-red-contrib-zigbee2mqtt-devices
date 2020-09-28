@@ -160,7 +160,7 @@ module.exports = function (RED) {
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
                 const ioMap = {
                     toggle: createButtonOutput(0, "toggle", "pressed"),
-                    toggle_hold: createButtonOutput(0, "toggle", "hold"),
+                    toggle_hold: createButtonOutput(0, "toggle", "released"),
                     brightness_up_click: createButtonOutput(1, "brightness_up", "pressed"),
                     brightness_up_hold: createButtonOutput(1, "brightness_up", "hold"),
                     brightness_up_release: createButtonOutput(1, "brightness_up", "released",),
