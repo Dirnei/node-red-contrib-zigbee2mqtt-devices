@@ -1,5 +1,6 @@
 module.exports = function (RED) {
     const bavaria = require("node-red-ext-bavaria-black");
+
     RED.httpAdmin.get('/z2m/devices/:broker/:deviceType/:vendor/:model', function (req, res) {
         try {
             var broker = RED.nodes.getNode(req.params.broker.replace("_", "."));
@@ -426,7 +427,7 @@ module.exports = function (RED) {
         var devicesContextName = "z2m_devices_" + node.id.replace(".", "_");
         var globalContext = node.context().global;
 
-        var option = {};
+        var options = {};
         if (node.requireLogin) {
             options = {
                 username: this.credentials.username,
@@ -575,8 +576,7 @@ module.exports = function (RED) {
                         && msg.payload.override.temperature !== ""
                         && element.temperature !== undefined
                         && element.temperature !== "") {
-                        element.temperature = undefined;
-                        element.color_temp = msg.payload.override.temperature;
+                        element.temperature = msg.payload.override.temperature;
                     }
 
                     if (msg.payload.override.color !== undefined
@@ -594,14 +594,25 @@ module.exports = function (RED) {
             enqueue();
 
             function sendNextMessage() {
+                var topic = messages[i].topic;
+                if(messages.target === "z2m" || messages.target === undefined)
+                {
+                    topic = bridgeNode.baseTopic + "/" + messages[i].topic + "/set";
+                }
+
                 var message = {
                     payload: messages[i],
-                    topic: bridgeNode.baseTopic + "/" + messages[i].topic + "/set",
+                    topic: topic,
                 }
 
                 message.payload.topic = undefined;
 
-                node.warn(message);
+                if(message.payload.temperature)
+                {
+                    message.payload.color_temp = message.payload.temperature;
+                    message.payload.temperature = undefined;
+                }
+
                 bridgeNode.publish(message.topic, JSON.stringify(message.payload));
 
                 if (++i < messages.length) {
