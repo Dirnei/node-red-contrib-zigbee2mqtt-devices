@@ -106,6 +106,27 @@
     </div>
 </script>
 
+<script type="text/html" data-help-name="zigbee2mqtt-bridge-config">
+    <p>
+        Configure your connection to your MQTT Broker and zigbee2mqtt. This is needed in order to get or send messages via MQTT to zigbee2mqtt
+    </p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt class="required">Base MQTT Topic <span class="property-type">string</span></dt>
+        <dd>The base topic which is configured in the configuration.yml in zigbee2mqtt. Usually: <code>zigbee2mqtt</code></dd>
+        <dt class="required">Broker <span class="property-type">string</span></dt>
+        <dd>Connects to the broker specified by the given URL. The URL can be on the following protocols: 'mqtt', 'mqtts', 'tcp', 'tls', 'ws', 'wss'.
+            Example: <code>mqtt://localhost</code>
+        </dd>
+        <dt class="optional">Require login <span class="property-type">bool</span></dt>
+        <dd>Check if your MQTT broker needs a login in order to connect. If checked the username and password below are required</dd>
+        <dt class="optional">Username <span class="property-type">string</span></dt>
+        <dd>The username to connect to your MQTT broker</dd>
+        <dt class="optional">Password <span class="property-type">string</span></dt>
+        <dd>The password to connect to your MQTT broker</dd>
+    </dl>
+</script>
+
 <!--- DEVICE CONFIG NODE --->
 <script type="text/javascript">
     RED.nodes.registerType('zigbee2mqtt-device-config', {
