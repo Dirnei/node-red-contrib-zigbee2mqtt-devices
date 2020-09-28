@@ -595,10 +595,12 @@ module.exports = function (RED) {
 
             function sendNextMessage() {
                 var topic = messages[i].topic;
-                if(messages.target === "z2m" || messages.target === undefined)
+                if(messages[i].target === "z2m" || messages[i].target === undefined)
                 {
                     topic = bridgeNode.baseTopic + "/" + messages[i].topic + "/set";
                 }
+
+                messages[i].target = undefined;
 
                 var message = {
                     payload: messages[i],
