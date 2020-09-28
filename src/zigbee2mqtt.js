@@ -159,12 +159,15 @@ module.exports = function (RED) {
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
+                var leberkas = {};
+                message.action = message.action.replace("-", "_");
+
                 const ioMap = {
                     toggle: createButtonOutput(0, "toggle", "pressed"),
                     toggle_hold: createButtonOutput(0, "toggle", "released"),
                     brightness_up_click: createButtonOutput(1, "brightness_up", "pressed"),
                     brightness_up_hold: createButtonOutput(1, "brightness_up", "hold"),
-                    brightness_up_release: createButtonOutput(1, "brightness_up", "released",),
+                    brightnessup_release: createButtonOutput(1, "brightness_up", "released",),
                     brightness_down_click: createButtonOutput(2, "brightness_down", "pressed"),
                     brightness_down_hold: createButtonOutput(2, "brightness_down", "hold"),
                     brightness_down_release: createButtonOutput(2, "brightness_down", "released"),
