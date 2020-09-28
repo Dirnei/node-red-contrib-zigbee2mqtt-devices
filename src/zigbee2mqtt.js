@@ -426,6 +426,7 @@ module.exports = function (RED) {
         var devicesContextName = "z2m_devices_" + node.id.replace(".", "_");
         var globalContext = node.context().global;
 
+        var option = {};
         if (node.requireLogin) {
             options = {
                 username: this.credentials.username,
