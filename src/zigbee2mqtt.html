@@ -1186,3 +1186,59 @@
 <script type="text/html" data-help-name="climate-sensor">
     <p>Node to trigger scenes</p>
 </script>
+
+<!--- CLIMATE SENSOR NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('device-status', {
+        category: 'zigbee2mqtt',
+        color: '#bada66',
+        defaults: {
+            name: { value: "" },
+            deviceName: { value: "", required: true },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+        },
+        inputs: 0,
+        outputs: 1,
+        icon: "serial.png",
+        label: function () {
+            return this.name || "device status";
+        },
+        oneditprepare: function () {
+            var node = this;
+            var deviceName = node.deviceName;
+
+            $("#node-input-bridge").change(function () {
+                var bridgeId = $("#node-input-bridge").val().replace(".", "_");
+                $.getJSON('/z2m/devices/' + bridgeId + '/all/all/all', function (data) {
+                    $("#node-input-deviceName").empty();
+                    data.devices.forEach(e => {
+                        $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
+                    });
+
+                    $("#node-input-deviceName").val(deviceName);
+                });
+            });
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="device-status">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-input-bridge" placeholder="bridge" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
+        <select id="node-input-deviceName"></select>
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="device-status">
+    <p>Injects a message with the every mqtt payload a device publishes</p>
+</script>

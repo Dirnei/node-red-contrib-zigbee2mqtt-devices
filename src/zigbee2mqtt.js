@@ -50,7 +50,7 @@ module.exports = function (RED) {
                     dm = e.model.toLowerCase();
                 }
 
-                return (dt == type || (type == "enddevice" && dt == "greenpower")) &&
+                return (dt == type || (type == "enddevice" && dt == "greenpower") || (type == "all" && dt !== "coordinator")) &&
                     (dv == vendor || (vendor == "all")) &&
                     (dm == model || (model == "all"));
             })
@@ -159,7 +159,6 @@ module.exports = function (RED) {
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
-                var leberkas = {};
                 message.action = message.action.replace("-", "_");
 
                 const ioMap = {
@@ -827,4 +826,17 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("climate-sensor", climateSensor);
+    
+    function deviceStatus(config) {
+        RED.nodes.createNode(this, config);
+        var node = this;
+        var bridgeNode = RED.nodes.getNode(config.bridge);
+
+        bridgeNode.subscribeDevice(node.id, config.deviceName, function(msg){
+            node.send({
+                payload: msg,
+            });
+        });
+    }
+    RED.nodes.registerType("device-status", deviceStatus);
 }
