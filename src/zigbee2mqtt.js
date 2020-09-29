@@ -336,16 +336,22 @@ module.exports = function (RED) {
             node.status(status);
         }
 
-        var subId = bridgeNode.subscribeDevice(node.id, deviceConfig.deviceName, function (msg) {
-            messageToStatus(msg);
-        });
+        if (deviceConfig.genericMqttDevice !== true) {
+            bridgeNode.subscribeDevice(node.id, deviceConfig.deviceName, function (msg) {
+                messageToStatus(msg);
+            });
+        }
 
         bavaria.observer.register(bridgeNode.id + "_connected", function (msg) {
-            bridgeNode.refreshDevice(deviceConfig.deviceName);
+            if (deviceConfig.genericMqttDevice !== true) {
+                bridgeNode.refreshDevice(deviceConfig.deviceName);
+            }
         });
 
-        if (bridgeNode.isConnected) {
-            bridgeNode.refreshDevice(deviceConfig.deviceName);
+        if (bridgeNode.isConnected()) {
+            if (deviceConfig.genericMqttDevice !== true) {
+                bridgeNode.refreshDevice(deviceConfig.deviceName);
+            }
         }
 
         bavaria.observer.register(topic + "_routeError", function (msg) {
@@ -360,13 +366,13 @@ module.exports = function (RED) {
         var status = nodeContext.get(getContextName());
         if (status && status.status) {
             node.status(status.status);
-        } else {
+        } else if (deviceConfig.genericMqttDevice !== true) {
             node.status({ fill: "gray", shape: "dot", text: "pending" });
         }
 
         node.on('close', function () {
             nodeContext.set(getContextName(), undefined);
-            bridgeNode.unsubscribeDevice(subId);
+            bridgeNode.unsubscribeDevice(node.id);
         });
 
         node.on('input', function (msg) {
@@ -376,9 +382,10 @@ module.exports = function (RED) {
             }
 
             device = {
-                topic: deviceConfig.deviceName,
+                topic: deviceConfig.genericMqttDevice ? deviceConfig.commandTopic : deviceConfig.deviceName,
                 state: config.state,
                 delay: config.delay,
+                target: deviceConfig.genericMqttDevice ? "mqtt" : "z2m"
             };
 
             if (deviceConfig.brightnessSupport) {
@@ -413,6 +420,10 @@ module.exports = function (RED) {
         this.temperatureSupport = config.temperatureSupport;
         this.colorSupport = config.colorSupport;
         this.bridge = config.bridge;
+        this.genericMqttDevice = config.genericMqttDevice;
+        this.statusTopic = config.statusTopic;
+        this.commandTopic = config.commandTopic;
+        this.refreshTopic = config.refreshTopic;
     }
     RED.nodes.registerType("zigbee2mqtt-device-config", deviceConfig)
 
@@ -597,8 +608,7 @@ module.exports = function (RED) {
 
             function sendNextMessage() {
                 var topic = messages[i].topic;
-                if(messages[i].target === "z2m" || messages[i].target === undefined)
-                {
+                if (messages[i].target === "z2m" || messages[i].target === undefined) {
                     topic = bridgeNode.baseTopic + "/" + messages[i].topic + "/set";
                 }
 
@@ -611,8 +621,7 @@ module.exports = function (RED) {
 
                 message.payload.topic = undefined;
 
-                if(message.payload.temperature)
-                {
+                if (message.payload.temperature) {
                     message.payload.color_temp = message.payload.temperature;
                     message.payload.temperature = undefined;
                 }
@@ -807,12 +816,12 @@ module.exports = function (RED) {
             node.send({ payload: message });
         };
 
-        function subscribe(){
+        function subscribe() {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, messageReceived);
         }
 
-        if (bridgeNode.isConnected() === true){
+        if (bridgeNode.isConnected() === true) {
             subscribe();
         }
 
@@ -826,13 +835,13 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("climate-sensor", climateSensor);
-    
+
     function deviceStatus(config) {
         RED.nodes.createNode(this, config);
         var node = this;
         var bridgeNode = RED.nodes.getNode(config.bridge);
 
-        bridgeNode.subscribeDevice(node.id, config.deviceName, function(msg){
+        bridgeNode.subscribeDevice(node.id, config.deviceName, function (msg) {
             node.send({
                 payload: msg,
             });

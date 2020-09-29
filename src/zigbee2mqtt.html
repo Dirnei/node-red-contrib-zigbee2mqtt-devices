@@ -138,12 +138,32 @@
             brightnessSupport: { value: false },
             temperatureSupport: { value: false },
             colorSupport: { value: false },
+            genericMqttDevice: { value: false },
+            statusTopic: { value: "" },
+            commandTopic: { value: "" },
+            refreshTopic: { value: "" },
         },
         label: function () { return this.name; },
         paletteLabel: "Device config",
         oneditprepare: function () {
             var node = this;
             var deviceName = node.deviceName;
+
+            if (node.genericMqttDevice === true) {
+                $("#fullMqttTopic").show()
+            } else {
+                $("#fullMqttTopic").hide()
+            }
+
+            $("#node-config-input-genericMqttDevice").change(function () {
+                if (this.checked) {
+                    $("#fullMqttTopic").show()
+                    node.deviceName = "---";
+                } else {
+                    $("#fullMqttTopic").hide()
+                    node.deviceName = "";
+                }
+            })
 
             $("#node-config-input-bridge").change(function () {
                 var bridgeId = $("#node-config-input-bridge").val().replace(".", "_");
@@ -184,6 +204,26 @@
     <div class="form-row">
         <label for="node-config-input-colorSupport"><i class="fa fa-tag"></i> Color Support</label>
         <input type="checkbox" id="node-config-input-colorSupport" />
+    </div>
+    <div class="form-row">
+        <h3>Non zigbee2mqtt device support (experimental)</h3>
+        <label for="node-config-input-genericMqttDevice"><i class="fa fa-tag"></i> Is generic mqtt device</label>
+        <input type="checkbox" id="node-config-input-genericMqttDevice" />
+    </div>
+
+    <div id="fullMqttTopic">
+        <div class="form-row">
+            <label for="node-config-input-fullMqttTopic"><i class="fa fa-tag"></i> Status Topic</label>
+            <input type="text" id="node-config-input-statusTopic" />
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-fullMqttTopic"><i class="fa fa-tag"></i> Command Topic</label>
+            <input type="text" id="node-config-input-commandTopic" />
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-fullMqttTopic"><i class="fa fa-tag"></i> Refresh Topic</label>
+            <input type="text" id="node-config-input-refreshTopic" />
+        </div>
     </div>
 </script>
 
