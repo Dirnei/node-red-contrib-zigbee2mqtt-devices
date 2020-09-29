@@ -6,7 +6,7 @@
 
 Many nodes are availabe right now and there are still new node ideas that will be added in the near future. Here is a list of the currently availabe ones:
 
-- Generic lamp
+- [generic-lamp](docs/nodes/generic-lamp.md)
     - Used to prepare the mqtt messages that are sent to zigbee2mqtt
 - Send messages
     - Sends the prepared mqtt messages via the mqtt broker to zigbee2mqtt
@@ -59,6 +59,10 @@ Many nodes are availabe right now and there are still new node ideas that will b
             - allowed scene values:
                 - index (the index of the scene that are configured) e.g.: 0 (first scene in the list)
                 - name (the name of the scene-in node you want to trigger)
+
+# Configuration
+
+[Bridge config](docs/bridge-config.md)
 
 ## Searching for help?
 
