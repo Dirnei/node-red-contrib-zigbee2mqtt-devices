@@ -1,6 +1,6 @@
 # Bridge configuration
 
-Define your connection to your MQTT-Broker and the base MQTT-Topic which is defined in the zigbee2mqtt configuration.yaml. Default value is __zigbee2mqtt__
+Define your connection to your MQTT-Broker and the base MQTT-Topic, which is defined in the zigbee2mqtt configuration.yaml. Default value is __zigbee2mqtt__
 
 ![img](img/bridge-config-config.png)
 
