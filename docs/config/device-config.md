@@ -52,6 +52,6 @@ When something is published to this topic, the device should change it state. It
 
 When something is published to this topic, the device should respond with it's current state to the **status topic**. It has to be the same payload that zigbee2mqtt sends when a zigbee device changes it state.
 
-> Can be conpared with *zigbee2mqtt/friendly_name/set*
+> Can be conpared with *zigbee2mqtt/friendly_name/get*
 
 [Back to main](../../README.MD)
