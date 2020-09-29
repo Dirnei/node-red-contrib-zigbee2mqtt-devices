@@ -454,7 +454,7 @@ module.exports = function (RED) {
         this.isReconnecting = function () { return client.reconnecting; };
         this.publish = function (topic, message) { client.publish(topic, message); };
         this.refreshDevice = function (deviceName) {
-            client.publish(node.baseTopic + "/" + deviceName + "/get", "");
+            client.publish(node.baseTopic + "/" + deviceName + "/get", '{"state": ""}');
         };
         this.getDeviceList = function () {
             return globalContext.get(devicesContextName) || [];
@@ -848,4 +848,33 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("device-status", deviceStatus);
+
+    function getLampState(config) {
+        RED.nodes.createNode(this, config);
+        var node = this;
+        var bridgeNode = RED.nodes.getNode(config.bridge);
+        var deviceNode = RED.nodes.getNode(config.device);
+
+        var enableOutput = false;
+        bridgeNode.subscribeDevice(node.id, deviceNode.deviceName, function (msg) {
+            if(enableOutput === true){
+                enableOutput = false;
+                node.send({
+                    device: deviceNode.deviceName,
+                    payload: msg,
+                });
+            }
+        });
+        
+        node.on('input', function(msg){
+            enableOutput = true;
+
+            if(deviceNode.genericMqttDevice === true){
+                bridgeNode.publish(deviceNode.refreshTopic, {});
+            } else {
+                bridgeNode.refreshDevice(deviceNode.deviceName);
+            }
+        });
+    }
+    RED.nodes.registerType("get-lamp-state", getLampState);
 }
