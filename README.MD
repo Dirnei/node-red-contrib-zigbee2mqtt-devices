@@ -62,7 +62,7 @@ Many nodes are availabe right now and there are still new node ideas that will b
 
 # Configuration
 
-[Bridge config](docs/bridge-config.md)
+[Bridge config](docs/config/bridge-config.md)
 
 ## Searching for help?
 
