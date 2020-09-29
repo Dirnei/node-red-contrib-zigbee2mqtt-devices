@@ -8,7 +8,7 @@ Many nodes are availabe right now and there are still new node ideas that will b
 
 - [generic-lamp](docs/nodes/generic-lamp.md)
     - Used to prepare the mqtt messages that are sent to zigbee2mqtt
-- Send messages
+- [send-messages](docs/nodes/send-messages.md)
     - Sends the prepared mqtt messages via the mqtt broker to zigbee2mqtt
 - override nodes
     - all override nodes will override the specific property configured in a generic lamp node. used to set the same value for all devices in the same message
