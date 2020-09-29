@@ -28,4 +28,4 @@ Set the desired state you want to send to the lamp. Following values are availab
 
 The delay is used to delay the message befor it will be sent to the mqtt broker. This can be used for animation. It is defined in milliseconds. The order of your lamps withing the flow is important.
 
-[Back to main](../../README.md)
+[Back to main](../../README.MD)

@@ -13,4 +13,4 @@ If you want to change the label of the node on flow you can set a name.
 
 ![img](img/send-messages-config.png)
 
-[Back to main](../../README.md)
+[Back to main](../../README.MD)

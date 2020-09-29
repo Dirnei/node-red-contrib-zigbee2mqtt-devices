@@ -9,4 +9,4 @@ URL to the MQTT Broker. The most important thing is that you must define the pro
 
 Example and default value: __mqtt://localhost__
 
-[Back to main](../../README.md)
+[Back to main](../../README.MD)

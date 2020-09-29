@@ -54,4 +54,4 @@ When something is published to this topic, the device should respond with it's c
 
 > Can be conpared with *zigbee2mqtt/friendly_name/set*
 
-[Back to main](../../README.md)
+[Back to main](../../README.MD)
