@@ -108,18 +108,18 @@
 
 <script type="text/html" data-help-name="zigbee2mqtt-bridge-config">
     <p>
-        Configure your connection to your MQTT Broker and zigbee2mqtt. This is needed in order to get or send messages via MQTT to zigbee2mqtt
+        Configure the connection to your MQTT Broker and zigbee2mqtt. This is needed to get or send messages via MQTT to zigbee2mqtt.
     </p>
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt class="required">Base MQTT Topic <span class="property-type">string</span></dt>
         <dd>The base topic which is configured in the configuration.yml in zigbee2mqtt. Usually: <code>zigbee2mqtt</code></dd>
         <dt class="required">Broker <span class="property-type">string</span></dt>
-        <dd>Connects to the broker specified by the given URL. The URL can be on the following protocols: 'mqtt', 'mqtts', 'tcp', 'tls', 'ws', 'wss'.
+        <dd>Connects to the broker specified by the given URL. The URL can be one of the following protocols: 'mqtt', 'mqtts', 'tcp', 'tls', 'ws', 'wss'.
             Example: <code>mqtt://localhost</code>
         </dd>
         <dt class="optional">Require login <span class="property-type">bool</span></dt>
-        <dd>Check if your MQTT broker needs a login in order to connect. If checked the username and password below are required</dd>
+        <dd>Check if your MQTT broker needs a login in order to connect. If checked, the username and password below are required.</dd>
         <dt class="optional">Username <span class="property-type">string</span></dt>
         <dd>The username to connect to your MQTT broker</dd>
         <dt class="optional">Password <span class="property-type">string</span></dt>
@@ -207,7 +207,7 @@
     </div>
     <div class="form-row">
         <h3>Non zigbee2mqtt device support (experimental)</h3>
-        <label for="node-config-input-genericMqttDevice"><i class="fa fa-tag"></i> Is generic mqtt device</label>
+        <label for="node-config-input-genericMqttDevice"><i class="fa fa-tag"></i> Is generic MQTT device</label>
         <input type="checkbox" id="node-config-input-genericMqttDevice" />
     </div>
 
@@ -445,8 +445,8 @@
 </script>
 
 <script type="text/html" data-help-name="sonoff-button">
-    <p>Sends a new message when a sonoff touch button is pressed.</p>
-    <p>It is only compatible with SONOFF touch button (Model: SNZB-01)</p>
+    <p>Sends a new message when a SONOFF touch button is pressed.</p>
+    <p>It is only compatible with the SONOFF touch button (Model: SNZB-01)</p>
     <h3>Output</h3>
     <dl class="message-properties">
         <dt> button_name <span class="property-type"> string </span> </dt>
@@ -456,7 +456,7 @@
             The type in wich way the button was pressed. Following types are available:
             <ul>
                 <li><code>pressed</code> - single press</li>
-                <li><code>released</code> - hold for a few seconds</li>
+                <li><code>released</code> - held for a few seconds</li>
                 <li><code>double</code> - double press</li>
             </ul>
         </dd>
@@ -530,8 +530,8 @@
             The type in wich way the button was pressed. Following types are available:
             <ul>
                 <li><code>pressed</code> - single press</li>
-                <li><code>hold</code> - when a button is hold down for a bit</li>
-                <li><code>released</code> - when a hold down button was being released</li>
+                <li><code>hold</code> - when a button is held down for a bit</li>
+                <li><code>released</code> - when a held down button is released</li>
             </ul>
         </dd>
     </dl>
@@ -604,8 +604,8 @@
             The type in wich way the button was pressed. Following types are available:
             <ul>
                 <li><code>pressed</code> - single press</li>
-                <li><code>hold</code> - when a button is hold down for a bit</li>
-                <li><code>released</code> - when a hold down button was being released</li>
+                <li><code>hold</code> - when a button is held down for a bit</li>
+                <li><code>released</code> - when a held down button is released</li>
             </ul>
         </dd>
     </dl>
@@ -678,7 +678,7 @@
             The type in wich way the button was pressed. Following types are available:
             <ul>
                 <li><code>pressed</code> - single press</li>
-                <li><code>released</code> - hold for a few seconds</li>
+                <li><code>released</code> - held for a few seconds</li>
             </ul>
         </dd>
     </dl>
@@ -804,7 +804,7 @@
 </script>
 
 <script type="text/html" data-help-name="occupancy-sensor">
-    <p>Sends a new message when a occupancy sensor state changes.</p>
+    <p>Sends a new message when an occupancy sensor state changes.</p>
     <h3>Output</h3>
     <dl class="message-properties">
         <dt> payload <span class="property-type"> object </span> </dt>
@@ -959,7 +959,7 @@
 </script>
 
 <script type="text/html" data-help-name="override-temperature">
-    <p>Node to overrite color temperature</p>
+    <p>Node to override color temperature</p>
 </script>
 
 <!--- OVERRIDE COLOR NODE --->
@@ -1280,7 +1280,7 @@
 </script>
 
 <script type="text/html" data-help-name="device-status">
-    <p>Injects a message with the every mqtt payload a device publishes</p>
+    <p>Injects a message with every MQTT payload a device publishes</p>
 </script>
 
 <!--- GET LAMP STATE NODE --->
