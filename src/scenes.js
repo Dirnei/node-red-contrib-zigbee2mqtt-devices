@@ -1,24 +1,33 @@
 module.exports = function (RED) {
 
-    function triggerScene(scene, msg) {
+    function getSceneInNodes(scene) {
+        var nodes = [];
         RED.nodes.eachNode(n => {
             try {
                 if (n.type === "scene-in" && n.scene === scene) {
-                    RED.nodes.getNode(n.id).trigger(msg);
+                    nodes.push(RED.nodes.getNode(n.id));
                 }
             } catch (err) {
                 console.log(err);
             }
         });
+
+        return nodes;
     }
 
     function sceneIn(config) {
         RED.nodes.createNode(this, config);
         var node = this;
 
+        this.isActive = function () {
+            return config.active;
+        }
+
         this.trigger = function (msg) {
-            msg.scene = config.scene;
-            node.send(msg);
+            if (config.active === true) {
+                msg.scene = config.scene;
+                node.send(msg);
+            }
         }
     }
     RED.nodes.registerType("scene-in", sceneIn);
@@ -48,7 +57,14 @@ module.exports = function (RED) {
         var index = nodeContext.get("index");
         setState(index);
 
-        node.on('input', function (msg) {
+        node.on('input',msg => handleMessage(msg, 0));
+
+        function handleMessage(msg, revCount) {
+            if(revCount >= config.scenes.length ){
+                node.error("All configured scenes are inactive");
+                return;
+            }
+            revCount++;
             var command = msg.command;
             if (!command) {
                 return;
@@ -59,6 +75,7 @@ module.exports = function (RED) {
                     index++;
                     break;
                 case "previous":
+                case "prev":
                     index--;
                     break;
                 case "set":
@@ -77,6 +94,7 @@ module.exports = function (RED) {
                     break;
                 default:
                     node.error("Command not found");
+                    return;
                     break;
             }
 
@@ -91,13 +109,27 @@ module.exports = function (RED) {
                 }
             }
 
-            if (!config.changedOutputOnly || nodeContext.get("index") != index) {
-                nodeContext.set("index", index);
+            if (config.changedOutputOnly === false || nodeContext.get("index") != index) {
+                var nodes = getSceneInNodes(config.scenes[index]).filter(n => n.isActive());
+
+                if (nodes.length === 0) {
+                    if (command === "next" || command === "previous") {
+                        handleMessage(msg, revCount);
+                    } else {
+                        node.error(`No active node for scene "${config.scenes[index]}" found.`);
+                        return;
+                    }
+                }
+
                 msg.command = undefined;
-                triggerScene(config.scenes[index], msg);
+                nodes.forEach(n => {
+                    n.trigger(msg);
+                });
+
+                nodeContext.set("index", index);
                 setState(index);
             }
-        });
+        }
     }
     RED.nodes.registerType("scene-selector", sceneSelector);
 }
