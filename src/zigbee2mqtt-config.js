@@ -139,6 +139,10 @@ module.exports = function (RED) {
 
             bavaria.observer.notify(node.id + "_connected", {});
         });
+
+        node.on("close", function(){
+           client.end(true);
+        });
     }
     RED.nodes.registerType("zigbee2mqtt-bridge-config", bridgeConfig, {
         credentials: {
