@@ -2,8 +2,8 @@
 <script type="text/javascript">
 
     RED.nodes.registerType('sonoff-button', {
-        category: 'zigbee2mqtt_sonoff',
-        color: '#fd0',
+        category: 'zigbee2mqtt_remotes-sonoff',
+        color: '#f5f5f5',
         defaults: {
             name: { value: "" },
             bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
@@ -11,7 +11,7 @@
         },
         inputs: 0,
         outputs: 1,
-        icon: "remote.svg",
+        icon: "remote-black.svg",
         label: function () {
             return this.name || "Sonoff Button";
         },
