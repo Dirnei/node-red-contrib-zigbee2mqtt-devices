@@ -1,5 +1,6 @@
 module.exports = function (RED) {
-    const bavaria = require("node-red-ext-bavaria-black");
+    const utils = require("./utils.js");
+    const bavaria = utils.bavaria();
 
     RED.httpAdmin.get('/z2m/devices/:broker/:deviceType/:vendor/:model', function (req, res) {
         try {
@@ -57,187 +58,18 @@ module.exports = function (RED) {
         }));
     }
 
-    function sendAt(node, index, msg) {
-        var output = [];
-        for (var i = 0; i < index; i++) {
-            output.push(null);
-        }
-
-        output.push(msg);
-        node.send(output);
-    }
-
-    function createButtonOutput(output, name, type) {
-        return {
-            index: output,
-            button_name: name,
-            button_type: type,
-        };
-    }
-
-    function setConnectionState(bridgeNode, node) {
-        if (bridgeNode.isConnected() === true) {
-            node.status({ fill: "green", text: "connected" });
-        } else {
-            node.status({ fill: "blue", text: "not connected" });
-        }
-    }
-
-    function sonoffButton(config) {
-        RED.nodes.createNode(this, config);
-        var bridgeNode = RED.nodes.getNode(config.bridge);
-        var node = this;
-
-        setConnectionState(bridgeNode, node);
-        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
-            node.status({ fill: "green", text: "connected" });
-            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
-                try {
-                    const ioMap = {
-                        single: createButtonOutput(0, "button", "pressed"),
-                        long: createButtonOutput(0, "button", "released"),
-                        double: createButtonOutput(0, "button", "double"),
-                    };
-
-                    var output = ioMap[message.action];
-                    sendAt(node, output.index, {
-                        payload: {
-                            button_name: output.button_name,
-                            button_type: output.button_type,
-                        }
-                    });
-
-                    node.status({ fill: "green", "text": "Last action: " + output.button_type });
-                    setTimeout(function () {
-                        node.status({ fill: "green", text: "connected" });
-                    }, 2000);
-                } catch (err) {
-                    node.error(err);
-                    node.status({ fill: "red", "text": "error" });
-                }
-            });
-        });
-
-    }
-    RED.nodes.registerType("sonoff-button", sonoffButton);
-
-    function ikeaDimmer(config) {
-        RED.nodes.createNode(this, config);
-        var bridgeNode = RED.nodes.getNode(config.bridge);
-        var node = this;
-
-        setConnectionState(bridgeNode, node);
-        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
-            node.status({ fill: "green", text: "connected" });
-            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
-                const ioMap = {
-                    on: createButtonOutput(0, "on", "pressed"),
-                    off: createButtonOutput(1, "off", "pressed"),
-                    brightness_up: createButtonOutput(2, "dimm_up", "hold"),
-                    brightness_down: createButtonOutput(3, "dimm_down", "hold"),
-                    brightness_stop: createButtonOutput(4, "dimm_stop", "released"),
-                };
-
-                var output = ioMap[message.click];
-                sendAt(node, output.index, {
-                    payload: {
-                        button_name: output.button_name,
-                        button_type: output.button_type,
-                    }
-                });
-            });
-        });
-    }
-    RED.nodes.registerType("ikea-dimmer", ikeaDimmer);
-
-    function ikeaRemote(config) {
-        RED.nodes.createNode(this, config);
-        var bridgeNode = RED.nodes.getNode(config.bridge);
-        var node = this;
-
-        setConnectionState(bridgeNode, node);
-        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
-            node.status({ fill: "green", text: "connected" });
-            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
-                message.action = message.action.replace("-", "_");
-
-                const ioMap = {
-                    toggle: createButtonOutput(0, "toggle", "pressed"),
-                    toggle_hold: createButtonOutput(0, "toggle", "released"),
-                    brightness_up_click: createButtonOutput(1, "brightness_up", "pressed"),
-                    brightness_up_hold: createButtonOutput(1, "brightness_up", "hold"),
-                    brightnessup_release: createButtonOutput(1, "brightness_up", "released",),
-                    brightness_down_click: createButtonOutput(2, "brightness_down", "pressed"),
-                    brightness_down_hold: createButtonOutput(2, "brightness_down", "hold"),
-                    brightness_down_release: createButtonOutput(2, "brightness_down", "released"),
-                    arrow_left_click: createButtonOutput(3, "arrow_left", "pressed"),
-                    arrow_left_hold: createButtonOutput(3, "arrow_left", "hold"),
-                    arrow_left_release: createButtonOutput(3, "arrow_left", "released"),
-                    arrow_right_click: createButtonOutput(4, "arrow_right", "pressed"),
-                    arrow_right_hold: createButtonOutput(4, "arrow_right", "hold"),
-                    arrow_right_release: createButtonOutput(4, "arrow_right", "released")
-                };
-
-                var output = ioMap[message.action];
-                sendAt(node, output.index, {
-                    payload: {
-                        button_name: output.button_name,
-                        button_type: output.button_type,
-                    }
-                });
-            });
-        });
-    }
-    RED.nodes.registerType("ikea-remote", ikeaRemote);
-
-    function scenicSwitch(config) {
-        RED.nodes.createNode(this, config);
-        var bridgeNode = RED.nodes.getNode(config.bridge);
-        var node = this;
-
-        setConnectionState(bridgeNode, node);
-        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
-            node.status({ fill: "green", text: "connected" });
-            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
-                var ioMap = {
-                    recall_scene_0: createButtonOutput(0, "A0", "pressed"),
-                    recall_scene_4: createButtonOutput(0, "A0", "released"),
-                    recall_scene_1: createButtonOutput(1, "A1", "pressed"),
-                    recall_scene_5: createButtonOutput(1, "A1", "released"),
-                    recall_scene_3: createButtonOutput(2, "B0", "pressed"),
-                    recall_scene_7: createButtonOutput(2, "B0", "released"),
-                    recall_scene_2: createButtonOutput(3, "B1", "pressed"),
-                    recall_scene_6: createButtonOutput(3, "B1", "released"),
-                    press_2_of_2: createButtonOutput(4, "UP", "pressed"),
-                    release_2_of_2: createButtonOutput(4, "UP", "released"),
-                    press_1_of_2: createButtonOutput(5, "DOWN", "pressed"),
-                    release_1_of_2: createButtonOutput(5, "DOWN", "released"),
-                }
-
-                var output = ioMap[message.action];
-                sendAt(node, output.index, {
-                    payload: {
-                        button_name: output.button_name,
-                        button_type: output.button_type,
-                    }
-                });
-            });
-        });
-    }
-    RED.nodes.registerType("scenic-foh-switch", scenicSwitch);
-
     function buttonSwitch(config) {
         RED.nodes.createNode(this, config);
         var node = this;
         const inputs = {
-            pressed: createButtonOutput(0, "", ""),
-            hold: createButtonOutput(1, "", ""),
-            released: createButtonOutput(2, "", ""),
-            double: createButtonOutput(3, "", ""),
+            pressed: utils.createButtonOutput(0, "", ""),
+            hold: utils.createButtonOutput(1, "", ""),
+            released: utils.createButtonOutput(2, "", ""),
+            double: utils.createButtonOutput(3, "", ""),
         }
 
         node.on('input', function (msg) {
-            sendAt(node, inputs[msg.payload.button_type].index, msg);
+            utils.sendAt(node, inputs[msg.payload.button_type].index, msg);
         });
     }
     RED.nodes.registerType("button-switch", buttonSwitch);
@@ -247,7 +79,7 @@ module.exports = function (RED) {
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
-        setConnectionState(bridgeNode, node);
+        utils.setConnectionState(bridgeNode, node);
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
 
@@ -267,7 +99,7 @@ module.exports = function (RED) {
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
-        setConnectionState(bridgeNode, node);
+        utils.setConnectionState(bridgeNode, node);
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
 
@@ -372,7 +204,7 @@ module.exports = function (RED) {
 
         node.on('close', function () {
             nodeContext.set(getContextName(), undefined);
-            bridgeNode.unsubscribeDevice(node.id);
+            bridgeNode.unsubscribe(node.id);
         });
 
         node.on('input', function (msg) {
@@ -461,6 +293,9 @@ module.exports = function (RED) {
         };
         this.subscribeDevice = function (nodeId, device, callback) {
             var topic = node.baseTopic + "/" + device;
+            this.subscribe(nodeId, topic, callback);
+        };
+        this.subscribe = function (nodeId, topic, callback) {
             var sub = _subs.find(e => e.nodeId == nodeId);
             if (sub) {
                 if (sub.topic !== topic) {
@@ -482,8 +317,7 @@ module.exports = function (RED) {
             client.subscribe(topic);
             return true;
         };
-
-        this.unsubscribeDevice = function (nodeId) {
+        this.unsubscribe = function (nodeId) {
             var sub = _subs.find(e => e.nodeId == nodeId);
             if (sub) {
                 var topic = sub.topic;
@@ -570,7 +404,7 @@ module.exports = function (RED) {
             node.status({ fill: "green", text: "connected" });
         });
 
-        if (bridgeNode.isConnected) {
+        if (bridgeNode.isConnected()) {
             node.status({ fill: "green", text: "connected" });
         }
 
@@ -777,17 +611,23 @@ module.exports = function (RED) {
                     node.error("Command not found");
                     break;
             }
-
-            if (index >= config.scenes.length) {
-                index = 0;
-            } else if (index < 0) {
-                index = config.scenes.length - 1;
+            if (config.wrapAround) {
+                if (index >= config.scenes.length) {
+                    index = 0;
+                } else if (index < 0) {
+                    index = config.scenes.length - 1;
+                }
+            } else {
+                index = Math.min(config.scenes.length - 1, index);
+                index = Math.max(0, index);
             }
 
-            nodeContext.set("index", index);
-            msg.command = undefined;
-            triggerScene(config.scenes[index], msg);
-            setState(index);
+            if (!config.changedOutputOnly || nodeContext.get("index") != index) {
+                nodeContext.set("index", index);
+                msg.command = undefined;
+                triggerScene(config.scenes[index], msg);
+                setState(index);
+            }
         });
     }
     RED.nodes.registerType("scene-selector", sceneSelector);
@@ -796,7 +636,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
-        setConnectionState(bridgeNode, node);
+        utils.setConnectionState(bridgeNode, node);
 
         function messageReceived(message) {
             var text = "";
@@ -830,7 +670,7 @@ module.exports = function (RED) {
         });
 
         node.on('close', function () {
-            bridgeNode.unsubscribeDevice(node.id);
+            bridgeNode.unsubscribe(node.id);
             bavaria.observer.unregister(observerId);
         });
     }
@@ -840,12 +680,21 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
         var bridgeNode = RED.nodes.getNode(config.bridge);
+        var deviceNode = RED.nodes.getNode(config.device);
 
-        bridgeNode.subscribeDevice(node.id, config.deviceName, function (msg) {
+        if (config.genericMqttDevice === true) {
+            bridgeNode.subscribe(node.id, deviceNode.statusTopic, subscriptionCallback);
+        } else {
+            bridgeNode.subscribeDevice(node.id, config.deviceName, subscriptionCallback);
+        }
+
+        function subscriptionCallback(msg) {
             node.send({
+                device: config.genericMqttDevice === true ? deviceNode.statusTopic : config.deviceName,
+                deviceName: deviceNode.name || config.deviceName,
                 payload: msg,
             });
-        });
+        }
     }
     RED.nodes.registerType("device-status", deviceStatus);
 
@@ -856,21 +705,28 @@ module.exports = function (RED) {
         var deviceNode = RED.nodes.getNode(config.device);
 
         var enableOutput = false;
-        bridgeNode.subscribeDevice(node.id, deviceNode.deviceName, function (msg) {
-            if(enableOutput === true){
+        if (deviceNode.genericMqttDevice === true) {
+            bridgeNode.subscribe(node.id, deviceNode.statusTopic, subscriptionCallback);
+        } else {
+            bridgeNode.subscribeDevice(node.id, deviceNode.deviceName, subscriptionCallback);
+        }
+
+        function subscriptionCallback(msg) {
+            if (enableOutput === true) {
                 enableOutput = false;
                 node.send({
-                    device: deviceNode.deviceName,
+                    device: deviceNode.genericMqttDevice === true ? deviceNode.statusTopic : deviceNode.deviceName,
+                    deviceName: deviceNode.name,
                     payload: msg,
                 });
             }
-        });
-        
-        node.on('input', function(msg){
+        }
+
+        node.on('input', function (msg) {
             enableOutput = true;
 
-            if(deviceNode.genericMqttDevice === true){
-                bridgeNode.publish(deviceNode.refreshTopic, {});
+            if (deviceNode.genericMqttDevice === true) {
+                bridgeNode.publish(deviceNode.refreshTopic, "{}");
             } else {
                 bridgeNode.refreshDevice(deviceNode.deviceName);
             }
