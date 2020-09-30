@@ -779,17 +779,24 @@ module.exports = function (RED) {
                     node.error("Command not found");
                     break;
             }
-
-            if (index >= config.scenes.length) {
-                index = 0;
-            } else if (index < 0) {
-                index = config.scenes.length - 1;
+            if (config.wrapAround) {
+                if (index >= config.scenes.length) {
+                    index = 0;
+                } else if (index < 0) {
+                    index = config.scenes.length - 1;
+                }
+            } else {
+                index = Math.min(config.scenes.length - 1, index);
+                index = Math.max(0, index);
             }
 
-            nodeContext.set("index", index);
-            msg.command = undefined;
-            triggerScene(config.scenes[index], msg);
-            setState(index);
+            if (!config.changedOutputOnly || nodeContext.get("index") != index)
+            {
+                nodeContext.set("index", index);
+                msg.command = undefined;
+                triggerScene(config.scenes[index], msg);
+                setState(index);
+            }
         });
     }
     RED.nodes.registerType("scene-selector", sceneSelector);

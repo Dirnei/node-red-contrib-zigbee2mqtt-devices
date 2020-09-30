@@ -1098,6 +1098,8 @@
         defaults: {
             name: { value: "" },
             scenes: { value: [], required: true },
+            wrapAround: { value: true },
+            changedOutputOnly: { value: false }
         },
         inputs: 1,
         outputs: 0,
@@ -1149,7 +1151,14 @@
             </div>
         </div>
     </div>
-
+    <div class="form-row">
+        <label for="node-input-wrapAround"><i class="fa fa-retweet"></i> Wrap around</label>
+        <input type="checkbox" id="node-input-wrapAround">
+    </div>
+    <div class="form-row">
+        <label for="node-input-changedOutputOnly"><i class="fa fa-envelope"></i> Changed output only</label>
+        <input type="checkbox" id="node-input-changedOutputOnly">
+    </div>
 </script>
 
 <script type="text/html" data-help-name="scene-selector">
