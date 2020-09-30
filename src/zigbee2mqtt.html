@@ -1236,6 +1236,8 @@
             name: { value: "" },
             deviceName: { value: "", required: true },
             bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            genericMqttDevice: { value: false },
+            device: { value: "", type: "zigbee2mqtt-device-config", required: false}
         },
         inputs: 0,
         outputs: 1,
@@ -1246,6 +1248,22 @@
         oneditprepare: function () {
             var node = this;
             var deviceName = node.deviceName;
+            
+            if (node.genericMqttDevice === true) {
+                $("#fullMqttTopic").show()
+            } else {
+                $("#fullMqttTopic").hide()
+            }
+
+            $("#node-input-genericMqttDevice").change(function () {
+                if (this.checked) {
+                    $("#fullMqttTopic").show()
+                    node.deviceName = "---";
+                } else {
+                    $("#fullMqttTopic").hide()
+                    node.deviceName = "";
+                }
+            })
 
             $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
@@ -1275,6 +1293,14 @@
     <div class="form-row">
         <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
         <select id="node-input-deviceName"></select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-genericMqttDevice"><i class="fa fa-tag"></i> Generic MQTT Device</label>
+        <input type="checkbox" id="node-input-genericMqttDevice" />
+    </div>
+    <div class="form-row" id="fullMqttTopic">
+        <label for="node-input-device"><i class="fa fa-tag"></i> Device</label>
+        <input type="text" id="node-input-device" placeholder="device" />
     </div>
 
 </script>

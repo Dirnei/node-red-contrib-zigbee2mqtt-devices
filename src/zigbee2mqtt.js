@@ -372,7 +372,7 @@ module.exports = function (RED) {
 
         node.on('close', function () {
             nodeContext.set(getContextName(), undefined);
-            bridgeNode.unsubscribeDevice(node.id);
+            bridgeNode.unsubscribe(node.id);
         });
 
         node.on('input', function (msg) {
@@ -461,6 +461,9 @@ module.exports = function (RED) {
         };
         this.subscribeDevice = function (nodeId, device, callback) {
             var topic = node.baseTopic + "/" + device;
+            this.subscribe(nodeId, topic, callback);
+        };
+        this.subscribe = function (nodeId, topic, callback) {
             var sub = _subs.find(e => e.nodeId == nodeId);
             if (sub) {
                 if (sub.topic !== topic) {
@@ -482,8 +485,7 @@ module.exports = function (RED) {
             client.subscribe(topic);
             return true;
         };
-
-        this.unsubscribeDevice = function (nodeId) {
+        this.unsubscribe = function (nodeId) {
             var sub = _subs.find(e => e.nodeId == nodeId);
             if (sub) {
                 var topic = sub.topic;
@@ -830,7 +832,7 @@ module.exports = function (RED) {
         });
 
         node.on('close', function () {
-            bridgeNode.unsubscribeDevice(node.id);
+            bridgeNode.unsubscribe(node.id);
             bavaria.observer.unregister(observerId);
         });
     }
@@ -841,11 +843,20 @@ module.exports = function (RED) {
         var node = this;
         var bridgeNode = RED.nodes.getNode(config.bridge);
 
-        bridgeNode.subscribeDevice(node.id, config.deviceName, function (msg) {
-            node.send({
-                payload: msg,
+        if (config.genericMqttDevice === true) {
+            var deviceNode = RED.nodes.getNode(config.device);
+            bridgeNode.subscribe(node.id, deviceNode.statusTopic, function (msg) {
+                node.send({
+                    payload: msg,
+                });
             });
-        });
+        } else {
+            bridgeNode.subscribeDevice(node.id, config.deviceName, function (msg) {
+                node.send({
+                    payload: msg,
+                });
+            });
+        }
     }
     RED.nodes.registerType("device-status", deviceStatus);
 
