@@ -1,5 +1,5 @@
 module.exports = function (RED) {
-    const utils = require("./utils.js");
+    const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
 
     function sonoffButton(config) {

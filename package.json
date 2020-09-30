@@ -6,7 +6,8 @@
     "license": "MIT",
     "keywords": [
         "node-red",
-        "zigbee2mqtt"
+        "zigbee2mqtt",
+        "smart home"
     ],
     "repository": {
       "type": "git",

@@ -1,5 +1,5 @@
 module.exports = function (RED) {
-    const utils = require("./utils.js");
+    const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
 
     RED.httpAdmin.get('/z2m/devices/:broker/:deviceType/:vendor/:model', function (req, res) {
