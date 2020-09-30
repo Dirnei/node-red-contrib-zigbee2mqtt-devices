@@ -48,7 +48,7 @@ module.exports = function (RED) {
                     toggle_hold: utils.createButtonOutput(0, "toggle", "released"),
                     brightness_up_click: utils.createButtonOutput(1, "brightness_up", "pressed"),
                     brightness_up_hold: utils.createButtonOutput(1, "brightness_up", "hold"),
-                    brightnessup_release: utils.createButtonOutput(1, "brightness_up", "released",),
+                    brightness_up_release: utils.createButtonOutput(1, "brightness_up", "released",),
                     brightness_down_click: utils.createButtonOutput(2, "brightness_down", "pressed"),
                     brightness_down_hold: utils.createButtonOutput(2, "brightness_down", "hold"),
                     brightness_down_release: utils.createButtonOutput(2, "brightness_down", "released"),

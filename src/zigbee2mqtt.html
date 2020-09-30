@@ -223,41 +223,6 @@
     <p>Node for generic lamp devices</p>
 </script>
 
-<!--- BUTTON SWITCH NODE --->
-<script type="text/javascript">
-
-    RED.nodes.registerType('button-switch', {
-        category: 'zigbee2mqtt-utils',
-        color: '#97f798',
-        defaults: {
-            name: { value: "" },
-        },
-        inputs: 1,
-        outputs: 4,
-        icon: "function.png",
-        label: function () {
-            return this.name || "button-switch";
-        },
-        outputLabels: ["pressed", "hold", "released", "double"],
-        oneditprepare: function () {
-            RED.bavaria.ui.addNumRangeInput("#node-input-brightness", 0, 255);
-        },
-    });
-</script>
-
-<script type="text/html" data-template-name="button-switch">
-
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-
-</script>
-
-<script type="text/html" data-help-name="button-switch">
-    <p>Node to switch button press types</p>
-</script>
-
 <!--- PREPARE MESSAGES NODE --->
 <script type="text/javascript">
 
@@ -294,6 +259,129 @@
     <p>Node to send messages to devices</p>
 </script>
 
+<!--- BUTTON SWITCH NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('button-switch', {
+        category: 'zigbee2mqtt-utils',
+        color: '#97f798',
+        defaults: {
+            name: { value: "" },
+
+            payloadPressed: { value: "" },
+            payloadHold: { value: "" },
+            payloadReleased: { value: "" },
+            payloadDouble: { value: "" },
+
+            typePressed: { value: "str" },
+            typeHold: { value: "str" },
+            typeReleased: { value: "str" },
+            typeDouble: { value: "str" },
+
+            customPayloadPressed: { value: false },
+            customPayloadHold: { value: false },
+            customPayloadReleased: { value: false },
+            customPayloadDouble: { value: false },
+        },
+        inputs: 1,
+        outputs: 4,
+        icon: "function.png",
+        label: function () {
+            return this.name || "button-switch";
+        },
+        outputLabels: ["pressed", "hold", "released", "double"],
+        oneditprepare: function () {
+            RED.bavaria.ui.addNumRangeInput("#node-input-brightness", 0, 255);
+            var node = this;
+            var names = ["Pressed", "Hold", "Released", "Double"];
+            names.forEach(name => {
+                var value = node["payload" + name];
+                var type = node["type" + name];
+                
+                var options = {
+                    type: type,
+                    types: ["str", "json", "num", "bool"]
+                };
+
+                const index = options.types.indexOf(type);
+
+                if (index > -1) {
+                    options.types.splice(index, 1);
+                    options.types.splice(0, 0, type);
+                }
+
+                console.log(options);
+                $("#node-input-payload" + name).typedInput(options);
+            });
+        },
+        oneditsave: function () {
+            function getInputType(name) {
+                var splits = $("#node-input-payload" + name).next().children("button").children("span").children("img").first().attr("src").split("/");
+                var type = splits[splits.length - 1].split(".")[0];
+
+                switch (type) {
+                    case "az":
+                        type = "str";
+                        break;
+                    case "09":
+                        type = "num";
+                        break;
+                    case "bool":
+                        type = "bool";
+                        break;
+                    case "json":
+                        type = "json";
+                        break;
+                }
+
+                return type;
+            }
+
+            var names = ["Pressed", "Hold", "Released", "Double"];
+            var node = this;
+
+            names.forEach(name => {
+                var type = getInputType(name);
+
+                node["customPayload" + name] = $("#node-input-payload" + name).val() !== "";
+                node["type" + name] = type;
+                console.log(type);
+            });
+
+            console.log(node);
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="button-switch">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-payloadPressed"><i class="fa fa-tag"></i> Pressed</label>
+        <input type="text" id="node-input-payloadPressed">
+    </div>
+    <div class="form-row">
+        <label for="node-input-payloadHold"><i class="fa fa-tag"></i> Hold</label>
+        <input type="text" id="node-input-payloadHold">
+    </div>
+    <div class="form-row">
+        <label for="node-input-payloadReleased"><i class="fa fa-tag"></i> Released</label>
+        <input type="text" id="node-input-payloadReleased">
+    </div>
+    <div class="form-row">
+        <label for="node-input-payloadDouble"><i class="fa fa-tag"></i> Double</label>
+        <input type="text" id="node-input-payloadDouble">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="button-switch">
+    <p>Node to switch button press types</p>
+</script>
+
 <!--- DEVICE STATUS NODE --->
 <script type="text/javascript">
     RED.nodes.registerType('device-status', {
@@ -304,7 +392,7 @@
             deviceName: { value: "", required: true },
             bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
             genericMqttDevice: { value: false },
-            device: { value: "", type: "zigbee2mqtt-device-config", required: false}
+            device: { value: "", type: "zigbee2mqtt-device-config", required: false }
         },
         inputs: 0,
         outputs: 1,
@@ -315,7 +403,7 @@
         oneditprepare: function () {
             var node = this;
             var deviceName = node.deviceName;
-            
+
             if (node.genericMqttDevice === true) {
                 $("#fullMqttTopic").show()
             } else {

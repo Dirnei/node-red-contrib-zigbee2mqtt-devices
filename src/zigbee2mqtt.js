@@ -58,22 +58,6 @@ module.exports = function (RED) {
         }));
     }
 
-    function buttonSwitch(config) {
-        RED.nodes.createNode(this, config);
-        var node = this;
-        const inputs = {
-            pressed: utils.createButtonOutput(0, "", ""),
-            hold: utils.createButtonOutput(1, "", ""),
-            released: utils.createButtonOutput(2, "", ""),
-            double: utils.createButtonOutput(3, "", ""),
-        }
-
-        node.on('input', function (msg) {
-            utils.sendAt(node, inputs[msg.payload.button_type].index, msg);
-        });
-    }
-    RED.nodes.registerType("button-switch", buttonSwitch);
-
     function genericLamp(config) {
 
         RED.nodes.createNode(this, config);
@@ -294,6 +278,47 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("send-messages", sendMessages);
+
+    function buttonSwitch(config) {
+        RED.nodes.createNode(this, config);
+        var node = this;
+        const inputs = {
+            pressed: utils.createButtonOutput(0, "", ""),
+            hold: utils.createButtonOutput(1, "", ""),
+            released: utils.createButtonOutput(2, "", ""),
+            double: utils.createButtonOutput(3, "", ""),
+        }
+
+        function getPayload(data, type) {
+            try {
+                switch (type) {
+                    case "num":
+                        return Number.parseFloat(data);
+                    case "bool":
+                        return data == true;
+                    case "json":
+                        return JSON.parse(data);
+                }
+            } catch (err) {
+                node.error(err);
+            }
+
+            return data;
+        }
+
+        node.on('input', function (msg) {
+            var actionName = msg.payload.button_type;
+            var index = inputs[actionName].index;
+            actionName = actionName.charAt(0).toUpperCase() + actionName.slice(1);
+
+            if (config["customPayload" + actionName] === true) {
+                msg = { payload: getPayload(config["payload" + actionName], config["type" + actionName]) };
+            }
+
+            utils.sendAt(node, index, msg);
+        });
+    }
+    RED.nodes.registerType("button-switch", buttonSwitch);
 
     function deviceStatus(config) {
         RED.nodes.createNode(this, config);
