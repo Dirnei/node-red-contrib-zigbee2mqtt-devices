@@ -15,7 +15,7 @@
     "node-red": {
         "nodes": {
             "generic-lamp": "src/zigbee2mqtt.js",
-            "hue-devices": "src/hue-devices.js"
+            "hue-devices": "src/devices-hue.js"
         }
     },
     "dependencies": {
