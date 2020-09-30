@@ -1,6 +1,6 @@
 # Device Status
 
-A device status node can be used to retrieve notifications whenever a device status was updated. In the configuration, you can define and select your device which you want to listen to.
+A device status node can be used to retrieve notifications whenever a device status was updated. In the configuration, you can define and select your device which you want to listen to. Note that only zigbee router devices can be selected.
 
 ## Configuration
 

@@ -842,19 +842,19 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
         var bridgeNode = RED.nodes.getNode(config.bridge);
+        var deviceNode = RED.nodes.getNode(config.device);
 
         if (config.genericMqttDevice === true) {
-            var deviceNode = RED.nodes.getNode(config.device);
-            bridgeNode.subscribe(node.id, deviceNode.statusTopic, function (msg) {
-                node.send({
-                    payload: msg,
-                });
-            });
+            bridgeNode.subscribe(node.id, deviceNode.statusTopic, subscriptionCallback);
         } else {
-            bridgeNode.subscribeDevice(node.id, config.deviceName, function (msg) {
-                node.send({
-                    payload: msg,
-                });
+            bridgeNode.subscribeDevice(node.id, config.deviceName, subscriptionCallback);
+        }
+
+        function subscriptionCallback(msg) {
+            node.send({
+                device: config.genericMqttDevice === true ? deviceNode.statusTopic : config.deviceName,
+                deviceName: deviceNode.name || config.deviceName,
+                payload: msg,
             });
         }
     }
@@ -867,21 +867,28 @@ module.exports = function (RED) {
         var deviceNode = RED.nodes.getNode(config.device);
 
         var enableOutput = false;
-        bridgeNode.subscribeDevice(node.id, deviceNode.deviceName, function (msg) {
+        if (deviceNode.genericMqttDevice === true) {
+            bridgeNode.subscribe(node.id, deviceNode.statusTopic, subscriptionCallback);
+        } else {
+            bridgeNode.subscribeDevice(node.id, deviceNode.deviceName, subscriptionCallback);
+        }
+
+        function subscriptionCallback(msg) {
             if(enableOutput === true){
                 enableOutput = false;
                 node.send({
-                    device: deviceNode.deviceName,
+                    device: deviceNode.genericMqttDevice === true ? deviceNode.statusTopic : deviceNode.deviceName,
+                    deviceName: deviceNode.name,
                     payload: msg,
                 });
             }
-        });
+        }
         
         node.on('input', function(msg){
             enableOutput = true;
 
             if(deviceNode.genericMqttDevice === true){
-                bridgeNode.publish(deviceNode.refreshTopic, {});
+                bridgeNode.publish(deviceNode.refreshTopic, "{}");
             } else {
                 bridgeNode.refreshDevice(deviceNode.deviceName);
             }
