@@ -1,0 +1,72 @@
+<!--- SCENIC FOH SWITCH NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('scenic-foh-switch', {
+        category: 'zigbee2mqtt_scenic',
+        color: '#f5f5f5',
+        defaults: {
+            name: { value: "" },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
+        },
+        inputs: 0,
+        outputs: 6,
+        icon: "inject.png",
+        label: function () {
+            return this.name || "Scenic FoH Switch";
+        },
+        outputLabels: ["A0", "A1", "B0", "B1", "UP", "DOWN",],
+        oneditprepare: function () {
+            var node = this;
+            var deviceName = node.deviceName;
+
+            $("#node-input-bridge").change(function () {
+                var bridgeId = $("#node-input-bridge").val().replace(".", "_");
+                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/GreenPower/GreenPower_On_Off_Switch', function (data) {
+                    $("#node-input-deviceName").empty();
+                    data.devices.forEach(e => {
+                        $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
+                    });
+
+                    $("#node-input-deviceName").val(deviceName);
+                });
+            });
+        }
+    });
+
+</script>
+
+<script type="text/html" data-template-name="scenic-foh-switch">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-input-bridge" placeholder="bridge" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
+        <select id="node-input-deviceName"></select>
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="scenic-foh-switch">
+    <p>Sends a new message when a Scenic Friends of Hue button is pressed.</p>
+    <p>It is only compatible with Scenic Friends of Hue smart switch (Model: GreenPower_On_Off_Switch)</p>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt> button_name <span class="property-type"> string </span> </dt>
+        <dd> The name of the button that was pressed </dd>
+        <dt> button_type  <span class="property-type"> string </span> </dt>
+        <dd>
+            The type in wich way the button was pressed. Following types are available:
+            <ul>
+                <li><code>pressed</code> - single press</li>
+                <li><code>released</code> - hold for a few seconds</li>
+            </ul>
+        </dd>
+    </dl>
+</script>
