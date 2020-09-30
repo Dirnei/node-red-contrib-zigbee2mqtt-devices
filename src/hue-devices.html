@@ -1,0 +1,74 @@
+
+<!--- IKEA DIMMER NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('hue-dimmer-switch', {
+        category: 'zigbee2mqtt_remotes-hue',
+        color: '#7da6e1',
+        defaults: {
+            name: { value: "" },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
+        },
+        inputs: 0,
+        outputs: 4,
+        icon: "remote.svg",
+        label: function () {
+            return this.name || "Hue Dimmer Switch";
+        }, 
+        outputLabels: ["on", "off", "up", "down"],
+        oneditprepare: function () {
+            var node = this;
+            var deviceName = node.deviceName;
+
+            $("#node-input-bridge").change(function () {
+                var bridgeId = $("#node-input-bridge").val().replace(".", "_");
+                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/Philips/324131092621', function (data) {
+                    $("#node-input-deviceName").empty();
+                    data.devices.forEach(e => {
+                        $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
+                    });
+
+                    $("#node-input-deviceName").val(deviceName);
+                });
+            });
+        }
+    });
+
+</script>
+
+<script type="text/html" data-template-name="hue-dimmer-switch">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-input-bridge" placeholder="bridge" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
+        <select id="node-input-deviceName"></select>
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="hue-dimmer-switch">
+    <p>Sends a new message when a Philips Hue button is pressed.</p>
+    <p>It is only compatible with Philip Hue Dimmer Switches (Model: 324131092621)</p>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt> button_name <span class="property-type"> string </span> </dt>
+        <dd> The name of the button that was pressed </dd>
+        <dt> button_type  <span class="property-type"> string </span> </dt>
+        <dd>
+            The type in wich way the button was pressed. Following types are available:
+            <ul>
+                <li><code>pressed</code> - single press</li>
+                <li><code>hold</code> - when a button is hold down for a bit</li>
+                <li><code>released</code> - when a hold down button was being released</li>
+            </ul>
+        </dd>
+    </dl>
+</script>

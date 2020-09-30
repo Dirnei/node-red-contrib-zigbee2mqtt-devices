@@ -1,5 +1,6 @@
 module.exports = function (RED) {
-    const bavaria = require("node-red-ext-bavaria-black");
+    const utils = require("./utils.js");
+    const bavaria = utils.bavaria();
 
     RED.httpAdmin.get('/z2m/devices/:broker/:deviceType/:vendor/:model', function (req, res) {
         try {
@@ -56,25 +57,6 @@ module.exports = function (RED) {
             })
         }));
     }
-
-    function sendAt(node, index, msg) {
-        var output = [];
-        for (var i = 0; i < index; i++) {
-            output.push(null);
-        }
-
-        output.push(msg);
-        node.send(output);
-    }
-
-    function createButtonOutput(output, name, type) {
-        return {
-            index: output,
-            button_name: name,
-            button_type: type,
-        };
-    }
-
     function setConnectionState(bridgeNode, node) {
         if (bridgeNode.isConnected() === true) {
             node.status({ fill: "green", text: "connected" });
@@ -100,7 +82,7 @@ module.exports = function (RED) {
                     };
 
                     var output = ioMap[message.action];
-                    sendAt(node, output.index, {
+                    utils.sendAt(node, output.index, {
                         payload: {
                             button_name: output.button_name,
                             button_type: output.button_type,
@@ -131,15 +113,15 @@ module.exports = function (RED) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
                 const ioMap = {
-                    on: createButtonOutput(0, "on", "pressed"),
-                    off: createButtonOutput(1, "off", "pressed"),
-                    brightness_up: createButtonOutput(2, "dimm_up", "hold"),
-                    brightness_down: createButtonOutput(3, "dimm_down", "hold"),
-                    brightness_stop: createButtonOutput(4, "dimm_stop", "released"),
+                    on: utils.createButtonOutput(0, "on", "pressed"),
+                    off: utils.createButtonOutput(1, "off", "pressed"),
+                    brightness_up: utils.createButtonOutput(2, "dimm_up", "hold"),
+                    brightness_down: utils.createButtonOutput(3, "dimm_down", "hold"),
+                    brightness_stop: utils.createButtonOutput(4, "dimm_stop", "released"),
                 };
 
                 var output = ioMap[message.click];
-                sendAt(node, output.index, {
+                utils.sendAt(node, output.index, {
                     payload: {
                         button_name: output.button_name,
                         button_type: output.button_type,
@@ -179,7 +161,7 @@ module.exports = function (RED) {
                 };
 
                 var output = ioMap[message.action];
-                sendAt(node, output.index, {
+                utils.sendAt(node, output.index, {
                     payload: {
                         button_name: output.button_name,
                         button_type: output.button_type,
@@ -215,7 +197,7 @@ module.exports = function (RED) {
                 }
 
                 var output = ioMap[message.action];
-                sendAt(node, output.index, {
+                utils.sendAt(node, output.index, {
                     payload: {
                         button_name: output.button_name,
                         button_type: output.button_type,
@@ -237,7 +219,7 @@ module.exports = function (RED) {
         }
 
         node.on('input', function (msg) {
-            sendAt(node, inputs[msg.payload.button_type].index, msg);
+            utils.sendAt(node, inputs[msg.payload.button_type].index, msg);
         });
     }
     RED.nodes.registerType("button-switch", buttonSwitch);
@@ -572,7 +554,7 @@ module.exports = function (RED) {
             node.status({ fill: "green", text: "connected" });
         });
 
-        if (bridgeNode.isConnected) {
+        if (bridgeNode.isConnected()) {
             node.status({ fill: "green", text: "connected" });
         }
 
