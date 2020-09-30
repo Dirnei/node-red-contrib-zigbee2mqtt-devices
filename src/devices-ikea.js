@@ -44,20 +44,20 @@ module.exports = function (RED) {
                 message.action = message.action.replace("-", "_");
 
                 const ioMap = {
-                    toggle: createButtonOutput(0, "toggle", "pressed"),
-                    toggle_hold: createButtonOutput(0, "toggle", "released"),
-                    brightness_up_click: createButtonOutput(1, "brightness_up", "pressed"),
-                    brightness_up_hold: createButtonOutput(1, "brightness_up", "hold"),
-                    brightnessup_release: createButtonOutput(1, "brightness_up", "released",),
-                    brightness_down_click: createButtonOutput(2, "brightness_down", "pressed"),
-                    brightness_down_hold: createButtonOutput(2, "brightness_down", "hold"),
-                    brightness_down_release: createButtonOutput(2, "brightness_down", "released"),
-                    arrow_left_click: createButtonOutput(3, "arrow_left", "pressed"),
-                    arrow_left_hold: createButtonOutput(3, "arrow_left", "hold"),
-                    arrow_left_release: createButtonOutput(3, "arrow_left", "released"),
-                    arrow_right_click: createButtonOutput(4, "arrow_right", "pressed"),
-                    arrow_right_hold: createButtonOutput(4, "arrow_right", "hold"),
-                    arrow_right_release: createButtonOutput(4, "arrow_right", "released")
+                    toggle: utils.createButtonOutput(0, "toggle", "pressed"),
+                    toggle_hold: utils.createButtonOutput(0, "toggle", "released"),
+                    brightness_up_click: utils.createButtonOutput(1, "brightness_up", "pressed"),
+                    brightness_up_hold: utils.createButtonOutput(1, "brightness_up", "hold"),
+                    brightnessup_release: utils.createButtonOutput(1, "brightness_up", "released",),
+                    brightness_down_click: utils.createButtonOutput(2, "brightness_down", "pressed"),
+                    brightness_down_hold: utils.createButtonOutput(2, "brightness_down", "hold"),
+                    brightness_down_release: utils.createButtonOutput(2, "brightness_down", "released"),
+                    arrow_left_click: utils.createButtonOutput(3, "arrow_left", "pressed"),
+                    arrow_left_hold: utils.createButtonOutput(3, "arrow_left", "hold"),
+                    arrow_left_release: utils.createButtonOutput(3, "arrow_left", "released"),
+                    arrow_right_click: utils.createButtonOutput(4, "arrow_right", "pressed"),
+                    arrow_right_hold: utils.createButtonOutput(4, "arrow_right", "hold"),
+                    arrow_right_release: utils.createButtonOutput(4, "arrow_right", "released")
                 };
 
                 var output = ioMap[message.action];

@@ -58,44 +58,6 @@ module.exports = function (RED) {
         }));
     }
 
-    function sonoffButton(config) {
-        RED.nodes.createNode(this, config);
-        var bridgeNode = RED.nodes.getNode(config.bridge);
-        var node = this;
-
-        utils.setConnectionState(bridgeNode, node);
-        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
-            node.status({ fill: "green", text: "connected" });
-            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
-                try {
-                    const ioMap = {
-                        single: createButtonOutput(0, "button", "pressed"),
-                        long: createButtonOutput(0, "button", "released"),
-                        double: createButtonOutput(0, "button", "double"),
-                    };
-
-                    var output = ioMap[message.action];
-                    utils.sendAt(node, output.index, {
-                        payload: {
-                            button_name: output.button_name,
-                            button_type: output.button_type,
-                        }
-                    });
-
-                    node.status({ fill: "green", "text": "Last action: " + output.button_type });
-                    setTimeout(function () {
-                        node.status({ fill: "green", text: "connected" });
-                    }, 2000);
-                } catch (err) {
-                    node.error(err);
-                    node.status({ fill: "red", "text": "error" });
-                }
-            });
-        });
-
-    }
-    RED.nodes.registerType("sonoff-button", sonoffButton);
-
     function scenicSwitch(config) {
         RED.nodes.createNode(this, config);
         var bridgeNode = RED.nodes.getNode(config.bridge);
@@ -106,18 +68,18 @@ module.exports = function (RED) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
                 var ioMap = {
-                    recall_scene_0: createButtonOutput(0, "A0", "pressed"),
-                    recall_scene_4: createButtonOutput(0, "A0", "released"),
-                    recall_scene_1: createButtonOutput(1, "A1", "pressed"),
-                    recall_scene_5: createButtonOutput(1, "A1", "released"),
-                    recall_scene_3: createButtonOutput(2, "B0", "pressed"),
-                    recall_scene_7: createButtonOutput(2, "B0", "released"),
-                    recall_scene_2: createButtonOutput(3, "B1", "pressed"),
-                    recall_scene_6: createButtonOutput(3, "B1", "released"),
-                    press_2_of_2: createButtonOutput(4, "UP", "pressed"),
-                    release_2_of_2: createButtonOutput(4, "UP", "released"),
-                    press_1_of_2: createButtonOutput(5, "DOWN", "pressed"),
-                    release_1_of_2: createButtonOutput(5, "DOWN", "released"),
+                    recall_scene_0: utils.createButtonOutput(0, "A0", "pressed"),
+                    recall_scene_4: utils.createButtonOutput(0, "A0", "released"),
+                    recall_scene_1: utils.createButtonOutput(1, "A1", "pressed"),
+                    recall_scene_5: utils.createButtonOutput(1, "A1", "released"),
+                    recall_scene_3: utils.createButtonOutput(2, "B0", "pressed"),
+                    recall_scene_7: utils.createButtonOutput(2, "B0", "released"),
+                    recall_scene_2: utils.createButtonOutput(3, "B1", "pressed"),
+                    recall_scene_6: utils.createButtonOutput(3, "B1", "released"),
+                    press_2_of_2: utils.createButtonOutput(4, "UP", "pressed"),
+                    release_2_of_2: utils.createButtonOutput(4, "UP", "released"),
+                    press_1_of_2: utils.createButtonOutput(5, "DOWN", "pressed"),
+                    release_1_of_2: utils.createButtonOutput(5, "DOWN", "released"),
                 }
 
                 var output = ioMap[message.action];
@@ -136,10 +98,10 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
         const inputs = {
-            pressed: createButtonOutput(0, "", ""),
-            hold: createButtonOutput(1, "", ""),
-            released: createButtonOutput(2, "", ""),
-            double: createButtonOutput(3, "", ""),
+            pressed: utils.createButtonOutput(0, "", ""),
+            hold: utils.createButtonOutput(1, "", ""),
+            released: utils.createButtonOutput(2, "", ""),
+            double: utils.createButtonOutput(3, "", ""),
         }
 
         node.on('input', function (msg) {
@@ -696,8 +658,7 @@ module.exports = function (RED) {
                 index = Math.max(0, index);
             }
 
-            if (!config.changedOutputOnly || nodeContext.get("index") != index)
-            {
+            if (!config.changedOutputOnly || nodeContext.get("index") != index) {
                 nodeContext.set("index", index);
                 msg.command = undefined;
                 triggerScene(config.scenes[index], msg);
@@ -787,7 +748,7 @@ module.exports = function (RED) {
         }
 
         function subscriptionCallback(msg) {
-            if(enableOutput === true){
+            if (enableOutput === true) {
                 enableOutput = false;
                 node.send({
                     device: deviceNode.genericMqttDevice === true ? deviceNode.statusTopic : deviceNode.deviceName,
@@ -796,11 +757,11 @@ module.exports = function (RED) {
                 });
             }
         }
-        
-        node.on('input', function(msg){
+
+        node.on('input', function (msg) {
             enableOutput = true;
 
-            if(deviceNode.genericMqttDevice === true){
+            if (deviceNode.genericMqttDevice === true) {
                 bridgeNode.publish(deviceNode.refreshTopic, "{}");
             } else {
                 bridgeNode.refreshDevice(deviceNode.deviceName);

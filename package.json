@@ -16,7 +16,8 @@
         "nodes": {
             "generic-lamp": "src/zigbee2mqtt.js",
             "devices-hue": "src/devices-hue.js",
-            "device-ikea": "src/devices-ikea.js"
+            "devices-ikea": "src/devices-ikea.js",
+            "devices-sonoff": "src/devices-sonoff.js"
         }
     },
     "dependencies": {
