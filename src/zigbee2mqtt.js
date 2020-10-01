@@ -211,25 +211,34 @@ module.exports = function (RED) {
             var messages = [];
             msg.payload.devices.forEach(element => {
                 if (msg.payload.override !== undefined) {
-                    if (msg.payload.override.brightness !== undefined
-                        && msg.payload.override.brightness !== ""
-                        && element.brightness !== undefined
-                        && element.brightness !== "") {
-                        element.brightness = msg.payload.override.brightness;
-                    }
+                    if (msg.payload.override.action) {
+                        element.brightness = undefined;
+                        element.color_temp = undefined;
+                        element.color = undefined;
+                        element.delay = undefined;
+                        element.state = "ON";
+                        element[msg.payload.override.action.name] = msg.payload.override.action.value;
+                    } else {
+                        if (msg.payload.override.brightness !== undefined
+                            && msg.payload.override.brightness !== ""
+                            && element.brightness !== undefined
+                            && element.brightness !== "") {
+                            element.brightness = msg.payload.override.brightness;
+                        }
 
-                    if (msg.payload.override.temperature !== undefined
-                        && msg.payload.override.temperature !== ""
-                        && element.temperature !== undefined
-                        && element.temperature !== "") {
-                        element.temperature = msg.payload.override.temperature;
-                    }
+                        if (msg.payload.override.temperature !== undefined
+                            && msg.payload.override.temperature !== ""
+                            && element.temperature !== undefined
+                            && element.temperature !== "") {
+                            element.temperature = msg.payload.override.temperature;
+                        }
 
-                    if (msg.payload.override.color !== undefined
-                        && msg.payload.override.color !== ""
-                        && element.color !== undefined
-                        && element.color !== "") {
-                        element.color = msg.payload.override.color;
+                        if (msg.payload.override.color !== undefined
+                            && msg.payload.override.color !== ""
+                            && element.color !== undefined
+                            && element.color !== "") {
+                            element.color = msg.payload.override.color;
+                        }
                     }
                 }
 
@@ -257,6 +266,10 @@ module.exports = function (RED) {
                 if (message.payload.temperature) {
                     message.payload.color_temp = message.payload.temperature;
                     message.payload.temperature = undefined;
+                }
+                
+                if(message.payload.transition === 0){
+                    message.payload.transition = undefined;
                 }
 
                 bridgeNode.publish(message.topic, JSON.stringify(message.payload));
