@@ -62,6 +62,10 @@ module.exports = function (RED) {
                 text += "H: " + message.humidity + "%";
             }
 
+            if (config.co2 === true) {
+                text += "CO2: " + message.co2 + "ppm";
+            }
+
             node.status({ fill: "green", text: text });
             node.send({ payload: message });
         };
