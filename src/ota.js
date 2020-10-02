@@ -13,12 +13,6 @@ module.exports = function (RED) {
         var currentDeviceState = nodeContext.get("currentDeviceState") || {};
         var updateableDevices = [];
 
-        if (isUpdating === true) {
-            node.status({ fill: "yellow", text: "Updating..." });
-        } else {
-            node.status({ fill: "green", text: "ready" });
-        }
-
         if (!bridgeNode.registerOtaNode(node.id, otaStatusUpdateReceived, deviceStatusReceived)) {
             node.status({ fill: "red", text: "duplicate ota update" });
             node.error("Duplicate ota update node. Only one ota update node per bridge allowed!")
@@ -60,6 +54,7 @@ module.exports = function (RED) {
                     setUpdateFlag(false);
 
                     node.error(msg);
+                    node.status({ fill: "red", text: "error - updated failed" })
                     break;
                 case "update_progress":
                     setUpdateFlag(true);
@@ -79,18 +74,17 @@ module.exports = function (RED) {
                     const index = updateableDevices.indexOf(msg.device);
                     if (index > -1) {
                         updateableDevices.splice(index, 1);
-                        node.status({ fill: "blue", text: updateableDevices.length + " updates available" });
                     }
                     nodeContext.set("updates_available", updateableDevices);
                     cleanup();
 
-                    if (updateableDevices.length > 0) {
+                    if (config.autoUpdate === true && updateableDevices.length > 0) {
                         node.status({ fill: "grey", text: "Next update will start in 5 seconds...." });
                         setTimeout(function () {
                             startNext();
                         }, 5000)
                     } else {
-                        node.status({ fill: "green", text: "ready" });
+                        refreshStatus();
                     }
 
                     node.send({
@@ -154,10 +148,11 @@ module.exports = function (RED) {
         function addAvailableDevice(device) {
             if (updateableDevices.indexOf(device) === -1) {
                 updateableDevices.push(device);
-                if (isUpdating !== true) {
-                    node.status({ fill: "blue", text: updateableDevices.length + " updates available" });
-                }
                 nodeContext.set("updates_available", updateableDevices);
+
+                if (isUpdating !== true) {
+                    refreshStatus();
+                }
             }
         }
 
@@ -201,6 +196,16 @@ module.exports = function (RED) {
             }
         }
 
+        function refreshStatus() {
+            if (isUpdating === true) {
+                node.status({ fill: "yellow", text: "Updating..." });
+            } else if (updateableDevices.length > 0) {
+                node.status({ fill: "blue", text: updateableDevices.length + " updates available" });
+            } else {
+                node.status({ fill: "green", text: "ready" });
+            }
+        }
+
         node.on('input', function (msg) {
             startUpdate(msg.payload.device);
         });
@@ -208,6 +213,8 @@ module.exports = function (RED) {
         node.on('close', function () {
             bridgeNode.unsubscribe(node.id);
         });
+
+        refreshStatus();
 
         function logVerbose(msg) {
             if (config.verboseLogging === true) {
