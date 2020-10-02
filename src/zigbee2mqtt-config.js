@@ -44,8 +44,10 @@ module.exports = function (RED) {
         this.isReconnecting = function () { return client.reconnecting; };
         this.publish = function (topic, message) { client.publish(topic, message); };
         this.setDeviceState = (device, payload) => {
-            var topic = node.baseTopic + "/" + device + "/set";
-            this.publish(topic, JSON.stringify(payload));
+            if (device !== undefined && device !== "") {
+                var topic = node.baseTopic + "/" + device + "/set";
+                this.publish(topic, JSON.stringify(payload));
+            }
         }
         this.refreshDevice = function (deviceName) {
             client.publish(node.baseTopic + "/" + deviceName + "/get", '{"state": ""}');
@@ -55,9 +57,26 @@ module.exports = function (RED) {
         };
         this.subscribeDevice = function (nodeId, device, callback) {
             var topic = node.baseTopic + "/" + device;
-            this.subscribe(nodeId, topic, callback);
+            subscribeInternal(nodeId, topic, callback, true);
         };
         this.subscribe = function (nodeId, topic, callback) {
+            subscribeInternal(nodeId, topic, callback, false);
+            client.subscribe(topic);
+            return true;
+        };
+        this.unsubscribe = function (nodeId) {
+            var sub = _subs.find(e => e.nodeId == nodeId);
+            if (sub) {
+                var topic = sub.topic;
+                var index = _subs.indexOf(sub);
+                _subs.splice(index, 1);
+                if (!sub.isDevice && !_subs.some(s => s.topic == topic)) {
+                    client.unsubscribe(sub.topic);
+                }
+            }
+        };
+
+        function subscribeInternal(nodeId, topic, callback, isDevice) {
             var sub = _subs.find(e => e.nodeId == nodeId);
             if (sub) {
                 if (sub.topic !== topic) {
@@ -70,26 +89,14 @@ module.exports = function (RED) {
                 sub = {
                     nodeId: nodeId,
                     topic: topic,
-                    callback: callback
+                    callback: callback,
+                    isDevice: isDevice
                 }
 
                 _subs.push(sub);
             }
+        };
 
-            client.subscribe(topic);
-            return true;
-        };
-        this.unsubscribe = function (nodeId) {
-            var sub = _subs.find(e => e.nodeId == nodeId);
-            if (sub) {
-                var topic = sub.topic;
-                var index = _subs.indexOf(sub);
-                _subs.splice(index, 1);
-                if (!_subs.some(s => s.topic == topic)) {
-                    client.unsubscribe(sub.topic);
-                }
-            }
-        };
         var registeredOtaNodeId = "";
         var otaCallback = (msg) => { };
         var otaDeviceCallback = (deviceName, msg) => { };
@@ -159,6 +166,7 @@ module.exports = function (RED) {
 
         client.on('connect', function () {
             client.subscribe(node.baseTopic + "/bridge/log");
+            client.subscribe(node.baseTopic + "/+");
 
             if (node.getDeviceList().length == 0) {
                 client.publish(node.baseTopic + "/bridge/config/devices", "");
