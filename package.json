@@ -20,6 +20,7 @@
             "config": "src/zigbee2mqtt-config.js",
             "scenes": "src/scenes.js",
             "sensors": "src/sensors.js",
+            "ota": "src/ota.js",
             "devices-hue": "src/devices-hue.js",
             "devices-ikea": "src/devices-ikea.js",
             "devices-sonoff": "src/devices-sonoff.js",
