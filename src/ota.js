@@ -10,7 +10,7 @@ module.exports = function (RED) {
         var nodeContext = this.context();
         var isUpdating = nodeContext.get("isUpdating") || false;
         var currentDevice = nodeContext.get("currentDevice") || "";
-        var currentDeviceState = nodeContext.get("currentDeviceState") || "";
+        var currentDeviceState = nodeContext.get("currentDeviceState") || {};
         var updateableDevices = [];
 
         if (isUpdating === true) {
@@ -67,6 +67,13 @@ module.exports = function (RED) {
                     logVerbose(msg.message);
                     setCurrentDevice(msg.device);
                     node.status({ fill: "yellow", text: `Updating... ${msg.progress}%` });
+                    node.send([undefined, {
+                        payload: {
+                            device: msg.device,
+                            message: "Progress changed",
+                            progress: msg.progress
+                        }
+                    }]);
                     break;
                 case "update_succeeded":
                     setUpdateFlag(false);
@@ -80,18 +87,19 @@ module.exports = function (RED) {
                     cleanup();
 
                     if (updateableDevices.length > 0) {
-                        node.status({ fill: "grey", text: "Next update will start in 5 Secons...." });
+                        node.status({ fill: "grey", text: "Next update will start in 5 seconds...." });
                         setTimeout(function () {
                             startNext();
                         }, 5000)
+                    } else {
+                        node.status({ fill: "green", text: "ready" });
                     }
 
-                    node.status({ fill: "green", text: "ready" });
                     node.send({
                         payload: {
                             device: msg.device,
                             message: "Update succeded",
-                            nedUpdatedQueued: updateableDevices.length > 0
+                            devicesQueued: updateableDevices.length > 0
                         }
                     });
                     break;
@@ -101,20 +109,25 @@ module.exports = function (RED) {
         function cleanup() {
             bridgeNode.unsubscribe(node.id);
             bridgeNode.setDeviceState(currentDevice, currentDeviceState);
-            setCurrentDeviceState(null);
             setCurrentDevice("");
+            setCurrentDeviceState(null);
         }
 
         function deviceStatusReceived(deviceName, msg) {
             if (deviceName !== currentDevice) {
-                if (msg.update_available === true && updateableDevices.indexOf(deviceName) === -1) {
+                if (msg.update_available === true) {
                     addAvailableDevice(deviceName);
+                    if (config.autoUpdate === true) {
+                        startNext();
+                    }
                 }
 
                 return;
             }
 
-            setCurrentDeviceState(msg);
+            if (currentDevice !== "") {
+                setCurrentDeviceState(msg);
+            }
         }
 
         function setCurrentDevice(device) {
@@ -141,11 +154,13 @@ module.exports = function (RED) {
         }
 
         function addAvailableDevice(device) {
-            updateableDevices.push(device);
-            if (isUpdating !== true) {
-                node.status({ fill: "blue", text: updateableDevices.length + " updates available" });
+            if (updateableDevices.indexOf(device) === -1) {
+                updateableDevices.push(device);
+                if (isUpdating !== true) {
+                    node.status({ fill: "blue", text: updateableDevices.length + " updates available" });
+                }
+                nodeContext.set("updates_available", updateableDevices);
             }
-            nodeContext.set("updates_available", updateableDevices);
         }
 
         function startNext() {
@@ -156,7 +171,7 @@ module.exports = function (RED) {
 
         function startUpdate(device) {
             if (!device) {
-                node.error("msg.device was not set");
+                node.error("msg.payload.device was not set");
                 return;
             }
 
@@ -167,10 +182,7 @@ module.exports = function (RED) {
             }
 
             if (isUpdating === true) {
-                if (updateableDevices.indexOf(device) === -1) {
-                    addAvailableDevice(device);
-                }
-
+                addAvailableDevice(device);
                 return;
             }
 
@@ -192,6 +204,17 @@ module.exports = function (RED) {
         }
 
         node.on('input', function (msg) {
+            if (msg.payload.cleanup === "leberkas") {
+                cleanup();
+                return;
+            }
+            if (msg.payload.test !== undefined) {
+                setCurrentDevice(msg.payload.test.device);
+                setCurrentDeviceState(msg.payload.test.state);
+                setUpdateFlag(true);
+                return
+            }
+
             startUpdate(msg.payload.device);
         });
 
