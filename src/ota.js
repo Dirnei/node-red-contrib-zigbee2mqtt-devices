@@ -11,6 +11,7 @@ module.exports = function (RED) {
         var isUpdating = nodeContext.get("isUpdating") || false;
         var currentDevice = nodeContext.get("currentDevice") || "";
         var currentDeviceState = nodeContext.get("currentDeviceState") || {};
+        var overrideAutoUpdate = false;
         var updateableDevices = [];
 
         if (!bridgeNode.registerOtaNode(node.id, otaStatusUpdateReceived, deviceStatusReceived)) {
@@ -31,7 +32,7 @@ module.exports = function (RED) {
 
                     addAvailableDevice(msg.device);
 
-                    if (config.autoUpdate === true && isUpdating === false) {
+                    if (isAutoUpdateEnabled() === true && isUpdating === false) {
                         startNext();
                     } else {
                         node.send({
@@ -78,7 +79,7 @@ module.exports = function (RED) {
                     nodeContext.set("updates_available", updateableDevices);
                     cleanup();
 
-                    if (config.autoUpdate === true && updateableDevices.length > 0) {
+                    if (isAutoUpdateEnabled() === true && updateableDevices.length > 0) {
                         node.status({ fill: "grey", text: "Next update will start in 5 seconds...." });
                         setTimeout(function () {
                             startNext();
@@ -109,7 +110,7 @@ module.exports = function (RED) {
             if (deviceName !== currentDevice) {
                 if (msg.update_available === true) {
                     addAvailableDevice(deviceName);
-                    if (config.autoUpdate === true) {
+                    if (isAutoUpdateEnabled() === true) {
                         startNext();
                     }
                 }
@@ -206,7 +207,19 @@ module.exports = function (RED) {
             }
         }
 
+        function isAutoUpdateEnabled() {
+            return config.autoUpdate === true || overrideAutoUpdate === true;
+        }
+
         node.on('input', function (msg) {
+            if (msg.payload.autoUpdate !== undefined) {
+                overrideAutoUpdate = msg.payload.autoUpdate;
+                if (overrideAutoUpdate) {
+                    startNext();
+                }
+                return;
+            }
+
             startUpdate(msg.payload.device);
         });
 
