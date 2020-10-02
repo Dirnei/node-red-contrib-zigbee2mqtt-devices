@@ -28,7 +28,6 @@ module.exports = function (RED) {
         function otaStatusUpdateReceived(msg) {
             switch (msg.status) {
                 case "available":
-                    logVerbose("Update available for: " + msg.device);
 
                     var found = bridgeNode.getDeviceList().find(d => d.friendly_name == msg.device && d.type === "Router");
                     if (!found) {
@@ -64,7 +63,6 @@ module.exports = function (RED) {
                     break;
                 case "update_progress":
                     setUpdateFlag(true);
-                    logVerbose(msg.message);
                     setCurrentDevice(msg.device);
                     node.status({ fill: "yellow", text: `Updating... ${msg.progress}%` });
                     node.send([undefined, {
@@ -204,17 +202,6 @@ module.exports = function (RED) {
         }
 
         node.on('input', function (msg) {
-            if (msg.payload.cleanup === "leberkas") {
-                cleanup();
-                return;
-            }
-            if (msg.payload.test !== undefined) {
-                setCurrentDevice(msg.payload.test.device);
-                setCurrentDeviceState(msg.payload.test.state);
-                setUpdateFlag(true);
-                return
-            }
-
             startUpdate(msg.payload.device);
         });
 
