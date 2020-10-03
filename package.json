@@ -15,6 +15,7 @@
     },
     "node-red": {
         "nodes": {
+            "api": "src/_api.js",
             "generic-lamp": "src/zigbee2mqtt.js",
             "override": "src/override-nodes.js",
             "config": "src/zigbee2mqtt-config.js",
