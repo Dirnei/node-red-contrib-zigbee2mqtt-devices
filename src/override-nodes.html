@@ -47,7 +47,7 @@
         color: '#bada66',
         defaults: {
             name: { value: "" },
-            temperature: { value: 255, validate: RED.bavaria.validators.range(0, 500) },
+            temperature: { value: 333, validate: RED.bavaria.validators.range(0, 50000) },
         },
         inputs: 1,
         outputs: 1,
@@ -56,7 +56,7 @@
             return this.name || "override-temperature";
         },
         oneditprepare: function () {
-            RED.bavaria.ui.addNumRangeInput("#node-input-temperature", 0, 500);
+            RED.bavaria.ui.addNumRangeInput("#node-input-temperature", 0, 50000);
         },
     });
 </script>

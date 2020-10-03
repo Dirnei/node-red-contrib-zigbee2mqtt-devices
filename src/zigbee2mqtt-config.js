@@ -43,6 +43,12 @@ module.exports = function (RED) {
         this.isConnected = function () { return client.connected; };
         this.isReconnecting = function () { return client.reconnecting; };
         this.publish = function (topic, message) { client.publish(topic, message); };
+        this.setDeviceState = (device, payload) => {
+            if (device !== undefined && device !== "") {
+                var topic = node.baseTopic + "/" + device + "/set";
+                this.publish(topic, JSON.stringify(payload));
+            }
+        }
         this.refreshDevice = function (deviceName) {
             client.publish(node.baseTopic + "/" + deviceName + "/get", '{"state": ""}');
         };
@@ -51,9 +57,26 @@ module.exports = function (RED) {
         };
         this.subscribeDevice = function (nodeId, device, callback) {
             var topic = node.baseTopic + "/" + device;
-            this.subscribe(nodeId, topic, callback);
+            subscribeInternal(nodeId, topic, callback, true);
         };
         this.subscribe = function (nodeId, topic, callback) {
+            subscribeInternal(nodeId, topic, callback, false);
+            client.subscribe(topic);
+            return true;
+        };
+        this.unsubscribe = function (nodeId) {
+            var sub = _subs.find(e => e.nodeId == nodeId);
+            if (sub) {
+                var topic = sub.topic;
+                var index = _subs.indexOf(sub);
+                _subs.splice(index, 1);
+                if (!sub.isDevice && !_subs.some(s => s.topic == topic)) {
+                    client.unsubscribe(sub.topic);
+                }
+            }
+        };
+
+        function subscribeInternal(nodeId, topic, callback, isDevice) {
             var sub = _subs.find(e => e.nodeId == nodeId);
             if (sub) {
                 if (sub.topic !== topic) {
@@ -66,26 +89,28 @@ module.exports = function (RED) {
                 sub = {
                     nodeId: nodeId,
                     topic: topic,
-                    callback: callback
+                    callback: callback,
+                    isDevice: isDevice
                 }
 
                 _subs.push(sub);
             }
+        };
 
-            client.subscribe(topic);
-            return true;
-        };
-        this.unsubscribe = function (nodeId) {
-            var sub = _subs.find(e => e.nodeId == nodeId);
-            if (sub) {
-                var topic = sub.topic;
-                var index = _subs.indexOf(sub);
-                _subs.splice(index, 1);
-                if (!_subs.some(s => s.topic == topic)) {
-                    client.unsubscribe(sub.topic);
-                }
+        var registeredOtaNodeId = "";
+        var otaCallback = (msg) => { };
+        var otaDeviceCallback = (deviceName, msg) => { };
+        this.registerOtaNode = (nodeId, otaStatusCallback, deviceStatusCallback) => {
+            if (registeredOtaNodeId !== "" && registeredOtaNodeId !== nodeId) {
+                return false;
             }
-        };
+
+            registeredOtaNodeId = nodeId;
+            otaCallback = otaStatusCallback;
+            otaDeviceCallback = deviceStatusCallback;
+
+            return true;
+        }
 
         client.on('message', function (topic, message) {
             try {
@@ -110,6 +135,14 @@ module.exports = function (RED) {
                                     bavaria.observer.notify(name + "_routeError", {});
                                 }
                                 break;
+                            case "ota_update":
+                                otaCallback({
+                                    device: message.meta.device,
+                                    status: message.meta.status,
+                                    progress: message.meta.progress,
+                                    message: message.message,
+                                })
+                                break;
                         }
                     }
                 } else {
@@ -124,6 +157,7 @@ module.exports = function (RED) {
 
                     var deviceName = topic.substr(node.baseTopic.length + 1);
                     bavaria.observer.notify(deviceName, message);
+                    otaDeviceCallback(deviceName, message);
                 }
             } catch (err) {
                 node.error(err);
@@ -132,6 +166,7 @@ module.exports = function (RED) {
 
         client.on('connect', function () {
             client.subscribe(node.baseTopic + "/bridge/log");
+            client.subscribe(node.baseTopic + "/+");
 
             if (node.getDeviceList().length == 0) {
                 client.publish(node.baseTopic + "/bridge/config/devices", "");
@@ -140,8 +175,8 @@ module.exports = function (RED) {
             bavaria.observer.notify(node.id + "_connected", {});
         });
 
-        node.on("close", function(){
-           client.end(true);
+        node.on("close", function () {
+            client.end(true);
         });
     }
     RED.nodes.registerType("zigbee2mqtt-bridge-config", bridgeConfig, {
