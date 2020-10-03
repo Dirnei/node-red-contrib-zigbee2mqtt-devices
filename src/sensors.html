@@ -139,7 +139,8 @@
             bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
             temperature: { value: true },
             pressure: { value: true },
-            humidity: { value: true }
+            humidity: { value: true },
+            co2: { value: true }
         },
         inputs: 0,
         outputs: 1,
@@ -167,7 +168,6 @@
 </script>
 
 <script type="text/html" data-template-name="climate-sensor">
-
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
@@ -192,7 +192,10 @@
         <label for="node-input-humidity"><i class="fa fa-tag"></i>Humidity</label>
         <input type="checkbox" id="node-input-humidity" />
     </div>
-
+    <div class="form-row">
+        <label for="node-input-co2"><i class="fa fa-tag"></i>CO2</label>
+        <input type="checkbox" id="node-input-co2" />
+    </div>
 </script>
 
 <script type="text/html" data-help-name="climate-sensor">
