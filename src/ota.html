@@ -107,7 +107,7 @@
 
 <script type="text/html" data-help-name="ota-update">
     <p>Starts an OTA update when available and <code>auto update</code> is enabled. Updates can also be manually triggered when <code>msg.payload.device</code> is set.
-    While an update is in progress, it will send messages at the beginning, the end and every time when the progress changed.</p>
+    While an update is in progress, it will send messages at the beginning, the end, and whenever the progress changed.</p>
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt> device <span class="property-type"> string </span> </dt>
@@ -122,10 +122,10 @@
         <dd>
             Satus message of the current progress. It is one of the following messages:
             <ul>
-                <li><code>Update started</code> will be sent when the update starts (Output 1 - "start/end"</li>
-                <li><code>Update succeded</code> will be sent when the update succeded (Output 1 - "start/end")</li>
+                <li><code>Update started</code> will be sent when the update starts (Output 1 - "start/end")</li>
+                <li><code>Update succeded</code> will be sent when the update succeeded (Output 1 - "start/end")</li>
                 <li><code>Update failed</code> will be sent when the update failed (Output 1 - "start/end")</li>
-                <li><code>Progress changed</code> will be sent when the update succeded (Output 2 - "progress")</li>
+                <li><code>Progress changed</code> will be sent when the progress changed (Output 2 - "progress")</li>
                 <li><code>Queue changed</code> will be sent when the update queue changes (Output 3 - "update queue")</li>
             </ul>
         </dd>

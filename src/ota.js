@@ -78,7 +78,7 @@ module.exports = function (RED) {
                     cleanup();
 
                     if (isAutoUpdateEnabled() === true && updateableDevices.length > 0) {
-                        node.status({ fill: "grey", text: "Next update will start in 5 seconds...." });
+                        node.status({ fill: "grey", text: "Next update will start in 5 seconds..." });
                         setTimeout(function () {
                             startNext();
                         }, 5000)

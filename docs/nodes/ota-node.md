@@ -1,18 +1,18 @@
 # OTA node
 
-For basic information about OTA updates via zigbee2mqtt have a look at there documentation [here](https://www.zigbee2mqtt.io/information/ota_updates.html).
+For basic information about OTA updates via zigbee2mqtt, look at the documentation [here](https://www.zigbee2mqtt.io/information/ota_updates.html).
 
-> if you use our dashboard, have a look at the end of the flow. the node is used there to auto update over night.
+> If you use our dashboard, have a look at the end of the flow. The node is used there to auto-update overnight.
 
-The ota-node is used to start OTA updates. This can be done manually or automatically. 
+The OTA-node is used to start OTA updates. The updates can be executed manually or automatically. 
 
 ## Outputs
 
-This node has 3 output. **start/end**, **progress** and **queue changed**. The name of the output matches with the trigger of the message. E.g.: when the progress of the current update changes, a message will be sent to output 2 (Label: "progress")
+This node has three outputs. **start/end**, **progress** and **queue changed**. The name of the output matches the trigger of the message. E.g., when the progress of the current update changes, a message will be sent to output 2 (Label: "progress")
 
 ## Manual update
 
-To start the update process manually you have to send a ```msg``` to the input of the node with the following structure:
+To start the update process manually, you have to send a ```msg``` to the input of the node with the following structure:
 
 ``` js
 {
@@ -26,13 +26,13 @@ To start the update process manually you have to send a ```msg``` to the input o
 
 ### Always on
 
-If you want the feautre always available you can turn it on in the config.
+If you want the feature always available, you can turn it on in the config.
 
 ![img](img/ota-node-config.png)
 
-### Turn on with message
+### Turn on by message
 
-It is also possible to turn this feature **on** and **off** by sending a message to the input with following structure:
+It is also possible to turn this feature **on** and **off** by sending a message to the input with the following structure:
 
 ``` js
 {
@@ -42,15 +42,15 @@ It is also possible to turn this feature **on** and **off** by sending a message
 }
 ```
 
-A real world example would be to allow the auto update over night. To archive this you could use two **inject nodes** that will send a message at a specific time.
+A real-world example would be to allow the auto-update only during the night. To archive this, you could use two **inject nodes** to send a message at a specific time — one to turn the auto-update on, one to turn it off.
 
-You can copy paste the flow example below from the example folder in the repo.
+You can copy-paste the flow example below from the example folder in the repo.
 
 ![img](img/ota-node-autoUpdate-msg.png)
 
 ## Blacklist
 
-Some lamps you may want to update only manually, because for instance the Ikea lamps turn on for a short time after the installation process succeded. If this lamp is over your head while you asleep, you may wake up. To prevent this situation, or any other you don't wan't this to happen, you can add those lamps to a blacklist. All lamps on the blacklist can only be updated manually with a **msg** sent to the input (see description above) or you use our dashboard you find in the dashboard folder at the root of the repo.
+You may want to update some lamps only manually for various reasons. For example, the Ikea lamps turn on for a short time after the installation process succeeded. If this lamp is over your head while you are asleep, it might wake you. To prevent those situations, you can add those lamps to a blacklist. All lamps on the blacklist can only be updated manually with a **msg** sent to the input (see description above), or you use our dashboard you find in the dashboard folder at the root of the repo.
 
 ![img](img/ota-node-config-blacklist.png)
 
@@ -73,4 +73,4 @@ Some lamps you may want to update only manually, because for instance the Ikea l
 ![img](img/ota-node-update-finished.png)
 
 ## Nice 2 know
-> only one ota-update node per bridge is allowed. if more than one is deployed only the first on will work. All other will show an error status.
+> Only one OTA-update node per bridge is allowed. If more than one is deployed, only the first one will work. All others will show an error status.
