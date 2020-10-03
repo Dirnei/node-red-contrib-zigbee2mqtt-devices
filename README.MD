@@ -13,6 +13,7 @@ Many nodes are available right now, and there are still new node ideas that will
 - [button-switch](docs/nodes/button-switch.md)
 - [scene-in](docs/nodes/scene-in.md)
 - [scene-selector](docs/nodes/scene-selector.md)
+- [ota-node](docs/nodes/ota-node.md)
 
 ### Undocumented
 - device status
