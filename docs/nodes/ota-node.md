@@ -6,6 +6,10 @@ For basic information about OTA updates via zigbee2mqtt have a look at there doc
 
 The ota-node is used to start OTA updates. This can be done manually or automatically. 
 
+## Outputs
+
+This node has 3 output. **start/end**, **progress** and **queue changed**. The name of the output matches with the trigger of the message. E.g.: when the progress of the current update changes, a message will be sent to output 2 (Label: "progress")
+
 ## Manual update
 
 To start the update process manually you have to send a ```msg``` to the input of the node with the following structure:
@@ -43,6 +47,7 @@ A real world example would be to allow the auto update over night. To archive th
 You can copy paste the flow example below from the example folder in the repo.
 
 ![img](img/ota-node-autoUpdate-msg.png)
+
 
 ## Some screenshots
 
