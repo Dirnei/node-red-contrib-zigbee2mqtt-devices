@@ -1,4 +1,3 @@
-
 module.exports = function (RED) {
     const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
@@ -23,7 +22,6 @@ module.exports = function (RED) {
         function otaStatusUpdateReceived(msg) {
             switch (msg.status) {
                 case "available":
-
                     var found = bridgeNode.getDeviceList().find(d => d.friendly_name == msg.device && d.type === "Router");
                     if (!found) {
                         logVerbose(`'${msg.device}' can not be updated. Auto update is only available for routers. Please update it manually`);
@@ -147,9 +145,18 @@ module.exports = function (RED) {
         }
 
         function addAvailableDevice(device) {
-            if (updateableDevices.indexOf(device) === -1) {
+            if (updateableDevices.indexOf(device) === -1
+                && config.blacklist.indexOf(device) === -1) {
                 updateableDevices.push(device);
                 nodeContext.set("updates_available", updateableDevices);
+
+                node.send([null, null, {
+                    payload: {
+                        message: "Queue changed",
+                        queue: updateableDevices,
+                        autoUpdate: isAutoUpdateEnabled()
+                    }
+                }]);
 
                 if (isUpdating !== true) {
                     refreshStatus();
@@ -227,13 +234,27 @@ module.exports = function (RED) {
             bridgeNode.unsubscribe(node.id);
         });
 
-        refreshStatus();
-
         function logVerbose(msg) {
             if (config.verboseLogging === true) {
                 node.warn(msg);
             }
         }
+
+        refreshStatus();
+        node.send([null, {
+            payload: {
+                device: currentDevice,
+                message: "Progress changed",
+                progress: 0
+            }
+        }, {
+                payload: {
+                    message: "Queue changed",
+                    queue: updateableDevices,
+                    autoUpdate: isAutoUpdateEnabled()
+                }
+            }
+        ]);
     }
     RED.nodes.registerType("ota-update", otaUpdate);
 

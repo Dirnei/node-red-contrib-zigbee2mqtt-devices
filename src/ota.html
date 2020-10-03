@@ -1,21 +1,75 @@
 <!--- PREPARE MESSAGES NODE --->
 <script type="text/javascript">
-
     RED.nodes.registerType('ota-update', {
         category: 'zigbee2mqtt',
         color: '#bada66',
         defaults: {
             name: { value: "" },
             bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
-            autoUpdate: {value: false},
-            verboseLogging: {value: false}
+            autoUpdate: { value: false },
+            arsch: { value: [] },
+            blacklist: { values: [] },
+            verboseLogging: { value: false },
         },
         inputs: 1,
-        outputs: 2,
-        outputLabels: ["start/end", "progress"],
+        outputs: 3,
+        outputLabels: ["start/end", "progress", "update queue"],
         icon: "bridge.svg",
         label: function () {
             return this.name || "ota update";
+        },
+        oneditprepare: function () {
+            var node = this;
+            $("#node-input-bridge").change(function () {
+                var bridgeId = $("#node-input-bridge").val().replace(".", "_");
+                $.getJSON('/z2m/devices/' + bridgeId + '/Router/all/all', function (data) {
+                    $("#node-input-deviceName").empty();
+                    data.devices.forEach(e => {
+                        $("<option/>").val(e.friendly_name).text(e.friendly_name).appendTo("#node-input-deviceName");
+                    });
+                });
+            });
+
+            function showBlacklist() {
+                $("#node-input-blacklist").empty();
+                node.blacklist.forEach(e => {
+                    $("<option/>").val(e).text(e).appendTo("#node-input-blacklist");
+                })
+            }
+
+            $("#add-to-blacklist").click(function () {
+                var value = $("#node-input-deviceName").val();
+                var currentBlacklist = $("#node-input-blacklist option").map(function (i, option) {
+                    return option.value;
+                }).get();
+
+                if ($.inArray(value, currentBlacklist) === -1) {
+                    $("<option/>").val(value).text(value).appendTo("#node-input-blacklist");
+                }
+            });
+
+            $("#remove-from-blacklist").click(function () {
+                var values = $("#node-input-blacklist").val();
+                values.forEach(e => {
+                    $(`#node-input-blacklist option[value='${e}']`).remove();
+                });
+            });
+
+            showBlacklist();
+        },
+        oneditsave: function () {
+            // select all
+            $('#node-input-blacklist option').prop('selected', true);
+
+            var uniqueNames = [];
+            $.each($("#node-input-blacklist").val(), function (i, el) {
+                if ($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
+            });
+
+            // save blacklist
+            this.blacklist = uniqueNames;
+        },
+        oneditcancel: function () {
         },
     });
 </script>
@@ -38,6 +92,16 @@
         <label for="node-input-bridge"><i class="fa fa-tag"></i> Verbose Logging</label>
         <input type="checkbox" id="node-input-verboseLogging" />
     </div>
+    <div class="form-row">
+        <select id="node-input-deviceName" style="margin-left: 105px;width:45%"></select>
+        <button type="button" class="red-ui-button" id="add-to-blacklist" style="width:25%">add to blacklist</button>
+    </div>
+    <div class="form-row">
+        <label for="node-input-blacklist"><i class="fa fa-tag"></i> Blacklist</label>
+        <select id="node-input-blacklist" style="width:70%" size=10 multiple></select>
+        <button type="button" class="red-ui-button" id="remove-from-blacklist"
+        style="display:block;width:70%;margin-left:105px;margin-top:10px">remove from blacklist</button>
+    </div>
 
 </script>
 
@@ -58,12 +122,20 @@
         <dd>
             Satus message of the current progress. It is one of the following messages:
             <ul>
-                <li><code>Update started</code></li>
-                <li><code>Progress changed</code></li>
-                <li><code>Update succeded</code></li>
+                <li><code>Update started</code> will be sent when the update starts (Output 1 - "start/end"</li>
+                <li><code>Update succeded</code> will be sent when the update succeded (Output 1 - "start/end")</li>
+                <li><code>Update failed</code> will be sent when the update failed (Output 1 - "start/end")</li>
+                <li><code>Progress changed</code> will be sent when the update succeded (Output 2 - "progress")</li>
+                <li><code>Queue changed</code> will be sent when the update queue changes (Output 3 - "update queue")</li>
             </ul>
         </dd>
         <dt> progress <span class="property-type"> number </span> </dt>
-        <dd> The progress of the current update in percent. This property is only defined when <code>message</code> equals <code>Progress change</code></dd>
+        <dd> The progress of the current update in percent. This property is only available on Output 2 (Label: "progress")</dd>
+        <dt> queue <span class="property-type"> array </span> </dt>
+        <dd> Array of <code>firendly_name</code> that are available for updates. This property is only available on Output 3 (Label: "update queue")</dd>
+        <dt> isUpdating <span class="property-type"> boolean </span> </dt>
+        <dd> Represents the state of the ota-node. <code>true</code> if a update is currently running, otherwise <code>false</code>. This property is only available on Output 3 (Label: "update queue")</dd>
+        <dt> autoUpdate <span class="property-type"> boolean </span> </dt>
+        <dd> <code>true</code> if the auto update is enabled, otherwise <code>false</code>. This property is only available on Output 3 (Label: "update queue")</dd>
     </dl>
 </script>
