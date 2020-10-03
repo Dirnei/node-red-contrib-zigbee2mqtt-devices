@@ -48,6 +48,11 @@ You can copy paste the flow example below from the example folder in the repo.
 
 ![img](img/ota-node-autoUpdate-msg.png)
 
+## Blacklist
+
+Some lamps you may want to update only manually, because for instance the Ikea lamps turn on for a short time after the installation process succeded. If this lamp is over your head while you asleep, you may wake up. To prevent this situation, or any other you don't wan't this to happen, you can add those lamps to a blacklist. All lamps on the blacklist can only be updated manually with a **msg** sent to the input (see description above) or you use our dashboard you find in the dashboard folder at the root of the repo.
+
+![img](img/ota-node-config-blacklist.png)
 
 ## Some screenshots
 
