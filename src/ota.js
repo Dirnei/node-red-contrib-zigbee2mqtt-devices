@@ -89,7 +89,7 @@ module.exports = function (RED) {
                     node.send({
                         payload: {
                             device: msg.device,
-                            message: "Update succeded",
+                            message: "Update succeeded",
                             devicesQueued: updateableDevices.length > 0
                         }
                     });
