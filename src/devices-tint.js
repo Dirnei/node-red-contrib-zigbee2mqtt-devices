@@ -1,4 +1,5 @@
 module.exports = function (RED) {
+    const OutputHandler = require("../lib/outputHandler.js");
     const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
 
@@ -6,96 +7,68 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
+        var nodeConext = this.context();
 
         utils.setConnectionState(bridgeNode, node);
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
         });
 
-        bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
+        function getDirection(msg) {
+            var lastTemp = nodeConext.get("lastColorTemp");
+            var currentTemp = msg.action_color_temperature;
+            nodeConext.set("lastColorTemp", currentTemp)
+
+            if (currentTemp === 150) {
+                return "colder";
+            } else if (currentTemp >= 370 && (!lastTemp || lastTemp < 370)) {
+                return "warmer";
+            }
+
+            if (!lastTemp) {
+                return "unknown";
+            }
+
+            return lastTemp > currentTemp ? "colder" : "warmer";
+        }
+
+        function getColorTempStep(msg) {
+            var step = config.colorTempStep || 50;
+            var direction = getDirection(msg);
+            if (direction === "colder") {
+                step *= -1;
+            } else if (direction === "unknown") {
+                step = 0;
+            }
+
+            return step;
+        }
+
+        var handler = new OutputHandler();
+        handler
+            .addOutput(0, "power", "on", "pressed", config.suppressPowerpayload ? "" : "on")
+            .addOutput(0, "power", "off", "pressed", config.suppressPowerpayload ? "" : "off")
+            .addOutput(1, "color", "color_wheel", "pressed", (msg) => {
+                return bavaria.converter.xyToRgb(msg.action_color.x, msg.action_color.y);
+            })
+            .addOutput(2, "temperature", "color_temp", "pressed", (msg) => { return utils.payloads.createColorTempStep(getColorTempStep(msg)) })
+            .addOutput(3, "brightness_up", "brightness_up_click", "pressed", utils.payloads.createBrightnessStep(25.4))
+            .addOutput(3, "brightness_up", "brightness_up_hold", "hold")
+            .addOutput(3, "brightness_up", "brightness_up_release", "released")
+            .addOutput(4, "brightness_down", "brightness_down_click", "pressed", utils.payloads.createBrightnessStep(-25.4))
+            .addOutput(4, "brightness_down", "brightness_down_hold", "hold")
+            .addOutput(4, "brightness_down", "brightness_down_release", "released")
+            .addOutput(5, "scene", "scene_3", "pressed", utils.payloads.createSetSceneCommand(0))
+            .addOutput(5, "scene", "scene_1", "pressed", utils.payloads.createSetSceneCommand(1))
+            .addOutput(5, "scene", "scene_2", "pressed", utils.payloads.createSetSceneCommand(2))
+            .addOutput(5, "scene", "scene_6", "pressed", utils.payloads.createSetSceneCommand(3))
+            .addOutput(5, "scene", "scene_4", "pressed", utils.payloads.createSetSceneCommand(4))
+            .addOutput(5, "scene", "scene_5", "pressed", utils.payloads.createSetSceneCommand(5))
+
+        bridgeNode.subscribeDevice(node.id, config.deviceName, function (msg) {
             try {
-                const ioMap = {
-                    on: utils.createButtonOutput(0, "power", "pressed", config.suppressPowerpayload ? "" :"on"),
-                    off: utils.createButtonOutput(0, "power", "pressed", config.suppressPowerpayload ? "" :"off"),
-                    color_wheel: utils.createButtonOutput(1, "color", "pressed",{
-                        rgb: bavaria.converter.xyToRgb(message.action_color.x, message.action_color.y),
-                        xy: message.action_color
-                    } ),
-                    color_temp: utils.createButtonOutput(2, "temperature", "pressed", message.action_color_temperature),
-                    brightness_up_click: utils.createButtonOutput(3, "brightness_up", "pressed"),
-                    brightness_up_hold: utils.createButtonOutput(3, "brightness_up", "hold"),
-                    brightness_up_release: utils.createButtonOutput(3, "brightness_up", "released"),
-                    brightness_down_click: utils.createButtonOutput(4, "brightness_down", "pressed"),
-                    brightness_down_hold: utils.createButtonOutput(4, "brightness_down", "hold"),
-                    brightness_down_release: utils.createButtonOutput(4, "brightness_down", "released"),
-                    scene_3: utils.createButtonOutput(5, "scene", "pressed", 0),
-                    scene_1: utils.createButtonOutput(5, "scene", "pressed", 1),
-                    scene_2: utils.createButtonOutput(5, "scene", "pressed", 2),
-                    scene_6: utils.createButtonOutput(5, "scene", "pressed", 3),
-                    scene_4: utils.createButtonOutput(5, "scene", "pressed", 4),
-                    scene_5: utils.createButtonOutput(5, "scene", "pressed", 5),
-                };
-
-                var output = ioMap[message.action];
-                var msg = {
-                    remoteControl: {
-                        button_name: output.button_name,
-                        button_type: output.button_type,
-                        button_payload: output.button_payload,
-                        action_group: message.action_group
-                    }
-                };
-
-                switch (output.button_name) {
-                    case "scene":
-                        msg.command = "set";
-                        msg.scene = output.button_payload;
-                        break;
-                    case "color":
-                        msg.payload = {
-                            override: {
-                                color: output.button_payload.rgb
-                            }
-                        }
-                        break;
-                    case "temperature":
-                        msg.payload = {
-                            override: {
-                                action: {
-                                    name: "color_temp_step",
-                                    value: 50
-                                }
-                            }
-                        }
-                        break;
-                    case "brightness_up":
-                        if (output.button_type == "pressed") {
-                            msg.payload = {
-                                override: {
-                                    action: {
-                                        name: "brightness_step",
-                                        value: 50
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case "brightness_down":
-                        if (output.button_type == "pressed") {
-                            msg.payload = {
-                                override: {
-                                    action: {
-                                        name: "brightness_step",
-                                        value: -50
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                }
-
-                utils.sendAt(node, output.index, msg);
-                node.status({ fill: "green", "text": "Last action: " + output.button_type });
+                node.send(handler.prepareOutput("action", msg, node));
+                node.status({ fill: "green", "text": "Last action: " + msg.action });
                 setTimeout(function () {
                     utils.setConnectionState(bridgeNode, node);
                 }, 2000);
@@ -105,7 +78,7 @@ module.exports = function (RED) {
             }
         });
 
-        node.on('close', ()=>{
+        node.on('close', () => {
             bridgeNode.unsubscribe(node.id);
         });
     }
