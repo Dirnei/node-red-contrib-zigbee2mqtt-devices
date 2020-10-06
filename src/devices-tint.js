@@ -46,18 +46,18 @@ module.exports = function (RED) {
 
         var handler = new OutputHandler();
         handler
-            .addOutput(0, "power", "on", "pressed", config.suppressPowerpayload ? "" : "on")
-            .addOutput(0, "power", "off", "pressed", config.suppressPowerpayload ? "" : "off")
+            .addOutput(0, "power", "on", "pressed", config.suppressPowerpayload ? "toggle" : "on")
+            .addOutput(0, "power", "off", "pressed", config.suppressPowerpayload ? "toggle" : "off")
             .addOutput(1, "color", "color_wheel", "pressed", (msg) => {
                 return bavaria.converter.xyToRgb(msg.action_color.x, msg.action_color.y);
             })
             .addOutput(2, "temperature", "color_temp", "pressed", (msg) => { return utils.payloads.createColorTempStep(getColorTempStep(msg)) })
             .addOutput(3, "brightness_up", "brightness_up_click", "pressed", utils.payloads.createBrightnessStep(25.4))
-            .addOutput(3, "brightness_up", "brightness_up_hold", "hold")
-            .addOutput(3, "brightness_up", "brightness_up_release", "released")
+            .addOutput(3, "brightness_up", "brightness_up_hold", "hold", utils.payloads.createBrightnessMove(20))
+            .addOutput(3, "brightness_up", "brightness_up_release", "released", utils.payloads.createBrightnessMove(0))
             .addOutput(4, "brightness_down", "brightness_down_click", "pressed", utils.payloads.createBrightnessStep(-25.4))
-            .addOutput(4, "brightness_down", "brightness_down_hold", "hold")
-            .addOutput(4, "brightness_down", "brightness_down_release", "released")
+            .addOutput(4, "brightness_down", "brightness_down_hold", "hold", utils.payloads.createBrightnessMove(-20))
+            .addOutput(4, "brightness_down", "brightness_down_release", "released", utils.payloads.createBrightnessMove(-20))
             .addOutput(5, "scene", "scene_3", "pressed", utils.payloads.createSetSceneCommand(0))
             .addOutput(5, "scene", "scene_1", "pressed", utils.payloads.createSetSceneCommand(1))
             .addOutput(5, "scene", "scene_2", "pressed", utils.payloads.createSetSceneCommand(2))
