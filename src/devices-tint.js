@@ -33,7 +33,7 @@ module.exports = function (RED) {
         }
 
         function getColorTempStep(msg) {
-            var step = config.colorTempStep || 50;
+            var step = config.temperatureChange || 50;
             var direction = getDirection(msg);
             if (direction === "colder") {
                 step *= -1;
@@ -52,12 +52,12 @@ module.exports = function (RED) {
                 return bavaria.converter.xyToRgb(msg.action_color.x, msg.action_color.y);
             })
             .addOutput(2, "temperature", "color_temp", "pressed", (msg) => { return utils.payloads.createColorTempStep(getColorTempStep(msg)) })
-            .addOutput(3, "brightness_up", "brightness_up_click", "pressed", utils.payloads.createBrightnessStep(25.4))
-            .addOutput(3, "brightness_up", "brightness_up_hold", "hold", utils.payloads.createBrightnessMove(20))
+            .addOutput(3, "brightness_up", "brightness_up_click", "pressed", utils.payloads.createBrightnessStep(config.brightnessChange))
+            .addOutput(3, "brightness_up", "brightness_up_hold", "hold", utils.payloads.createBrightnessMove(config.brightnessChange))
             .addOutput(3, "brightness_up", "brightness_up_release", "released", utils.payloads.createBrightnessMove(0))
-            .addOutput(4, "brightness_down", "brightness_down_click", "pressed", utils.payloads.createBrightnessStep(-25.4))
-            .addOutput(4, "brightness_down", "brightness_down_hold", "hold", utils.payloads.createBrightnessMove(-20))
-            .addOutput(4, "brightness_down", "brightness_down_release", "released", utils.payloads.createBrightnessMove(-20))
+            .addOutput(4, "brightness_down", "brightness_down_click", "pressed", utils.payloads.createBrightnessStep(0-config.brightnessChange))
+            .addOutput(4, "brightness_down", "brightness_down_hold", "hold", utils.payloads.createBrightnessMove(0-config.brightnessChange))
+            .addOutput(4, "brightness_down", "brightness_down_release", "released", utils.payloads.createBrightnessMove(0))
             .addOutput(5, "scene", "scene_3", "pressed", utils.payloads.createSetSceneCommand(0))
             .addOutput(5, "scene", "scene_1", "pressed", utils.payloads.createSetSceneCommand(1))
             .addOutput(5, "scene", "scene_2", "pressed", utils.payloads.createSetSceneCommand(2))
