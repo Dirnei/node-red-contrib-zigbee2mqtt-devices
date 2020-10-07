@@ -65,7 +65,14 @@ module.exports = function (RED) {
                 return;
             }
             revCount++;
-            var command = msg.command;
+            
+            var command = msg.command !== undefined ? msg.command : msg.payload.command;
+            var scene = msg.scene;
+            
+            if(!scene && msg.payload) {
+                scene = msg.payload.scene;
+            }
+
             if (!command) {
                 return;
             }
@@ -79,10 +86,10 @@ module.exports = function (RED) {
                     index--;
                     break;
                 case "set":
-                    if (typeof msg.scene === "number" && msg.scene < config.scenes.length && msg.scene >= 0) {
-                        index = msg.scene;
-                    } else if (typeof msg.scene === "string") {
-                        index = config.scenes.indexOf(msg.scene);
+                    if (typeof scene === "number" && scene < config.scenes.length && scene >= 0) {
+                        index = scene;
+                    } else if (typeof scene === "string") {
+                        index = config.scenes.indexOf(scene);
                         if (index < 0) {
                             node.error("invalid scene");
                             return;
