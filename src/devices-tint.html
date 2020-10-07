@@ -88,14 +88,14 @@
         <li><code>description</code> - the type of how the button was pressed</li>
     </ul>
     <h4>Power button</h4>
-    <p>The remote has a small memory that will save the power state. The state will be set to <code>msg.payload</code> You can suppress power button payload in the config. If you do, the payload is <b>toggle</b></p>
+    <p>The remote has a small memory that will save the power state. The state will be set to <code>msg.payload</code>. You can suppress the power button payload in the config. If you do, the payload is <b>toggle</b>.</p>
     <h4>Color wheel</h4>
     <p>The color is also stored on the remote itself. You can press the same spot on the wheel more than once and it will shift the color slightly to the color you pressed.</p>
-    <p>The <code>msg.payload</code> of this node will be a color-override. Simply place the lamps behind this node you want to control followed by a send-message node.</p>
+    <p>The <code>msg.payload</code> of this node will be a color-override. Place the lamps you want to control behind this node, followed by a send-message node.</p>
     <h4>Color temperature</h4>
-    <p>It will output a <code>color_temp-move/step</code> when you press the color temperature buttons. The very first press fo the button, after the deploy, may be unrecognized.</p>
+    <p>It will output a <code>color_temp-move/step</code> when you press the color temperature buttons. The very first press of the button, after the deploy, may be unrecognized.</p>
     <h4>Brightness</h4>
     <p>It will send a <code>brightness-step</code> command when you press the buttons. If you hold it, a <code>brightness-move</code> will be send. When you release the button, the brightness move will stop.</p>
     <h4>Scene selection</h4>
-    <p>The scene buttons will swich between <code>scenes</code> by <code>index</code>, so it is the best way to place a scene-selector node right behind it</p>
+    <p>The scene buttons will swich between <code>scenes</code> by <code>index</code>, so it is the best way to place a scene-selector node right behind it.</p>
 </script>
