@@ -1,0 +1,68 @@
+
+<!--- BRIDGE LOG NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('bridge-log', {
+        category: 'zigbee2mqtt_sensor', //todo: change category
+        color: '#fcba03',
+        defaults: {
+            name: { value: "" },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
+        },
+        inputs: 0,
+        outputs: 2,
+        icon: "debug.png", // todo: debug icon
+        label: function () {
+            return this.name || "Bridge log";
+        },
+        outputLabels: ["closed", "open"],
+        oneditprepare: function () {
+            var node = this;
+            var deviceName = node.deviceName;
+
+            // $("#node-input-bridge").change(function () {
+            //     var bridgeId = $("#node-input-bridge").val().replace(".", "_");
+            //     $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/all/all', function (data) {
+            //         $("#node-input-deviceName").empty();
+            //         data.devices.forEach(e => {
+            //             $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
+            //         });
+
+            //         $("#node-input-deviceName").val(deviceName);
+            //     });
+            // });
+        }
+    });
+
+</script>
+
+<script type="text/html" data-template-name="bridge-log">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <!-- <div class="form-row">
+        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+        <input type="text" id="node-input-bridge" placeholder="bridge" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
+        <select id="node-input-deviceName"></select>
+    </div> -->
+    <div class="form-tips"><b>Tip:</b> This is here to help.</div>
+</script>
+
+<script type="text/html" data-help-name="bridge-log">
+    <p>Filtered input for the Zigbee2MQTT log.</p>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <!-- todo: Describe message properties-->
+        <dt> payload <span class="property-type"> object </span> </dt>
+        <dd> The MQTT payload of the device </dd>
+    </dl>
+    <h3>Details</h3>
+    <!-- todo: detailed documentation -->
+    <p>Some more information about the node.</p>
+</script>
