@@ -49,7 +49,7 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ### v0.13.0
 
-- Added Müller Licht - tint remove device support
+- Added _Müller Licht - tint_ remote device support
 - Added [override-action](docs/nodes/override-action.md) node
 - Removed ```delay``` property from mqtt payload, as it is only used internally
 
