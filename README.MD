@@ -47,6 +47,10 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ## Changelog 
 
+### v0.13.1
+
+- Fixed validation on newly added [override-action](docs/nodes/override-action.md) node
+
 ### v0.13.0
 
 - Added _Müller Licht - tint_ remote device support
