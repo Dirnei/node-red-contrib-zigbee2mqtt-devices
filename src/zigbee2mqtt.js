@@ -216,6 +216,7 @@ module.exports = function (RED) {
                     message.payload.transition = undefined;
                 }
 
+                msg.payload.delay = undefined;
                 bridgeNode.publish(message.topic, JSON.stringify(message.payload));
 
                 if (++i < messages.length) {
