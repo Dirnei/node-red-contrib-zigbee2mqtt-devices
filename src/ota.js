@@ -15,7 +15,7 @@ module.exports = function (RED) {
 
         if (!bridgeNode.registerOtaNode(node.id, otaStatusUpdateReceived, deviceStatusReceived)) {
             node.status({ fill: "red", text: "duplicate ota update" });
-            node.error("Duplicate ota update node. Only one ota update node per bridge allowed!")
+            node.error("Duplicate ota update node. Only one ota update node per bridge allowed!");
             return;
         }
 
@@ -53,7 +53,7 @@ module.exports = function (RED) {
                     setUpdateFlag(false);
 
                     node.error(msg);
-                    node.status({ fill: "red", text: "error - updated failed" })
+                    node.status({ fill: "red", text: "error - updated failed" });
                     break;
                 case "update_progress":
                     setUpdateFlag(true);
@@ -70,7 +70,7 @@ module.exports = function (RED) {
                 case "update_succeeded":
                     setUpdateFlag(false);
 
-                    const index = updateableDevices.indexOf(msg.device);
+                    var index = updateableDevices.indexOf(msg.device);
                     if (index > -1) {
                         updateableDevices.splice(index, 1);
                     }
@@ -81,7 +81,7 @@ module.exports = function (RED) {
                         node.status({ fill: "grey", text: "Next update will start in 5 seconds..." });
                         setTimeout(function () {
                             startNext();
-                        }, 5000)
+                        }, 5000);
                     } else {
                         refreshStatus();
                     }
@@ -124,7 +124,7 @@ module.exports = function (RED) {
         function setCurrentDevice(device) {
             if (currentDevice !== device && device !== null) {
                 bridgeNode.subscribeDevice(node.id, currentDevice, (msg) => {
-                    deviceStatusReceived(currentDevice, msg)
+                    deviceStatusReceived(currentDevice, msg);
                 });
 
                 bridgeNode.refreshDevice(device);
@@ -166,7 +166,7 @@ module.exports = function (RED) {
 
         function startNext() {
             if (updateableDevices.length > 0) {
-                startUpdate(updateableDevices[0])
+                startUpdate(updateableDevices[0]);
             }
         }
 
@@ -218,7 +218,7 @@ module.exports = function (RED) {
             return config.autoUpdate === true || overrideAutoUpdate === true;
         }
 
-        node.on('input', function (msg) {
+        node.on("input", function (msg) {
             if (msg.payload.autoUpdate !== undefined) {
                 overrideAutoUpdate = msg.payload.autoUpdate;
                 if (overrideAutoUpdate) {
@@ -230,7 +230,7 @@ module.exports = function (RED) {
             startUpdate(msg.payload.device);
         });
 
-        node.on('close', function () {
+        node.on("close", function () {
             bridgeNode.unsubscribe(node.id);
         });
 
@@ -248,12 +248,12 @@ module.exports = function (RED) {
                 progress: 0
             }
         }, {
-                payload: {
-                    message: "Queue changed",
-                    queue: updateableDevices,
-                    autoUpdate: isAutoUpdateEnabled()
-                }
+            payload: {
+                message: "Queue changed",
+                queue: updateableDevices,
+                autoUpdate: isAutoUpdateEnabled()
             }
+        }
         ]);
     }
     RED.nodes.registerType("ota-update", otaUpdate);
@@ -274,4 +274,4 @@ module.exports = function (RED) {
 
     */
 
-}
+};

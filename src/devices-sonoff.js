@@ -43,4 +43,4 @@ module.exports = function (RED) {
 
     }
     RED.nodes.registerType("sonoff-button", sonoffButton);
-}
+};

@@ -71,4 +71,4 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("ikea-remote", ikeaRemote);
-}
+};

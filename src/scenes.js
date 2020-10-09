@@ -21,14 +21,14 @@ module.exports = function (RED) {
 
         this.isActive = function () {
             return config.active;
-        }
+        };
 
         this.trigger = function (msg) {
             if (config.active === true) {
                 msg.scene = config.scene;
                 node.send(msg);
             }
-        }
+        };
     }
     RED.nodes.registerType("scene-in", sceneIn);
 
@@ -57,7 +57,7 @@ module.exports = function (RED) {
         var index = nodeContext.get("index");
         setState(index);
 
-        node.on('input',msg => handleMessage(msg, 0));
+        node.on("input",msg => handleMessage(msg, 0));
 
         function handleMessage(msg, revCount) {
             if(revCount >= config.scenes.length ){
@@ -102,7 +102,6 @@ module.exports = function (RED) {
                 default:
                     node.error("Command not found");
                     return;
-                    break;
             }
 
             if (config.wrapAround === false) {
@@ -139,4 +138,4 @@ module.exports = function (RED) {
         }
     }
     RED.nodes.registerType("scene-selector", sceneSelector);
-}
+};

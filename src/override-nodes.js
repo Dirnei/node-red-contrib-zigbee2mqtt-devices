@@ -6,7 +6,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on('input', function (msg) {
+        node.on("input", function (msg) {
             if (msg.payload.override === undefined) {
                 msg.payload.override = {};
             }
@@ -22,7 +22,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on('input', function (msg) {
+        node.on("input", function (msg) {
             if (msg.payload.override === undefined) {
                 msg.payload.override = {};
             }
@@ -38,7 +38,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on('input', function (msg) {
+        node.on("input", function (msg) {
             if (msg.payload.override === undefined) {
                 msg.payload.override = {};
             }
@@ -53,4 +53,4 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("override-color", overrideColor);
-}
+};

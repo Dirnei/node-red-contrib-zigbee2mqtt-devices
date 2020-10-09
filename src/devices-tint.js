@@ -17,7 +17,7 @@ module.exports = function (RED) {
         function getDirection(msg) {
             var lastTemp = nodeConext.get("lastColorTemp");
             var currentTemp = msg.action_color_temperature;
-            nodeConext.set("lastColorTemp", currentTemp)
+            nodeConext.set("lastColorTemp", currentTemp);
 
             if (currentTemp === 150) {
                 return "colder";
@@ -51,23 +51,23 @@ module.exports = function (RED) {
             .addOutput(1, "color", "color_wheel", "pressed", (msg) => {
                 return bavaria.converter.xyToRgb(msg.action_color.x, msg.action_color.y);
             })
-            .addOutput(2, "temperature", "color_temp", "pressed", (msg) => { return utils.payloads.createColorTempStep(getColorTempStep(msg)) })
+            .addOutput(2, "temperature", "color_temp", "pressed", (msg) => { return utils.payloads.createColorTempStep(getColorTempStep(msg)); })
             .addOutput(3, "brightness_up", "brightness_up_click", "pressed", utils.payloads.createBrightnessStep(config.brightnessChange))
             .addOutput(3, "brightness_up", "brightness_up_hold", "hold", utils.payloads.createBrightnessMove(config.brightnessChange))
             .addOutput(3, "brightness_up", "brightness_up_release", "released", utils.payloads.createBrightnessMove(0))
-            .addOutput(4, "brightness_down", "brightness_down_click", "pressed", utils.payloads.createBrightnessStep(0-config.brightnessChange))
-            .addOutput(4, "brightness_down", "brightness_down_hold", "hold", utils.payloads.createBrightnessMove(0-config.brightnessChange))
+            .addOutput(4, "brightness_down", "brightness_down_click", "pressed", utils.payloads.createBrightnessStep(0 - config.brightnessChange))
+            .addOutput(4, "brightness_down", "brightness_down_hold", "hold", utils.payloads.createBrightnessMove(0 - config.brightnessChange))
             .addOutput(4, "brightness_down", "brightness_down_release", "released", utils.payloads.createBrightnessMove(0))
             .addOutput(5, "scene", "scene_3", "pressed", utils.payloads.createSetSceneCommand(0))
             .addOutput(5, "scene", "scene_1", "pressed", utils.payloads.createSetSceneCommand(1))
             .addOutput(5, "scene", "scene_2", "pressed", utils.payloads.createSetSceneCommand(2))
             .addOutput(5, "scene", "scene_6", "pressed", utils.payloads.createSetSceneCommand(3))
             .addOutput(5, "scene", "scene_4", "pressed", utils.payloads.createSetSceneCommand(4))
-            .addOutput(5, "scene", "scene_5", "pressed", utils.payloads.createSetSceneCommand(5))
+            .addOutput(5, "scene", "scene_5", "pressed", utils.payloads.createSetSceneCommand(5));
 
         bridgeNode.subscribeDevice(node.id, config.deviceName, function (msg) {
             try {
-                node.send(handler.prepareOutput("action", msg, node));
+                node.send(handler.prepareOutput("action", msg));
                 node.status({ fill: "green", "text": "Last action: " + msg.action });
                 setTimeout(function () {
                     utils.setConnectionState(bridgeNode, node);
@@ -78,9 +78,9 @@ module.exports = function (RED) {
             }
         });
 
-        node.on('close', () => {
+        node.on("close", () => {
             bridgeNode.unsubscribe(node.id);
         });
     }
     RED.nodes.registerType("tint-remote", tintRemote);
-}
+};
