@@ -12,7 +12,7 @@ module.exports = {
     },
     "rules": {
         "indent": [
-            "warn",
+            "error",
             4,
             {
                 "SwitchCase":1
