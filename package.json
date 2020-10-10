@@ -16,9 +16,10 @@
     "node-red": {
         "nodes": {
             "api": "src/_api.js",
+            "mqtt-config": "src/non-z2m-nodes/mqtt-config.js",
+            "config": "src/zigbee2mqtt-config.js",
             "generic-lamp": "src/zigbee2mqtt.js",
             "override": "src/override-nodes.js",
-            "config": "src/zigbee2mqtt-config.js",
             "scenes": "src/scenes.js",
             "sensors": "src/sensors.js",
             "ota": "src/ota.js",

@@ -98,6 +98,9 @@ module.exports = function (RED) {
         });
 
         node.on("input", function (msg) {
+            if (msg.payload === undefined || typeof msg.payload != "object") {
+                msg.payload = {};
+            }
 
             if (msg.payload.devices === undefined) {
                 msg.payload.devices = [];
