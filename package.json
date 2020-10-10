@@ -27,7 +27,8 @@
             "devices-ikea": "src/devices-ikea.js",
             "devices-sonoff": "src/devices-sonoff.js",
             "devices-scenic": "src/devices-scenic.js",
-            "devices-tint": "src/devices-tint.js"
+            "devices-tint": "src/devices-tint.js",
+            "non-z2m-devices-shelly-25": "src/non-z2m-nodes/devices-shelly-25.js"
         }
     },
     "dependencies": {

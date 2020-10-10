@@ -1,0 +1,69 @@
+<!--- BRIDGE CONFIG NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('shelly-25', {
+        category: 'zigbee2mqtt_non_z2m-input',
+        defaults: {
+            name: { value: "" },
+            mqtt: { type: "mqtt-config" },
+            prefix: { value: "", required: true },
+            requireLogin: { value: false },
+            enableInput: { value: false },
+            condensedOutput: { value: true },
+        },
+        inputs: 0,
+        outputs: 4,
+        icon: "remote-black.svg",
+        label: function () { return this.name || "shelly 2.5"; },
+        paletteLabel: "shelly 2.5",
+        oneditsave: function () {
+            console.log(this);
+
+            if ($("#node-input-condensedOutput").is(":checked")) {
+                this.outputs = 3;
+                this.outputLabels = ["status", "input 0", "input 1"];
+            } else {
+                this.outputs = 4;
+                this.outputLabels = ["relay 0", "relay 1", "input 0", "input 1"];
+            }
+
+            if ($("#node-input-enableInput").is(":checked")) {
+                this.inputs = 1;
+                this.outputs += 1;
+                this.outputLabels.push("message");
+            } else {
+                this.inputs = 0;
+            }
+
+            console.log(this);
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="shelly-25">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" />
+    </div>	
+    <div class="form-row">
+        <label for="node-input-mqtt"><i class="fa fa-tag"></i> Broker</label>
+        <input type="text" id="node-input-mqtt"  />
+    </div>
+    <div class="form-row">
+        <label for="node-input-prefix"><i class="fa fa-tag"></i> MQTT Prefix</label>
+        <input type="text" id="node-input-prefix" placeholder="shellies/<shellymodel>-<deviceid>"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-enableInput"><i class="fa fa-tag"></i> Enable Input</label>
+        <input type="checkbox" id="node-input-enableInput"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-condensedOutput"><i class="fa fa-tag"></i> Condensed Output</label>
+        <input type="checkbox" id="node-input-condensedOutput"/>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="shelly-25">
+    <p>
+        Configure your shelly device
+    </p>
+</script>

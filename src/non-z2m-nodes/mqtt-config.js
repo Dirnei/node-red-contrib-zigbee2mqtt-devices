@@ -69,7 +69,10 @@ module.exports = function (RED) {
 
         client.on("message", function (topic, message) {
             try {
-                message = JSON.parse(message);
+                message = message.toString("utf8");
+                if (message.startsWith("{")) {
+                    message = JSON.parse(message);
+                }
 
                 var subs = _subs.filter(e => e.topic === topic);
                 subs.forEach(e => {
@@ -80,7 +83,7 @@ module.exports = function (RED) {
                     }
                 });
             } catch (err) {
-                node.error(err);
+                node.error(topic + " - " + err);
             }
         });
 
