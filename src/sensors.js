@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 module.exports = function (RED) {
     const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
@@ -68,7 +69,7 @@ module.exports = function (RED) {
 
             node.status({ fill: "green", text: text });
             node.send({ payload: message });
-        };
+        }
 
         function subscribe() {
             node.status({ fill: "green", text: "connected" });
@@ -89,4 +90,4 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("climate-sensor", climateSensor);
-}
+};

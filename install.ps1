@@ -84,7 +84,7 @@ Write-Output "Change location to: $destination"
 Set-Location $destination
 
 if ($packageModified) {
-    npm install ".\myModules\$repoName"
+    npm install --production ".\myModules\$repoName"
 }
 
 Write-Output "Switching back to: $origin"

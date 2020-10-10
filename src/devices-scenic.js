@@ -25,7 +25,7 @@ module.exports = function (RED) {
                     release_2_of_2: utils.createButtonOutput(4, "UP", "released"),
                     press_1_of_2: utils.createButtonOutput(5, "DOWN", "pressed"),
                     release_1_of_2: utils.createButtonOutput(5, "DOWN", "released"),
-                }
+                };
 
                 var output = ioMap[message.action];
                 utils.sendAt(node, output.index, {
@@ -38,4 +38,4 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("scenic-foh-switch", scenicSwitch);
-}
+};

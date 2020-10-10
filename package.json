@@ -10,8 +10,8 @@
         "smart home"
     ],
     "repository": {
-      "type": "git",
-      "url": "git+https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices"
+        "type": "git",
+        "url": "git+https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices"
     },
     "node-red": {
         "nodes": {
@@ -32,5 +32,8 @@
     "dependencies": {
         "mqtt": "^4.2.1",
         "node-red-ext-bavaria-black": "0.3.0"
+    },
+    "devDependencies": {
+        "eslint": "^7.10.0"
     }
 }

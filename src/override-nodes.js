@@ -6,7 +6,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on('input', function (msg) {
+        node.on("input", function (msg) {
             if (msg.payload === undefined || typeof msg.payload != "object") {
                 msg.payload = {};
             }
@@ -26,7 +26,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on('input', function (msg) {
+        node.on("input", function (msg) {
             if (msg.payload === undefined || typeof msg.payload != "object") {
                 msg.payload = {};
             }
@@ -46,7 +46,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on('input', function (msg) {
+        node.on("input", function (msg) {
             if (msg.payload === undefined || typeof msg.payload != "object") {
                 msg.payload = {};
             }
@@ -70,7 +70,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on('input', function (msg) {
+        node.on("input", function (msg) {
             if (msg.payload === undefined || typeof msg.payload != "object") {
                 msg.payload = {};
             }
@@ -110,4 +110,4 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("override-action", overrideAction);
-}
+};

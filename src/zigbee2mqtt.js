@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable indent */
 module.exports = function (RED) {
     const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
@@ -16,7 +18,7 @@ module.exports = function (RED) {
         }
 
         function messageToStatus(msg) {
-            var status = "grey";
+            var statusColor = "grey";
             var text = "Lm: " + msg.brightness;
 
             switch (msg.state) {
@@ -25,14 +27,14 @@ module.exports = function (RED) {
                 case 1:
                 case "true":
                 case true:
-                    status = "green";
+                    statusColor = "green";
                     break;
                 case "OFF":
                 case "0":
                 case 0:
                 case "false":
                 case false:
-                    status = "gray";
+                    statusColor = "gray";
                     break;
             }
 
@@ -48,7 +50,7 @@ module.exports = function (RED) {
 
                 text += " RGB: (" + rgb.r + ", " + rgb.g + ", " + rgb.b + ")";
             }
-            var status = { fill: status, shape: "dot", text: text };
+            var status = { fill: statusColor, shape: "dot", text: text };
             nodeContext.set(getContextName(), {
                 status: status
             });
@@ -62,7 +64,7 @@ module.exports = function (RED) {
             });
         }
 
-        bavaria.observer.register(bridgeNode.id + "_connected", function (msg) {
+        bavaria.observer.register(bridgeNode.id + "_connected", function (_msg) {
             if (deviceConfig.genericMqttDevice !== true) {
                 bridgeNode.refreshDevice(deviceConfig.deviceName);
             }
@@ -74,7 +76,7 @@ module.exports = function (RED) {
             }
         }
 
-        bavaria.observer.register(topic + "_routeError", function (msg) {
+        bavaria.observer.register(topic + "_routeError", function (_msg) {
             var status = { fill: "red", shape: "dot", text: "route error" };
             nodeContext.set(getContextName(), {
                 status: status
@@ -90,18 +92,18 @@ module.exports = function (RED) {
             node.status({ fill: "gray", shape: "dot", text: "pending" });
         }
 
-        node.on('close', function () {
+        node.on("close", function () {
             nodeContext.set(getContextName(), undefined);
             bridgeNode.unsubscribe(node.id);
         });
 
-        node.on('input', function (msg) {
+        node.on("input", function (msg) {
 
             if (msg.payload.devices === undefined) {
                 msg.payload.devices = [];
             }
 
-            device = {
+            var device = {
                 topic: deviceConfig.genericMqttDevice ? deviceConfig.commandTopic : deviceConfig.deviceName,
                 state: config.state,
                 delay: config.delay,
@@ -143,7 +145,7 @@ module.exports = function (RED) {
         }
         node.status({ fill: "blue", text: "not connected" });
 
-        bavaria.observer.register(bridgeNode.id + "_connected", function (msg) {
+        bavaria.observer.register(bridgeNode.id + "_connected", function (_msg) {
             node.status({ fill: "green", text: "connected" });
         });
 
@@ -151,7 +153,7 @@ module.exports = function (RED) {
             node.status({ fill: "green", text: "connected" });
         }
 
-        node.on('input', function (msg) {
+        node.on("input", function (msg) {
             var messages = [];
             msg.payload.devices.forEach(element => {
                 if (msg.payload.override !== undefined) {
@@ -203,7 +205,7 @@ module.exports = function (RED) {
                 var message = {
                     payload: messages[i],
                     topic: topic,
-                }
+                };
 
                 message.payload.topic = undefined;
 
@@ -245,7 +247,7 @@ module.exports = function (RED) {
             hold: utils.createButtonOutput(1, "", ""),
             released: utils.createButtonOutput(2, "", ""),
             double: utils.createButtonOutput(3, "", ""),
-        }
+        };
 
         function getPayload(data, type) {
             try {
@@ -264,7 +266,7 @@ module.exports = function (RED) {
             return data;
         }
 
-        node.on('input', function (msg) {
+        node.on("input", function (msg) {
             var actionName = msg.payload.button_type;
             var index = inputs[actionName].index;
             actionName = actionName.charAt(0).toUpperCase() + actionName.slice(1);
@@ -324,7 +326,7 @@ module.exports = function (RED) {
             }
         }
 
-        node.on('input', function (msg) {
+        node.on("input", function (msg) {
             enableOutput = true;
 
             if (deviceNode.genericMqttDevice === true) {
@@ -335,4 +337,4 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("get-lamp-state", getLampState);
-}
+};
