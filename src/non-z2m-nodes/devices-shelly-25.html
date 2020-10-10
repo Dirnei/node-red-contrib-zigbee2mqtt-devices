@@ -1,40 +1,67 @@
-<!--- BRIDGE CONFIG NODE --->
+<!--- SHELLY CONFIG NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('shelly-config', {
+        category: 'config',
+        defaults: {
+            name: { value: "" },
+            prefix: { value: "", required: true },
+        },
+        label: function () { return this.name || "shelly 2.5"; },
+    });
+</script>
+
+<script type="text/html" data-template-name="shelly-config">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name" />
+    </div>	
+    <div class="form-row">
+        <label for="node-input-prefix"><i class="fa fa-tag"></i> MQTT Prefix</label>
+        <input type="text" id="node-config-input-prefix" placeholder="shellies/<shellymodel>-<deviceid>"/>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="shelly-config">
+    <p>
+        Configure your shelly device
+    </p>
+</script>
+
+<!--- SHELLY NODE --->
 <script type="text/javascript">
     RED.nodes.registerType('shelly-25', {
         category: 'zigbee2mqtt_non_z2m-input',
         defaults: {
             name: { value: "" },
             mqtt: { type: "mqtt-config" },
-            prefix: { value: "", required: true },
-            requireLogin: { value: false },
-            enableInput: { value: false },
-            condensedOutput: { value: true },
+            shelly: { type: "shelly-config" },
+            enableInput: { value: true },
+            state: { value: "on" },
+            channel: { value: "0" },
+            inputs: { value: 1 },
+            outputs: { value: 3 },
         },
-        inputs: 0,
-        outputs: 4,
+        inputs: 1,
+        outputs: 3,
+        outputLabels: function () {
+            var labels = ["Channel " + this.channel, "Input " + this.channel];
+            if (this.enableInput) {
+                labels.push("message");
+            }
+
+            return labels;
+        },
         icon: "remote-black.svg",
         label: function () { return this.name || "shelly 2.5"; },
         paletteLabel: "shelly 2.5",
         oneditsave: function () {
-            console.log(this);
-
-            if ($("#node-input-condensedOutput").is(":checked")) {
-                this.outputs = 3;
-                this.outputLabels = ["status", "input 0", "input 1"];
-            } else {
-                this.outputs = 4;
-                this.outputLabels = ["relay 0", "relay 1", "input 0", "input 1"];
-            }
-
-            if ($("#node-input-enableInput").is(":checked")) {
+            if ($("#node-input-enableInput").is(":checked") && (this.inputs !== 1 || !this.inputs)) {
                 this.inputs = 1;
-                this.outputs += 1;
-                this.outputLabels.push("message");
-            } else {
+                this.outputs = 3;
+            } else if (!$("#node-input-enableInput").is(":checked") && (this.inputs !== 0 || !this.inputs)) {
                 this.inputs = 0;
+                this.outputs = 2;
             }
-
-            console.log(this);
         }
     });
 </script>
@@ -49,16 +76,27 @@
         <input type="text" id="node-input-mqtt"  />
     </div>
     <div class="form-row">
-        <label for="node-input-prefix"><i class="fa fa-tag"></i> MQTT Prefix</label>
-        <input type="text" id="node-input-prefix" placeholder="shellies/<shellymodel>-<deviceid>"/>
+        <label for="node-input-shelly"><i class="fa fa-tag"></i> Broker</label>
+        <input type="text" id="node-input-shelly"  />
+    </div>
+    <div class="form-row">
+        <label for="node-input-channel"><i class="fa fa-power-off"></i> Channel</label>
+        <select id="node-input-channel">
+            <option value="0">Channel 1</option>
+            <option value="1">Channel 2</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-state"><i class="fa fa-power-off"></i> State</label>
+        <select id="node-input-state">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+            <option value="toggle">Toggle</option>
+        </select>
     </div>
     <div class="form-row">
         <label for="node-input-enableInput"><i class="fa fa-tag"></i> Enable Input</label>
         <input type="checkbox" id="node-input-enableInput"/>
-    </div>
-    <div class="form-row">
-        <label for="node-input-condensedOutput"><i class="fa fa-tag"></i> Condensed Output</label>
-        <input type="checkbox" id="node-input-condensedOutput"/>
     </div>
 </script>
 

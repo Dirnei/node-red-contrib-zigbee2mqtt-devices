@@ -198,34 +198,51 @@ module.exports = function (RED) {
             enqueue();
 
             function sendNextMessage() {
-                var topic = messages[i].topic;
-                if (messages[i].target === "z2m" || messages[i].target === undefined) {
-                    topic = bridgeNode.baseTopic + "/" + messages[i].topic + "/set";
+                try {
+                    var topic = messages[i].topic;
+                    var enableGenerator = messages[i].target === "mqtt";
+
+                    if (messages[i].target === "z2m" || messages[i].target === undefined) {
+                        topic = bridgeNode.baseTopic + "/" + messages[i].topic + "/set";
+                    }
+
+                    messages[i].target = undefined;
+                    messages[i].delay = undefined;
+
+                    var message = {
+                        payload: messages[i],
+                        topic: topic,
+                    };
+
+                    message.payload.topic = undefined;
+
+                    if (message.payload.temperature) {
+                        message.payload.color_temp = message.payload.temperature;
+                        message.payload.temperature = undefined;
+                    }
+
+                    if (message.payload.transition === 0) {
+                        message.payload.transition = undefined;
+                    }
+
+                    try {
+                        if (message.payload.payloadGenerator && typeof message.payload.payloadGenerator === "function") {
+                            message.payload = message.payload.payloadGenerator(message.payload);
+                        } else {
+                            message.payload = JSON.stringify(message.payload);
+                        }
+
+                        bridgeNode.publish(message.topic, message.payload);
+                    } catch (err) {
+                        node.error(err);
+                    }
+
+                    if (++i < messages.length) {
+                        enqueue();
+                    }
                 }
-
-                messages[i].target = undefined;
-
-                var message = {
-                    payload: messages[i],
-                    topic: topic,
-                };
-
-                message.payload.topic = undefined;
-
-                if (message.payload.temperature) {
-                    message.payload.color_temp = message.payload.temperature;
-                    message.payload.temperature = undefined;
-                }
-                
-                if(message.payload.transition === 0){
-                    message.payload.transition = undefined;
-                }
-
-                msg.payload.delay = undefined;
-                bridgeNode.publish(message.topic, JSON.stringify(message.payload));
-
-                if (++i < messages.length) {
-                    enqueue();
+                catch (err) {
+                    node.error(err);
                 }
             }
 

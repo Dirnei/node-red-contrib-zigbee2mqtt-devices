@@ -2,26 +2,33 @@ module.exports = function (RED) {
     const utils = require("../../lib/utils.js");
     const bavaria = utils.bavaria();
 
+    function createShellyConfig(config) {
+        RED.nodes.createNode(this, config);
+        this.prefix = config.prefix;
+        this.name = config.name;
+
+    }
+
+    RED.nodes.registerType("shelly-config", createShellyConfig);
+
     function createShelly25(config) {
         RED.nodes.createNode(this, config);
         var node = this;
         var broker = RED.nodes.getNode(config.mqtt);
+        var shelly = RED.nodes.getNode(config.shelly);
+
         var context = node.context();
         var status = context.get("status") || { relay: [{ state: "off", energy: 0, power: 0 }, { state: "off", energy: 0, power: 0 }] };
+        var channel = parseInt(config.channel);
+        node.warn(channel);
 
-        broker.subscribe(node.id, config.prefix + "/relay/0", (msg) => { setRelay(0, msg); });
-        broker.subscribe(node.id + 1, config.prefix + "/relay/0/power", (msg) => { setPower(0, msg); });
-        broker.subscribe(node.id + 2, config.prefix + "/relay/0/energy", (msg) => { setEnergy(0, msg); });
-        broker.subscribe(node.id + 3, config.prefix + "/relay/1", (msg) => { setRelay(1, msg); });
-        broker.subscribe(node.id + 4, config.prefix + "/relay/1/power", (msg) => { setPower(1, msg); });
-        broker.subscribe(node.id + 5, config.prefix + "/relay/1/energy", (msg) => { setEnergy(1, msg); });
+        broker.subscribe(node.id, shelly.prefix + "/relay/" + channel, (msg) => { setRelay(channel, msg); });
+        broker.subscribe(node.id + 1, shelly.prefix + "/relay/" + channel + "/power", (msg) => { setPower(channel, msg); });
+        broker.subscribe(node.id + 2, shelly.prefix + "/relay/" + channel + "/energy", (msg) => { setEnergy(channel, msg); });
+        broker.subscribe(node.id + 2, shelly.prefix + "/input/" + channel, (msg) => { inputReceived(msg); });
 
-        broker.subscribe(node.id + 6, config.prefix + "/input/0", (msg) => { inputReceived(0, msg); });
-        broker.subscribe(node.id + 7, config.prefix + "/input/1", (msg) => { inputReceived(1, msg); });
-
-        function inputReceived(index, msg) {
-            node.warn("input/" + index);
-            node.send(utils.outputs.preapreOutputFor(index + (config.condensedOutput == true ? 1 : 2), msg));
+        function inputReceived(msg) {
+            node.send(utils.outputs.preapreOutputFor(1, msg));
         }
 
         function setRelay(index, value) {
@@ -45,39 +52,30 @@ module.exports = function (RED) {
         }
 
         function publishState(index) {
-            if (config.condensedOutput === true) {
-                node.send({ payload: status });
-            } else {
-                var states = [];
-                for (var i = 0; i < index; i++) {
-                    states.push(null);
-                }
-
-                states.push({
-                    paload: status.relay[index]
-                });
-
-                node.send(states);
-            }
+            node.send({
+                paload: status.relay[index]
+            });
         }
 
         node.on("input", function (msg) {
-            
-            msg = utils.payloads.devices.addDevice(msg, {
-                topic: config.prefix + "/relay/0",
-                state: "on",
-                target: "mqtt"
-            });
+            var state = config.state;
+            if (config.state === "toggle") {
+                state = status.relay[channel].state == "on" ? "off" : "on";
+            }
 
             msg = utils.payloads.devices.addDevice(msg, {
-                topic: config.prefix + "/relay/1",
-                state: "on",
-                target: "mqtt"
+                topic: shelly.prefix + "/relay/" + channel + "/command",
+                state: state,
+                target: "mqtt",
+                payloadGenerator: preparePayload
             });
 
-            node.warn(config);
             node.send(utils.outputs.preapreOutputFor(this.wires.length - 1, msg));
         });
+
+        function preparePayload(data) {
+            return data.state || "off";
+        }
 
         node.on("close", function () {
 
