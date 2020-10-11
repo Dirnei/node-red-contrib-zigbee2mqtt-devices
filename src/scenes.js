@@ -21,14 +21,14 @@ module.exports = function (RED) {
 
         this.isActive = function () {
             return config.active;
-        }
+        };
 
         this.trigger = function (msg) {
             if (config.active === true) {
                 msg.scene = config.scene;
                 node.send(msg);
             }
-        }
+        };
     }
     RED.nodes.registerType("scene-in", sceneIn);
 
@@ -57,7 +57,7 @@ module.exports = function (RED) {
         var index = nodeContext.get("index");
         setState(index);
 
-        node.on('input',msg => handleMessage(msg, 0));
+        node.on("input",msg => handleMessage(msg, 0));
 
         function handleMessage(msg, revCount) {
             if(revCount >= config.scenes.length ){
@@ -65,7 +65,14 @@ module.exports = function (RED) {
                 return;
             }
             revCount++;
-            var command = msg.command;
+            
+            var command = msg.command !== undefined ? msg.command : msg.payload.command;
+            var scene = msg.scene;
+            
+            if(!scene && msg.payload) {
+                scene = msg.payload.scene;
+            }
+
             if (!command) {
                 return;
             }
@@ -79,10 +86,10 @@ module.exports = function (RED) {
                     index--;
                     break;
                 case "set":
-                    if (typeof msg.scene === "number" && msg.scene < config.scenes.length && msg.scene >= 0) {
-                        index = msg.scene;
-                    } else if (typeof msg.scene === "string") {
-                        index = config.scenes.indexOf(msg.scene);
+                    if (typeof scene === "number" && scene < config.scenes.length && scene >= 0) {
+                        index = scene;
+                    } else if (typeof scene === "string") {
+                        index = config.scenes.indexOf(scene);
                         if (index < 0) {
                             node.error("invalid scene");
                             return;
@@ -95,7 +102,6 @@ module.exports = function (RED) {
                 default:
                     node.error("Command not found");
                     return;
-                    break;
             }
 
             if (config.wrapAround === false) {
@@ -132,4 +138,4 @@ module.exports = function (RED) {
         }
     }
     RED.nodes.registerType("scene-selector", sceneSelector);
-}
+};

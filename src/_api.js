@@ -2,7 +2,7 @@ module.exports = function (RED) {
     const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
 
-    RED.httpAdmin.get('/z2m/devices/:broker/:deviceType/:vendor/:model', function (req, res) {
+    RED.httpAdmin.get("/z2m/devices/:broker/:deviceType/:vendor/:model", function (req, res) {
         try {
             var broker = RED.nodes.getNode(req.params.broker.replace("_", "."));
             var devices = broker.getDeviceList();
@@ -34,7 +34,7 @@ module.exports = function (RED) {
         }
     });
 
-    RED.httpAdmin.get('/z2m/scenes', function (req, res) {
+    RED.httpAdmin.get("/z2m/scenes", function (req, res) {
         try {
             var scenes = [];
             RED.nodes.eachNode(n => {
@@ -52,4 +52,4 @@ module.exports = function (RED) {
             console.log(err);
         }
     });
-}
+};

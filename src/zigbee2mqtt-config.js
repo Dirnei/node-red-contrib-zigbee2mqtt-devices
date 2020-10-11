@@ -15,11 +15,11 @@ module.exports = function (RED) {
         this.commandTopic = config.commandTopic;
         this.refreshTopic = config.refreshTopic;
     }
-    RED.nodes.registerType("zigbee2mqtt-device-config", deviceConfig)
+    RED.nodes.registerType("zigbee2mqtt-device-config", deviceConfig);
 
     function bridgeConfig(config) {
         RED.nodes.createNode(this, config);
-        var mqtt = require('mqtt')
+        var mqtt = require("mqtt");
         this.name = config.name;
         this.baseTopic = config.baseTopic;
         this.broker = config.broker;
@@ -48,8 +48,9 @@ module.exports = function (RED) {
                 var topic = node.baseTopic + "/" + device + "/set";
                 this.publish(topic, JSON.stringify(payload));
             }
-        }
+        };
         this.refreshDevice = function (deviceName) {
+            // eslint-disable-next-line quotes
             client.publish(node.baseTopic + "/" + deviceName + "/get", '{"state": ""}');
         };
         this.getDeviceList = function () {
@@ -91,11 +92,11 @@ module.exports = function (RED) {
                     topic: topic,
                     callback: callback,
                     isDevice: isDevice
-                }
+                };
 
                 _subs.push(sub);
             }
-        };
+        }
 
         var registeredOtaNodeId = "";
         var otaCallback = (msg) => { };
@@ -110,9 +111,9 @@ module.exports = function (RED) {
             otaDeviceCallback = deviceStatusCallback;
 
             return true;
-        }
+        };
 
-        client.on('message', function (topic, message) {
+        client.on("message", function (topic, message) {
             try {
                 message = JSON.parse(message);
 
@@ -141,7 +142,7 @@ module.exports = function (RED) {
                                     status: message.meta.status,
                                     progress: message.meta.progress,
                                     message: message.message,
-                                })
+                                });
                                 break;
                         }
                     }
@@ -164,7 +165,7 @@ module.exports = function (RED) {
             }
         });
 
-        client.on('connect', function () {
+        client.on("connect", function () {
             client.subscribe(node.baseTopic + "/bridge/log");
             client.subscribe(node.baseTopic + "/+");
 
@@ -185,4 +186,4 @@ module.exports = function (RED) {
             password: { type: "password" }
         }
     });
-}
+};

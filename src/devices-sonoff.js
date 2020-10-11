@@ -12,6 +12,10 @@ module.exports = function (RED) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
                 try {
+                    if (message.action === undefined) {
+                        return;
+                    }
+
                     const ioMap = {
                         single: utils.createButtonOutput(0, "button", "pressed"),
                         long: utils.createButtonOutput(0, "button", "released"),
@@ -39,4 +43,4 @@ module.exports = function (RED) {
 
     }
     RED.nodes.registerType("sonoff-button", sonoffButton);
-}
+};
