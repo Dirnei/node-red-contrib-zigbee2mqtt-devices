@@ -20,14 +20,31 @@ module.exports = function (RED) {
         var context = node.context();
         var status = context.get("status") || { relay: [{ state: "off", energy: 0, power: 0 }, { state: "off", energy: 0, power: 0 }] };
         var channel = parseInt(config.channel);
-        node.warn(channel);
 
-        broker.subscribe(node.id, shelly.prefix + "/relay/" + channel, (msg) => { setRelay(channel, msg); });
-        broker.subscribe(node.id + 1, shelly.prefix + "/relay/" + channel + "/power", (msg) => { setPower(channel, msg); });
-        broker.subscribe(node.id + 2, shelly.prefix + "/relay/" + channel + "/energy", (msg) => { setEnergy(channel, msg); });
-        broker.subscribe(node.id + 2, shelly.prefix + "/input/" + channel, (msg) => { inputReceived(msg); });
+        function subscribe(channel, offset) {
+            broker.subscribe(node.id + offset, shelly.prefix + "/relay/" + channel, (msg) => { setRelay(channel, msg); });
+            broker.subscribe(node.id + 1 + offset, shelly.prefix + "/relay/" + channel + "/power", (msg) => { setPower(channel, msg); });
+            broker.subscribe(node.id + 2 + offset, shelly.prefix + "/relay/" + channel + "/energy", (msg) => { setEnergy(channel, msg); });
+            broker.subscribe(node.id + 3 + offset, shelly.prefix + "/input/" + channel, (msg) => { inputReceived(msg, channel); });
+        }
 
-        function inputReceived(msg) {
+        if (channel === 2) {
+            subscribe(0, 0);
+            subscribe(1, 1);
+        } else {
+            subscribe(channel, 0);
+        }
+
+        function inputReceived(msg, channel) {
+            msg = {
+                payload: msg
+            };
+            if (config.customPayload === true) {
+                var data = config["payloadInput" + channel];
+                var type = config["typeInput" + channel];
+                msg.payload = utils.ui.input.getPayload(data, type);
+            }
+
             node.send(utils.outputs.preapreOutputFor(1, msg));
         }
 
@@ -52,29 +69,47 @@ module.exports = function (RED) {
         }
 
         function publishState(index) {
-            node.send({
-                paload: status.relay[index]
-            });
+            if (channel === 2) {
+                node.send({ paload: status.relay });
+            } else {
+                node.send({ paload: status.relay[index] });
+            }
         }
 
         node.on("input", function (msg) {
-            var state = config.state;
-            if (config.state === "toggle") {
-                state = status.relay[channel].state == "on" ? "off" : "on";
+            function getOutputPayload(msg, channel, state) {
+                return utils.payloads.devices.addDevice(msg, {
+                    topic: shelly.prefix + "/relay/" + channel + "/command",
+                    state: utils.payloads.convertToOnOff(state),
+                    target: "mqtt",
+                    payloadGenerator: preparePayload
+                });
             }
 
-            msg = utils.payloads.devices.addDevice(msg, {
-                topic: shelly.prefix + "/relay/" + channel + "/command",
-                state: state,
-                target: "mqtt",
-                payloadGenerator: preparePayload
-            });
+            function getNewState(channel) {
+                if (config.state === "toggle") {
+                    return status.relay[channel].state == "on" ? "off" : "on";
+                }
+
+                return config.state;
+            }
+
+            if (channel === 2) {
+                msg = getOutputPayload(msg, 0, getNewState(0));
+                msg = getOutputPayload(msg, 1, getNewState(1));
+            } else {
+                msg = getOutputPayload(msg, channel, getNewState(1));
+            }
 
             node.send(utils.outputs.preapreOutputFor(this.wires.length - 1, msg));
         });
 
         function preparePayload(data) {
-            return data.state || "off";
+            if (data.state === undefined) {
+                data.state = "off";
+            }
+
+            return data.state.toLowerCase();
         }
 
         node.on("close", function () {

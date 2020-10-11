@@ -233,60 +233,16 @@
             var node = this;
             var names = ["Pressed", "Hold", "Released", "Double"];
             names.forEach(name => {
-                var value = node["payload" + name];
-                var type = node["type" + name];
-                
-                var options = {
-                    type: type,
-                    types: ["str", "json", "num", "bool"]
-                };
-
-                const index = options.types.indexOf(type);
-
-                if (index > -1) {
-                    options.types.splice(index, 1);
-                    options.types.splice(0, 0, type);
-                }
-
-                console.log(options);
-                $("#node-input-payload" + name).typedInput(options);
+                RED.bavaria.ui.addMultiInput(node, name);
             });
         },
         oneditsave: function () {
-            function getInputType(name) {
-                var splits = $("#node-input-payload" + name).next().children("button").children("span").children("img").first().attr("src").split("/");
-                var type = splits[splits.length - 1].split(".")[0];
-
-                switch (type) {
-                    case "az":
-                        type = "str";
-                        break;
-                    case "09":
-                        type = "num";
-                        break;
-                    case "bool":
-                        type = "bool";
-                        break;
-                    case "json":
-                        type = "json";
-                        break;
-                }
-
-                return type;
-            }
-
             var names = ["Pressed", "Hold", "Released", "Double"];
             var node = this;
 
             names.forEach(name => {
-                var type = getInputType(name);
-
-                node["customPayload" + name] = $("#node-input-payload" + name).val() !== "";
-                node["type" + name] = type;
-                console.log(type);
+                RED.bavaria.ui.saveMultiInput(node, name)
             });
-
-            console.log(node);
         }
     });
 </script>
