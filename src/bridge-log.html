@@ -3,23 +3,23 @@
 <script type="text/javascript">
 
     RED.nodes.registerType('bridge-log', {
-        category: 'zigbee2mqtt_sensor', //todo: change category
-        color: '#fcba03',
+        category: 'zigbee2mqtt', //todo: change category
+        color: '#C0D3C5',
         defaults: {
             name: { value: "" },
             bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
-            deviceName: { value: "", required: true },
         },
         inputs: 0,
-        outputs: 2,
-        icon: "debug.png", // todo: debug icon
+        outputs: 1,
+        outputLabels: ["closed"],
+        icon: "debug.png", // todo: log icon
         label: function () {
             return this.name || "Bridge log";
         },
-        outputLabels: ["closed", "open"],
+        
         oneditprepare: function () {
             var node = this;
-            var deviceName = node.deviceName;
+            // var deviceName = node.deviceName;
 
             // $("#node-input-bridge").change(function () {
             //     var bridgeId = $("#node-input-bridge").val().replace(".", "_");
@@ -43,14 +43,10 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
     </div>
-    <!-- <div class="form-row">
+    <div class="form-row">
         <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
         <input type="text" id="node-input-bridge" placeholder="bridge" />
     </div>
-    <div class="form-row">
-        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
-        <select id="node-input-deviceName"></select>
-    </div> -->
     <div class="form-tips"><b>Tip:</b> This is here to help.</div>
 </script>
 

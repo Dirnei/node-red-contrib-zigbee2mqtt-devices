@@ -118,6 +118,7 @@ module.exports = function (RED) {
                 message = JSON.parse(message);
 
                 if (topic === node.baseTopic + "/bridge/log") {
+                    bavaria.observer.notify(node.id + "_bridgeLog", message);
                     if (message.type === "devices") {
                         message.message.forEach(element => {
                             if (!knownDevices.some(dev => { return dev.friendly_name == element.friendly_name; })) {

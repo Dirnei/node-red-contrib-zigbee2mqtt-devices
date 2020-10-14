@@ -10,15 +10,12 @@ module.exports = function (RED) {
         utils.setConnectionState(bridgeNode, node);
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
-
-            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
-                if (message.contact) {
-                    node.send({ payload: message });
-                } else {
-                    node.send([null, { payload: message }]);
-                }
+            
+            bavaria.observer.register(bridgeNode.id + "_bridgeLog", message => {
+                node.send({ payload: message.message });
             });
+            
         });
     }
     RED.nodes.registerType("bridge-log", bridgeLog);
-}
+};
