@@ -9,24 +9,29 @@ module.exports = function (RED) {
             var type = req.params.deviceType.toLowerCase();
             var vendor = decodeURI(req.params.vendor).toLowerCase();
             var model = decodeURI(req.params.model).toLowerCase();
-    
+
             res.end(JSON.stringify({
                 devices: devices.filter(e => {
-                    var dt = e.type.toLowerCase();
-                    var dv = "all";
-                    var dm = "all";
-    
-                    if (e.vendor) {
-                        dv = e.vendor.toLowerCase();
+                    try {
+                        var dt = e.type.toLowerCase();
+                        var dv = "all";
+                        var dm = "all";
+
+                        if (e.vendor) {
+                            dv = e.vendor.toLowerCase();
+                        }
+
+                        if (e.model) {
+                            dm = e.model.toLowerCase();
+                        }
+
+                        return (dt == type || (type == "enddevice" && dt == "greenpower") || (type == "all" && dt !== "coordinator")) &&
+                            (dv == vendor || (vendor == "all")) &&
+                            (dm == model || (model == "all"));
+                    } catch (err) {
+                        console.log(err);
+                        console.log(e);
                     }
-    
-                    if (e.model) {
-                        dm = e.model.toLowerCase();
-                    }
-    
-                    return (dt == type || (type == "enddevice" && dt == "greenpower") || (type == "all" && dt !== "coordinator")) &&
-                        (dv == vendor || (vendor == "all")) &&
-                        (dm == model || (model == "all"));
                 })
             }));
         } catch (err) {
