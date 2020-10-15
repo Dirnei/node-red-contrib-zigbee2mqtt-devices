@@ -38,15 +38,66 @@
 </script>
 
 <script type="text/html" data-template-name="bridge-log">
+    <!-- <style type="text/css" scoped>
+        .bridge-log-types label{
+            width:200px !important;
+        }
+        .bridge-log-types input{
+            width:50px !important;
+        }
+    </style> -->
 
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
     </div>
+
     <div class="form-row">
         <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
         <input type="text" id="node-input-bridge" placeholder="bridge" />
     </div>
+
+    <h3>Types</h3>
+    <div class="bridge-log-types">
+        
+        <div class="form-row">
+            <label for="node-input-type-pairing"><i class="fa fa-tag"></i> pairing</label>
+            <input type="checkbox" id="node-input-type-pairing" />
+            <p>Logged when device is connecting to the network.</p>
+        </div>
+        
+        <div class="form-row">
+            <label for="node-input-type-device_connected"><i class="fa fa-tag"></i> blub</label>
+            <input type="checkbox" id="node-input-type-device_connected" />
+            <p>Sent when a new device connects to the network.</p>
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-type-device_ban"><i class="fa fa-tag"></i> device_ban</label>
+            <input type="checkbox" id="node-input-type-device_ban" />
+            <p>Sent when a device is banned from the network.</p>
+        </div>
+
+        <div class="form-row">
+            <input type="checkbox" id="node-input-type-device_ban_failed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off">
+            <label for="node-input-type-device_ban_failed" style="width: 70%;"> device_ban_failed</label>
+            <p>Sent when request to ban a device failed</>
+        </div>
+
+        <div class="form-row">
+            <input type="checkbox" id="node-input-type-device_announced" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off">
+            <label for="node-input-type-device_announced" style="width: 70%;"> device_announced</label>
+            <p>Sent when a device announces itself on the network.</>
+        </div>
+
+        <div class="form-row">
+            <input type="checkbox" id="node-input-type-device_removed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off">
+            <label for="node-input-type-device_removed" style="width: 70%;"> device_removed</label>
+            <p>Sent when a device is removed from the network.</p>
+        </div>
+
+    </div>
+    
     <div class="form-tips"><b>Tip:</b> This is here to help.</div>
 </script>
 
