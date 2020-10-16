@@ -1,5 +1,46 @@
 <!--- OVERRIDE BRIGHTNESS NODE --->
 <script type="text/javascript">
+    RED.nodes.registerType('override-state', {
+        category: 'zigbee2mqtt',
+        color: '#d1a932',
+        defaults: {
+            name: { value: "" },
+            state: { value: "ON" },
+
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "template.png",
+        label: function () {
+            return this.name || "override-state";
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="override-state">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-state"><i class="fa fa-sun-o"></i> State</label>
+        <select id="node-input-state">
+            <option value="ON">On</option>
+            <option value="OFF">Off</option>
+            <option value="TOGGLE">Toggle</option>
+        </select>
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="override-state">
+    <p>Node to override state</p>
+</script>
+
+<!--- OVERRIDE BRIGHTNESS NODE --->
+<script type="text/javascript">
     RED.nodes.registerType('override-brightness', {
         category: 'zigbee2mqtt',
         color: '#bada66',
