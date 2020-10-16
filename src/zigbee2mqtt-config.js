@@ -51,8 +51,10 @@ module.exports = function (RED) {
         this.unsubscribe = mqttNode.unsubscribe;
 
         this.refreshDevice = function (deviceName) {
-            // eslint-disable-next-line quotes
-            mqttNode.publish(node.baseTopic + "/" + deviceName + "/get", '{"state": ""}');
+            if(deviceName !== "" && deviceName !== "---"){
+                // eslint-disable-next-line quotes
+                mqttNode.publish(node.baseTopic + "/" + deviceName + "/get", '{"state": ""}');
+            }
         };
 
         var subId = bavaria.observer.register(mqttNode.id + "_connected", function (_msg) {

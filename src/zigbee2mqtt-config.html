@@ -47,7 +47,7 @@
         defaults: {
             name: { value: "", required: true },
             bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
-            deviceName: { value: "", required: true },
+            deviceName: { value: "---", required: true },
             brightnessSupport: { value: false },
             temperatureSupport: { value: false },
             colorSupport: { value: false },
@@ -74,9 +74,15 @@
                     node.deviceName = "---";
                 } else {
                     $("#fullMqttTopic").hide()
-                    node.deviceName = "";
+                    $("#node-config-input-deviceName").val(deviceName);
                 }
             })
+
+            $("#node-config-input-deviceName").change(function(){
+                if($(this).val() !== "---"){
+                    $("#select-empty-option").remove();
+                }
+            });
 
             $("#node-config-input-bridge").change(function () {
                 var bridgeId = $("#node-config-input-bridge").val().replace(".", "_");
@@ -85,6 +91,10 @@
                     data.devices.forEach(e => {
                         $("#node-config-input-deviceName").append("<option>" + e.friendly_name + "</option>");
                     });
+                    
+                    if(deviceName === "---"){
+                        $("#node-config-input-deviceName").append("<option value=\"---\" id=\"select-empty-option\"> Select device </option>");
+                    }
 
                     $("#node-config-input-deviceName").val(deviceName);
                 });
