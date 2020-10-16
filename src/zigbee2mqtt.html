@@ -206,6 +206,11 @@
         defaults: {
             name: { value: "" },
 
+            enablePressed: { value: true },
+            enableHold: { value: true },
+            enableReleased: { value: true },
+            enableDouble: { value: false },
+
             payloadPressed: { value: "" },
             payloadHold: { value: "" },
             payloadReleased: { value: "" },
@@ -220,9 +225,10 @@
             customPayloadHold: { value: false },
             customPayloadReleased: { value: false },
             customPayloadDouble: { value: false },
+            outputs: { value: 3 },
         },
         inputs: 1,
-        outputs: 4,
+        outputs: 3,
         icon: "function.png",
         label: function () {
             return this.name || "button-switch";
@@ -235,7 +241,7 @@
             names.forEach(name => {
                 var value = node["payload" + name];
                 var type = node["type" + name];
-                
+
                 var options = {
                     type: type,
                     types: ["str", "json", "num", "bool"]
@@ -248,8 +254,15 @@
                     options.types.splice(0, 0, type);
                 }
 
-                console.log(options);
                 $("#node-input-payload" + name).typedInput(options);
+
+                $("#node-input-enable" + name).change(function () {
+                    if ($(this).is(":checked")) {
+                        $("#custom-input-" + name.toLocaleLowerCase()).show();
+                    } else {
+                        $("#custom-input-" + name.toLocaleLowerCase()).hide();
+                    }
+                });
             });
         },
         oneditsave: function () {
@@ -277,16 +290,26 @@
 
             var names = ["Pressed", "Hold", "Released", "Double"];
             var node = this;
+            var outputCount = 0;
 
             names.forEach(name => {
                 var type = getInputType(name);
 
                 node["customPayload" + name] = $("#node-input-payload" + name).val() !== "";
                 node["type" + name] = type;
-                console.log(type);
+
+                if ($("#node-input-enable" + name).is(":checked")) {
+                    outputCount += 1;
+                }
             });
 
-            console.log(node);
+            console.log(outputCount);
+
+            if (this.outputs != outputCount) {
+                this.outputs = outputCount;
+            }
+
+            console.log(this);
         }
     });
 </script>
@@ -297,23 +320,42 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
     </div>
-    <div class="form-row">
-        <label for="node-input-payloadPressed"><i class="fa fa-tag"></i> Pressed</label>
-        <input type="text" id="node-input-payloadPressed">
+    <div class="config-group">
+        <div class="form-row">
+            <input type="checkbox" id="node-input-enablePressed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+            <label for="node-input-enablePressed" style="width: 70%;"> Enable output for <code>pressed</code></label>
+        </div>
+        <div class="form-row" id="custom-input-pressed">
+            <input type="text" id="node-input-payloadPressed">
+        </div>
     </div>
-    <div class="form-row">
-        <label for="node-input-payloadHold"><i class="fa fa-tag"></i> Hold</label>
-        <input type="text" id="node-input-payloadHold">
+    <div class="config-group">
+        <div class="form-row">
+            <input type="checkbox" id="node-input-enableHold" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+            <label for="node-input-enableHold" style="width: 70%;"> Enable output for <code>hold</code></label>
+        </div>
+        <div class="form-row" id="custom-input-hold">
+            <input type="text" id="node-input-payloadHold">
+        </div>
     </div>
-    <div class="form-row">
-        <label for="node-input-payloadReleased"><i class="fa fa-tag"></i> Released</label>
-        <input type="text" id="node-input-payloadReleased">
+    <div class="config-group">
+        <div class="form-row">
+            <input type="checkbox" id="node-input-enableReleased" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+            <label for="node-input-enableReleased" style="width: 70%;"> Enable output for <code>released</code></label>
+        </div>
+        <div class="form-row" id="custom-input-released">
+            <input type="text" id="node-input-payloadReleased">
+        </div>
     </div>
-    <div class="form-row">
-        <label for="node-input-payloadDouble"><i class="fa fa-tag"></i> Double</label>
-        <input type="text" id="node-input-payloadDouble">
+    <div class="config-group">
+        <div class="form-row">
+            <input type="checkbox" id="node-input-enableDouble" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+            <label for="node-input-enableDouble" style="width: 70%;"> Enable output for <code>double</code></label>
+        </div>
+        <div class="form-row" id="custom-input-double">
+            <input type="text" id="node-input-payloadDouble">
+        </div>
     </div>
-
 </script>
 
 <script type="text/html" data-help-name="button-switch">
