@@ -48,6 +48,14 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ## Changelog 
 
+### v0.14.0 !! Breaking-change !!
+
+- Moved mqtt configuration it own [node](docs/config/mqtt-config.md)
+- Added support for [Shelly 2.5](https://shelly.cloud/products/shelly-25-smart-home-automation-relay/)
+- Fixed device list request in [device-config](docs/device-config.md)
+- Changed colors of some nodes
+- Added [override-state](docs/nodes/override-state.md) node
+
 ### v0.13.1
 
 - Fixed validation on newly added [override-action](docs/nodes/override-action.md) node
