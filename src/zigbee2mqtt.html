@@ -225,6 +225,7 @@
             customPayloadHold: { value: false },
             customPayloadReleased: { value: false },
             customPayloadDouble: { value: false },
+            dynamicOutputLabels: { value: [] },
             outputs: { value: 3 },
         },
         inputs: 1,
@@ -233,7 +234,9 @@
         label: function () {
             return this.name || "button-switch";
         },
-        outputLabels: ["pressed", "hold", "released", "double"],
+        outputLabels: function (e) {
+            return this.dynamicOutputLabels[e];
+        },
         oneditprepare: function () {
             RED.bavaria.ui.addNumRangeInput("#node-input-brightness", 0, 255);
             var node = this;
@@ -291,6 +294,7 @@
             var names = ["Pressed", "Hold", "Released", "Double"];
             var node = this;
             var outputCount = 0;
+            node.dynamicOutputLabels = [];
 
             names.forEach(name => {
                 var type = getInputType(name);
@@ -299,6 +303,7 @@
                 node["type" + name] = type;
 
                 if ($("#node-input-enable" + name).is(":checked")) {
+                    node.dynamicOutputLabels.push(name);
                     outputCount += 1;
                 }
             });
