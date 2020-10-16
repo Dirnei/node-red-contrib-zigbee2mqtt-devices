@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+		{
+			"label": "node-red deploy",
+			"command": "./install.ps1",
+			"type": "shell",
+			"problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}
