@@ -165,6 +165,13 @@ module.exports = function (RED) {
                         element.state = "ON";
                         element[msg.payload.override.action.name] = msg.payload.override.action.value;
                     } else {
+                        if (msg.payload.override.state !== undefined
+                            && msg.payload.override.state !== ""
+                            && element.state !== undefined
+                            && element.state !== "") {
+                            element.state = msg.payload.override.state;
+                        }
+
                         if (msg.payload.override.brightness !== undefined
                             && msg.payload.override.brightness !== ""
                             && element.brightness !== undefined
