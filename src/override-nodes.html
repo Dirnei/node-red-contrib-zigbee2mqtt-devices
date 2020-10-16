@@ -1,8 +1,8 @@
 <!--- OVERRIDE BRIGHTNESS NODE --->
 <script type="text/javascript">
     RED.nodes.registerType('override-brightness', {
-        category: 'zigbee2mqtt',
-        color: '#bada66',
+        category: 'zigbee2mqtt-override',
+        color: '#d1a932',
         defaults: {
             name: { value: "" },
             brightness: { value: 255, validate: RED.bavaria.validators.range(0, 255) },
@@ -42,8 +42,8 @@
 <script type="text/javascript">
 
     RED.nodes.registerType('override-temperature', {
-        category: 'zigbee2mqtt',
-        color: '#bada66',
+        category: 'zigbee2mqtt-override',
+        color: '#d1a932',
         defaults: {
             name: { value: "" },
             temperature: { value: 333, validate: RED.bavaria.validators.range(0, 50000) },
@@ -82,8 +82,8 @@
 <script type="text/javascript">
 
     RED.nodes.registerType('override-color', {
-        category: 'zigbee2mqtt',
-        color: '#bada66',
+        category: 'zigbee2mqtt-override',
+        color: '#d1a932',
         defaults: {
             name: { value: "" },
             red: { value: 255, validate: RED.bavaria.validators.range(0, 255) },
@@ -136,11 +136,11 @@
 </script>
 
 
-<!--- OVERRIDE BRIGHTNESS NODE --->
+<!--- OVERRIDE ACTION NODE --->
 <script type="text/javascript">
     RED.nodes.registerType('override-action', {
-        category: 'zigbee2mqtt',
-        color: '#bada66',
+        category: 'zigbee2mqtt-override',
+        color: '#d1a932',
         defaults: {
             name: { value: "" },
             value: { value: 50, validate: RED.bavaria.validators.range(-255, 255) },
