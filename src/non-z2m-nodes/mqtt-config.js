@@ -6,7 +6,6 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         var mqtt = require("mqtt");
         this.name = config.name;
-        this.baseTopic = config.baseTopic;
         this.broker = config.protocol + "://" + config.broker;
         this.requireLogin = config.requireLogin;
         var _subs = [];
