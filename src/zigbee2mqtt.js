@@ -280,8 +280,6 @@ module.exports = function (RED) {
             }
         });
 
-        node.warn(inputs);
-
         function getPayload(data, type) {
             try {
                 switch (type) {
@@ -301,6 +299,10 @@ module.exports = function (RED) {
 
         node.on("input", function (msg) {
             var actionName = msg.payload.button_type;
+            if(actionName === undefined && msg.action !== undefined)
+            {
+                actionName = msg.action.description;
+            }
 
             if(config.dynamicOutputLabels.every(e => e.toLowerCase() != actionName))
             {
