@@ -220,8 +220,8 @@ module.exports = function (RED) {
                     message.payload.color_temp = message.payload.temperature;
                     message.payload.temperature = undefined;
                 }
-                
-                if(message.payload.transition === 0){
+
+                if (message.payload.transition === 0) {
                     message.payload.transition = undefined;
                 }
 
@@ -249,12 +249,18 @@ module.exports = function (RED) {
     function buttonSwitch(config) {
         RED.nodes.createNode(this, config);
         var node = this;
-        const inputs = {
-            pressed: utils.createButtonOutput(0, "", ""),
-            hold: utils.createButtonOutput(1, "", ""),
-            released: utils.createButtonOutput(2, "", ""),
-            double: utils.createButtonOutput(3, "", ""),
-        };
+
+        var inputs = {};
+        const types = ["Pressed", "Hold", "Released", "Double"];
+        var currentIndex = 0;
+        types.forEach(type => {
+            if (config["enable" + type]) {
+                inputs[type.toLowerCase()] = utils.createButtonOutput(currentIndex, "", "");
+                currentIndex++;
+            }
+        });
+
+        node.warn(inputs);
 
         function getPayload(data, type) {
             try {
@@ -275,6 +281,13 @@ module.exports = function (RED) {
 
         node.on("input", function (msg) {
             var actionName = msg.payload.button_type;
+
+            if(config.dynamicOutputLabels.every(e => e.toLowerCase() != actionName))
+            {
+                // output not enabled
+                return;
+            }
+
             var index = inputs[actionName].index;
             actionName = actionName.charAt(0).toUpperCase() + actionName.slice(1);
 
