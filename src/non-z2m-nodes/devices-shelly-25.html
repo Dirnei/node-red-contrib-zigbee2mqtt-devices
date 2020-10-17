@@ -50,13 +50,16 @@
         },
         inputs: 1,
         outputs: 3,
-        outputLabels: function () {
-            var labels = ["Channel " + this.channel, "Input " + this.channel];
-            if (this.enableInput) {
-                labels.push("message");
+        outputLabels: function (i) {
+            var no = parseInt(this.channel) + 1;
+            var labels = ["Channel " + no, "Input " + no, "Message"];
+
+            if (no === 3) {
+                labels[0] = "Both Channels";
+                labels[1] = "Both Inputs";
             }
 
-            return labels;
+            return labels[i];
         },
         icon: "remote-black.svg",
         label: function () { return this.name || "shelly 2.5"; },
@@ -100,7 +103,7 @@
                 this.inputs = 0;
                 this.outputs = 2;
             }
-            
+
             RED.bavaria.ui.saveMultiInput(this, "Input0")
             RED.bavaria.ui.saveMultiInput(this, "Input1")
         }
