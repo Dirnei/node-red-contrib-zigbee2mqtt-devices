@@ -55,6 +55,7 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 - Fixed device list request in [device-config](docs/device-config.md)
 - Changed colors of some nodes
 - Added [override-state](docs/nodes/override-state.md) node
+- [button-switch](docs/nodes/button-switch.md) outputs can now be disabled to reduce the number of outputs
 
 ### v0.13.1
 
