@@ -1,12 +1,12 @@
 # Bridge configuration
 
-Define your connection to your MQTT-Broker and the base MQTT-Topic, which is defined in the zigbee2mqtt configuration.yaml.
+Define the connection to your MQTT-Broker and the base MQTT-Topic, which is defined in the zigbee2mqtt configuration.yaml.
 
 ![img](img/bridge-config-config.png)
 
 ## Broker
 
-Detailed information about the mqtt-config you can find [here](mqtt-config.md)
+Detailed information about the mqtt-config can be found [here](mqtt-config.md)
 
 ## Base MQTT Topic
 
