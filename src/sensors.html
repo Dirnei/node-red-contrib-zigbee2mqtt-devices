@@ -39,20 +39,22 @@
 </script>
 
 <script type="text/html" data-template-name="contact-sensor">
+    <div class="zigbee2mqtt-devices-properties">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
+            <select id="node-input-deviceName"></select>
+        </div>
+    
     </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
-        <input type="text" id="node-input-bridge" placeholder="bridge" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
-        <select id="node-input-deviceName"></select>
-    </div>
-
 </script>
 
 <script type="text/html" data-help-name="contact-sensor">
@@ -103,20 +105,22 @@
 </script>
 
 <script type="text/html" data-template-name="occupancy-sensor">
+    <div class="zigbee2mqtt-devices-properties">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
-        <input type="text" id="node-input-bridge" placeholder="bridge" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
-        <select id="node-input-deviceName"></select>
-    </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
+            <select id="node-input-deviceName"></select>
+        </div>
 
+    </div>
 </script>
 
 <script type="text/html" data-help-name="occupancy-sensor">
@@ -168,33 +172,37 @@
 </script>
 
 <script type="text/html" data-template-name="climate-sensor">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
-        <input type="text" id="node-input-bridge" placeholder="bridge" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
-        <select id="node-input-deviceName"></select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-temperature"><i class="fa fa-thermometer-empty"></i> Temperature</label>
-        <input type="checkbox" id="node-input-temperature" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-pressure"><i class="fa fa-tachometer"></i> Pressure</label>
-        <input type="checkbox" id="node-input-pressure" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-humidity"><i class="fa fa-tint"></i> Humidity</label>
-        <input type="checkbox" id="node-input-humidity" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-co2"><i class="fa fa-industry"></i> CO2</label>
-        <input type="checkbox" id="node-input-co2" />
+    <div class="zigbee2mqtt-devices-properties">
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
+            <select id="node-input-deviceName"></select>
+        </div>
+        <div class="form-row">
+            <label for="node-input-temperature"><i class="fa fa-thermometer-empty"></i> Temperature</label>
+            <input type="checkbox" id="node-input-temperature" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-pressure"><i class="fa fa-tachometer"></i> Pressure</label>
+            <input type="checkbox" id="node-input-pressure" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-humidity"><i class="fa fa-tint"></i> Humidity</label>
+            <input type="checkbox" id="node-input-humidity" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-co2"><i class="fa fa-industry"></i> CO2</label>
+            <input type="checkbox" id="node-input-co2" />
+        </div>
+
     </div>
 </script>
 
