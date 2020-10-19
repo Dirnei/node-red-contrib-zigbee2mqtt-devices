@@ -1,0 +1,83 @@
+<!--- MQTT CONFIG NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('mqtt-config', {
+        category: 'config',
+        defaults: {
+            name: { value: "" },
+            protocol: { value: "mqtt" },
+            broker: { value: "localhost", required: true },
+            requireLogin: { value: false },
+        },
+        credentials: {
+            username: { type: "text" },
+            password: { type: "password" },
+        },
+        label: function () { return this.name || this.broker || "mqtt"; },
+        paletteLabel: "mqtt config"
+    });
+</script>
+
+<script type="text/html" data-template-name="mqtt-config">
+    <style>
+        .mqtt-config-editor label{
+            width:120px !important;
+        }
+        .mqtt-config-editor select{
+            width:70% !important;
+        }
+    </style>
+    <div class="mqtt-config-editor">
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-config-input-name" placeholder="Name" />
+        </div>	
+        <div class="form-row">
+            <label for="node-config-input-protocol"><i class="fa fa-envelope"></i> Protocol</label>
+            <select id="node-config-input-protocol">
+                <option value="mqtt">MQTT</option>
+                <option value="mqtts">MQTT (secure)</option>
+                <option value="tcp">TCP</option>
+                <option value="tls">TLS</option>
+                <option value="ws">Websockets</option>
+                <option value="wss">Websockets (secure)</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="node-input-broker"><i class="fa fa-server"></i> Broker</label>
+            <input type="text" id="node-config-input-broker" placeholder="test.mosquitto.org" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-requireLogin"><i class="fa fa-lock"></i> Require login</label>
+            <input type="checkbox" id="node-config-input-requireLogin" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-username"><i class="fa fa-user"></i> Username</label>
+            <input type="text" id="node-config-input-username" placeholder="Username" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-password"><i class="fa fa-key"></i> Password</label>
+            <input type="password" id="node-config-input-password" />
+        </div>
+
+    </div>
+</script>
+
+<script type="text/html" data-help-name="mqtt-config">
+    <p>
+        Configure the connection to your MQTT Broker to receive or send messages via MQTT.
+    </p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt class="required">Protocol <span class="property-type">enum</span></dt>
+        <dd>The protocol that is used to communicate with your MQTT broker. Usually, MQTT or preferably MQTT (secure).</dd>
+        <dt class="required">Broker <span class="property-type">string</span></dt>
+        <dd>The hostname or IP-Address of your to your MQTT broker.</dd>
+        <dt class="optional">Require login <span class="property-type">bool</span></dt>
+        <dd>Check if your MQTT broker needs a login in order to connect. If checked, the username and password below are required.</dd>
+        <dt class="optional">Username <span class="property-type">string</span></dt>
+        <dd>The username to connect to your MQTT broker</dd>
+        <dt class="optional">Password <span class="property-type">string</span></dt>
+        <dd>The password to connect to your MQTT broker</dd>
+    </dl>
+</script>

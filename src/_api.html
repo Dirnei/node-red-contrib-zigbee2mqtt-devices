@@ -8,6 +8,12 @@
     .config-group .red-ui-typedInput-container {
         width: 100% !important;
     }
+
+    .config-sub-group {
+        margin-left: 8px;
+        border-left: 5px solid #ddd;
+        padding-left: 7px;
+    }
 </style>
 
 <script type="text/javascript">
@@ -66,6 +72,47 @@
                     elements.forEach(element => {
                         RED.bavaria.ui.addNumRangeInput(element, min, max);
                     });
+                },
+                addMultiInput: function (node, name) {
+                    var value = node["payload" + name];
+                    var type = node["type" + name];
+
+                    var options = {
+                        type: type,
+                        types: ["str", "json", "num", "bool"]
+                    };
+
+                    const index = options.types.indexOf(type);
+
+                    if (index > -1) {
+                        options.types.splice(index, 1);
+                        options.types.splice(0, 0, type);
+                    }
+
+                    console.log(options);
+                    $("#node-input-payload" + name).typedInput(options);
+                },
+                saveMultiInput: function (node, name) {
+                    var splits = $("#node-input-payload" + name).next().children("button").children("span").children("img").first().attr("src").split("/");
+                    var type = splits[splits.length - 1].split(".")[0];
+
+                    switch (type) {
+                        case "az":
+                            type = "str";
+                            break;
+                        case "09":
+                            type = "num";
+                            break;
+                        case "bool":
+                            type = "bool";
+                            break;
+                        case "json":
+                            type = "json";
+                            break;
+                    }
+
+                    node["customPayload" + name] = $("#node-input-payload" + name).val() !== "";
+                    node["type" + name] = type;
                 }
             }
         }

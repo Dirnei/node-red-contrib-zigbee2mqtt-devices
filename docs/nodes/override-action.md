@@ -14,3 +14,5 @@ The direction of move and step can be either up or down, provide a negative valu
 > brightness move/step will stop at the minimum brightness and won't turn on the light when it's off.
 
 > When a action is set in the current flow, other changes will be ignored. It is only possible to do one action at a time.
+
+[Back to main](../../README.MD)

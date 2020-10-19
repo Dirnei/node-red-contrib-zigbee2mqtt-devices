@@ -238,83 +238,44 @@
             return this.dynamicOutputLabels[e];
         },
         oneditprepare: function () {
-            RED.bavaria.ui.addNumRangeInput("#node-input-brightness", 0, 255);
             var node = this;
             var names = ["Pressed", "Hold", "Released", "Double"];
             names.forEach(name => {
-                var value = node["payload" + name];
-                var type = node["type" + name];
-
-                var options = {
-                    type: type,
-                    types: ["str", "json", "num", "bool"]
-                };
-
-                const index = options.types.indexOf(type);
-
-                if (index > -1) {
-                    options.types.splice(index, 1);
-                    options.types.splice(0, 0, type);
-                }
-
-                $("#node-input-payload" + name).typedInput(options);
-
+                RED.bavaria.ui.addMultiInput(node, name);
                 $("#node-input-enable" + name).change(function () {
                     if ($(this).is(":checked")) {
-                        $("#custom-input-" + name.toLocaleLowerCase()).show();
+                        $("#output-enabled-" + name.toLocaleLowerCase()).show();
                     } else {
-                        $("#custom-input-" + name.toLocaleLowerCase()).hide();
+                        $("#output-enabled-" + name.toLocaleLowerCase()).hide();
+                    }
+                });
+
+                $("#node-input-customPayload" + name).change(function () {
+                    if ($(this).is(":checked")) {
+                        $("#custom-output-" + name.toLocaleLowerCase()).show();
+                    } else {
+                        $("#custom-output-" + name.toLocaleLowerCase()).hide();
                     }
                 });
             });
+
         },
         oneditsave: function () {
-            function getInputType(name) {
-                var splits = $("#node-input-payload" + name).next().children("button").children("span").children("img").first().attr("src").split("/");
-                var type = splits[splits.length - 1].split(".")[0];
-
-                switch (type) {
-                    case "az":
-                        type = "str";
-                        break;
-                    case "09":
-                        type = "num";
-                        break;
-                    case "bool":
-                        type = "bool";
-                        break;
-                    case "json":
-                        type = "json";
-                        break;
-                }
-
-                return type;
-            }
-
             var names = ["Pressed", "Hold", "Released", "Double"];
             var node = this;
             var outputCount = 0;
             node.dynamicOutputLabels = [];
 
             names.forEach(name => {
-                var type = getInputType(name);
-
-                node["customPayload" + name] = $("#node-input-payload" + name).val() !== "";
-                node["type" + name] = type;
-
+                RED.bavaria.ui.saveMultiInput(node, name)
                 if ($("#node-input-enable" + name).is(":checked")) {
                     node.dynamicOutputLabels.push(name);
                     outputCount += 1;
                 }
             });
-
-            console.log(outputCount);
-
             if (this.outputs != outputCount) {
                 this.outputs = outputCount;
             }
-
-            console.log(this);
         }
     });
 </script>
@@ -330,8 +291,14 @@
             <input type="checkbox" id="node-input-enablePressed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
             <label for="node-input-enablePressed" style="width: 70%;"> Enable output for <code>pressed</code></label>
         </div>
-        <div class="form-row" id="custom-input-pressed">
-            <input type="text" id="node-input-payloadPressed">
+        <div class="config-sub-group" id="output-enabled-pressed">
+            <div class="form-row">
+                <input type="checkbox" id="node-input-customPayloadPressed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-customPayloadPressed" style="width: 70%;"> Enable custom output</label>
+            </div>
+            <div class="form-row" id="custom-output-pressed">
+                <input type="text" id="node-input-payloadPressed">
+            </div>
         </div>
     </div>
     <div class="config-group">
@@ -339,8 +306,14 @@
             <input type="checkbox" id="node-input-enableHold" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
             <label for="node-input-enableHold" style="width: 70%;"> Enable output for <code>hold</code></label>
         </div>
-        <div class="form-row" id="custom-input-hold">
-            <input type="text" id="node-input-payloadHold">
+        <div class="config-sub-group" id="output-enabled-hold">
+            <div class="form-row">
+                <input type="checkbox" id="node-input-customPayloadHold" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-customPayloadHold" style="width: 70%;"> Enable custom output</label>
+            </div>
+            <div class="form-row" id="custom-output-hold">
+                <input type="text" id="node-input-payloadHold">
+            </div>
         </div>
     </div>
     <div class="config-group">
@@ -348,8 +321,14 @@
             <input type="checkbox" id="node-input-enableReleased" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
             <label for="node-input-enableReleased" style="width: 70%;"> Enable output for <code>released</code></label>
         </div>
-        <div class="form-row" id="custom-input-released">
-            <input type="text" id="node-input-payloadReleased">
+        <div class="config-sub-group" id="output-enabled-released">
+            <div class="form-row">
+                <input type="checkbox" id="node-input-customPayloadReleased" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-customPayloadReleased" style="width: 70%;"> Enable custom output</label>
+            </div>
+            <div class="form-row" id="custom-output-released">
+                <input type="text" id="node-input-payloadReleased">
+            </div>
         </div>
     </div>
     <div class="config-group">
@@ -357,8 +336,14 @@
             <input type="checkbox" id="node-input-enableDouble" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
             <label for="node-input-enableDouble" style="width: 70%;"> Enable output for <code>double</code></label>
         </div>
-        <div class="form-row" id="custom-input-double">
-            <input type="text" id="node-input-payloadDouble">
+        <div class="config-sub-group" id="output-enabled-double">
+            <div class="form-row">
+                <input type="checkbox" id="node-input-customPayloadDouble" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-customPayloadDouble" style="width: 70%;"> Enable custom output</code></label>
+            </div>
+            <div class="form-row" id="custom-output-double">
+                <input type="text" id="node-input-payloadDouble">
+            </div>
         </div>
     </div>
 </script>
