@@ -145,37 +145,40 @@
 </script>
 
 <script type="text/html" data-template-name="override-color">
+    <div class="zigbee2mqtt-devices-properties">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-red" style="color:red;">
+                <i class="fa fa-paint-brush"></i> Red
+            </label>
+            <input type="text" id="node-input-red">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-blue" style="color:green;">
+                <i class="fa fa-paint-brush"></i> Green
+            </label>
+            <input type="text" id="node-input-green">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-green" style="color:blue;">
+                <i class="fa fa-paint-brush"></i> Blue
+            </label>
+            <input type="text" id="node-input-blue">
+        </div>
+
     </div>
-
-    <div class="form-row">
-        <label for="node-input-temperature"><i class="fa fa-paint-brush"></i> Red</label>
-        <input type="text" id="node-input-red">
-    </div>
-
-    <div class="form-row">
-        <label for="node-input-temperature"><i class="fa fa-paint-brush"></i> Green</label>
-        <input type="text" id="node-input-green">
-    </div>
-
-    <div class="form-row">
-        <label for="node-input-temperature"><i class="fa fa-paint-brush"></i> Blue</label>
-        <input type="text" id="node-input-blue">
-    </div>
-
 </script>
 
-<script type="text/html" data-help-name="override-temperature">
+<script type="text/html" data-help-name="override-color">
     <p>Node to override color</p>
 </script>
-
-<script type="text/html" data-help-name="scene-out">
-    <p>Node to trigger scenes</p>
-</script>
-
 
 <!--- OVERRIDE ACTION NODE --->
 <script type="text/javascript">
@@ -200,31 +203,33 @@
 </script>
 
 <script type="text/html" data-template-name="override-action">
+    <div class="zigbee2mqtt-devices-properties">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-mode"><i class="fa fa-caret-square-o-down"></i> Mode</label>
+            <select id="node-input-mode">
+                <option value="brightness_move">Brightness Move</option>
+                <option value="brightness_step">Brightness Step</option>
+                <option value="color_temp_move">Color Temperature Move</option>
+                <option value="color_temp_step">Color Temperature Step</option>
+                <option value="hue_move">Hue Move</option>
+                <option value="hue_step">Hue Step</option>
+                <option value="saturation_move">Saturation Move</option>
+                <option value="saturation_step">Saturation Step</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-value"><i class="fa fa-edit"></i> Value</label>
+            <input type="text" id="node-input-value">
+        </div>
+
     </div>
-
-    <div class="form-row">
-        <label for="node-input-mode"><i class="fa fa-sun-o"></i> Mode</label>
-        <select id="node-input-mode">
-            <option value="brightness_move">Brightness Move</option>
-            <option value="brightness_step">Brightness Step</option>
-            <option value="color_temp_move">Color Temperature Move</option>
-            <option value="color_temp_step">Color Temperature Step</option>
-            <option value="hue_move">Hue Move</option>
-            <option value="hue_step">Hue Step</option>
-            <option value="saturation_move">Saturation Move</option>
-            <option value="saturation_step">Saturation Step</option>
-        </select>
-    </div>
-
-    <div class="form-row">
-        <label for="node-input-value"><i class="fa fa-sun-o"></i> Value</label>
-        <input type="text" id="node-input-value">
-    </div>
-
 </script>
 
 <script type="text/html" data-help-name="override-action">

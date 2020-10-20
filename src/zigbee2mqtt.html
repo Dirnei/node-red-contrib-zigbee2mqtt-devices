@@ -78,7 +78,7 @@
         outputs: 1,
         icon: "light.png",
         label: function () {
-            return this.name || "generic device";
+            return this.name || "generic lamp";
         },
         oneditprepare: function () {
             var numInputs = [
@@ -105,55 +105,58 @@
 </script>
 
 <script type="text/html" data-template-name="generic-lamp">
+    <div class="zigbee2mqtt-devices-properties">
+            
+        <div class="form-row">
+            <label for="node-input-device"><i class="fa fa-tag"></i> Device</label>
+            <input type="text" id="node-input-device" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge"  />
+        </div>
+        <div class="form-row" style="display:none">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="hidden" id="node-input-name">
+        </div>
 
-    <div class="form-row">
-        <label for="node-input-device"><i class="fa fa-tag"></i> Device</label>
-        <input type="text" id="node-input-device" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
-        <input type="text" id="node-input-bridge"  />
-    </div>
-    <div class="form-row" style="display:none">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="hidden" id="node-input-name">
-    </div>
+        <div class="form-row">
+            <label for="node-input-state"><i class="fa fa-power-off"></i> State</label>
+            <select id="node-input-state">
+                <option value="ON">On</option>
+                <option value="OFF">Off</option>
+                <option value="TOGGLE">Toggle</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="node-input-brightness"><i class="fa fa-sun-o"></i> Brightness</label>
+            <input type="text" id="node-input-brightness">
+        </div>
+        <div class="form-row">
+            <label for="node-input-temperature"><i class="fa fa-thermometer-full"></i> Temperature</label>
+            <input type="text" id="node-input-temperature">
+        </div>
+        <div class="form-row">
+            <label for="node-input-red" style="color:red;"><i class="fa fa-paint-brush"></i> Red</label>
+            <input type="text" id="node-input-red">
+        </div>
+        <div class="form-row">
+            <label for="node-input-green" style="color:green;"><i class="fa fa-paint-brush"></i> Green</label>
+            <input type="text" id="node-input-green">
+        </div>
+        <div class="form-row">
+            <label for="node-input-blue" style="color:blue;"><i class="fa fa-paint-brush"></i> Blue</label>
+            <input type="text" id="node-input-blue">
+        </div>
+        <div class="form-row">
+            <label for="node-input-transition"><i class="fa fa-clock-o"></i> Transition</label>
+            <input type="text" id="node-input-transition">
+        </div>
+        <div class="form-row">
+            <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
+            <input type="text" id="node-input-delay" >
+        </div>
 
-    <div class="form-row">
-        <label for="node-input-state"><i class="fa fa-power-off"></i> State</label>
-        <select id="node-input-state">
-            <option value="ON">On</option>
-            <option value="OFF">Off</option>
-            <option value="TOGGLE">Toggle</option>
-        </select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-brightness"><i class="fa fa-sun-o"></i> Brightness</label>
-        <input type="text" id="node-input-brightness">
-    </div>
-    <div class="form-row">
-        <label for="node-input-temperature"><i class="fa fa-thermometer-full"></i> Temperature</label>
-        <input type="text" id="node-input-temperature">
-    </div>
-    <div class="form-row">
-        <label for="node-input-red"><i class="fa fa-paint-brush"></i> Red</label>
-        <input type="text" id="node-input-red">
-    </div>
-    <div class="form-row">
-        <label for="node-input-green"><i class="fa fa-paint-brush"></i> Green</label>
-        <input type="text" id="node-input-green">
-    </div>
-    <div class="form-row">
-        <label for="node-input-blue"><i class="fa fa-paint-brush"></i> Blue</label>
-        <input type="text" id="node-input-blue">
-    </div>
-    <div class="form-row">
-        <label for="node-input-transition"><i class="fa fa-clock-o"></i> Transition</label>
-        <input type="text" id="node-input-transition">
-    </div>
-    <div class="form-row">
-        <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
-        <input type="text" id="node-input-delay" >
     </div>
 </script>
 
@@ -181,16 +184,18 @@
 </script>
 
 <script type="text/html" data-template-name="send-messages">
+    <div class="zigbee2mqtt-devices-properties">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
-        <input type="text" id="node-input-bridge" placeholder="bridge" />
-    </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
 
+    </div>
 </script>
 
 <script type="text/html" data-help-name="send-messages">
@@ -280,71 +285,76 @@
     });
 </script>
 
-<script type="text/html" data-template-name="button-switch">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-    <div class="config-group">
+
+<script type="text/html" data-template-name="button-switch">
+    <div class="zigbee2mqtt-devices-properties">
+
         <div class="form-row">
-            <input type="checkbox" id="node-input-enablePressed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
-            <label for="node-input-enablePressed" style="width: 70%;"> Enable output for <code>pressed</code></label>
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
         </div>
-        <div class="config-sub-group" id="output-enabled-pressed">
+        <div class="config-group">
             <div class="form-row">
-                <input type="checkbox" id="node-input-customPayloadPressed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
-                <label for="node-input-customPayloadPressed" style="width: 70%;"> Enable custom output</label>
+                <input type="checkbox" id="node-input-enablePressed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-enablePressed" style="width: 70%;"> Enable output for <code>pressed</code></label>
             </div>
-            <div class="form-row" id="custom-output-pressed">
-                <input type="text" id="node-input-payloadPressed">
+            <div class="config-sub-group" id="output-enabled-pressed">
+                <div class="form-row">
+                    <input type="checkbox" id="node-input-customPayloadPressed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                    <label for="node-input-customPayloadPressed" style="width: 70%;"> Enable custom output</label>
+                </div>
+                <div class="form-row" id="custom-output-pressed">
+                    <input type="text" id="node-input-payloadPressed">
+                </div>
             </div>
         </div>
-    </div>
-    <div class="config-group">
-        <div class="form-row">
-            <input type="checkbox" id="node-input-enableHold" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
-            <label for="node-input-enableHold" style="width: 70%;"> Enable output for <code>hold</code></label>
-        </div>
-        <div class="config-sub-group" id="output-enabled-hold">
+        <div class="config-group">
             <div class="form-row">
-                <input type="checkbox" id="node-input-customPayloadHold" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
-                <label for="node-input-customPayloadHold" style="width: 70%;"> Enable custom output</label>
+                <input type="checkbox" id="node-input-enableHold" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-enableHold" style="width: 70%;"> Enable output for <code>hold</code></label>
             </div>
-            <div class="form-row" id="custom-output-hold">
-                <input type="text" id="node-input-payloadHold">
+            <div class="config-sub-group" id="output-enabled-hold">
+                <div class="form-row">
+                    <input type="checkbox" id="node-input-customPayloadHold" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                    <label for="node-input-customPayloadHold" style="width: 70%;"> Enable custom output</label>
+                </div>
+                <div class="form-row" id="custom-output-hold">
+                    <input type="text" id="node-input-payloadHold">
+                </div>
             </div>
         </div>
-    </div>
-    <div class="config-group">
-        <div class="form-row">
-            <input type="checkbox" id="node-input-enableReleased" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
-            <label for="node-input-enableReleased" style="width: 70%;"> Enable output for <code>released</code></label>
-        </div>
-        <div class="config-sub-group" id="output-enabled-released">
+        <div class="config-group">
             <div class="form-row">
-                <input type="checkbox" id="node-input-customPayloadReleased" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
-                <label for="node-input-customPayloadReleased" style="width: 70%;"> Enable custom output</label>
+                <input type="checkbox" id="node-input-enableReleased" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-enableReleased" style="width: 70%;"> Enable output for <code>released</code></label>
             </div>
-            <div class="form-row" id="custom-output-released">
-                <input type="text" id="node-input-payloadReleased">
+            <div class="config-sub-group" id="output-enabled-released">
+                <div class="form-row">
+                    <input type="checkbox" id="node-input-customPayloadReleased" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                    <label for="node-input-customPayloadReleased" style="width: 70%;"> Enable custom output</label>
+                </div>
+                <div class="form-row" id="custom-output-released">
+                    <input type="text" id="node-input-payloadReleased">
+                </div>
             </div>
         </div>
-    </div>
-    <div class="config-group">
-        <div class="form-row">
-            <input type="checkbox" id="node-input-enableDouble" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
-            <label for="node-input-enableDouble" style="width: 70%;"> Enable output for <code>double</code></label>
-        </div>
-        <div class="config-sub-group" id="output-enabled-double">
+        <div class="config-group">
             <div class="form-row">
-                <input type="checkbox" id="node-input-customPayloadDouble" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
-                <label for="node-input-customPayloadDouble" style="width: 70%;"> Enable custom output</code></label>
+                <input type="checkbox" id="node-input-enableDouble" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-enableDouble" style="width: 70%;"> Enable output for <code>double</code></label>
             </div>
-            <div class="form-row" id="custom-output-double">
-                <input type="text" id="node-input-payloadDouble">
+            <div class="config-sub-group" id="output-enabled-double">
+                <div class="form-row">
+                    <input type="checkbox" id="node-input-customPayloadDouble" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                    <label for="node-input-customPayloadDouble" style="width: 70%;"> Enable custom output</code></label>
+                </div>
+                <div class="form-row" id="custom-output-double">
+                    <input type="text" id="node-input-payloadDouble">
+                </div>
             </div>
         </div>
+        
     </div>
 </script>
 
@@ -406,28 +416,30 @@
 </script>
 
 <script type="text/html" data-template-name="device-status">
+    <div class="zigbee2mqtt-devices-properties">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
-        <input type="text" id="node-input-bridge" placeholder="bridge" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
-        <select id="node-input-deviceName"></select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-genericMqttDevice"><i class="fa fa-tag"></i> Generic MQTT Device</label>
-        <input type="checkbox" id="node-input-genericMqttDevice" />
-    </div>
-    <div class="form-row" id="fullMqttTopic">
-        <label for="node-input-device"><i class="fa fa-tag"></i> Device</label>
-        <input type="text" id="node-input-device" placeholder="device" />
-    </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
+            <select id="node-input-deviceName"></select>
+        </div>
+        <div class="form-row">
+            <label for="node-input-genericMqttDevice"><i class="fa fa-tag"></i> Generic MQTT Device</label>
+            <input type="checkbox" id="node-input-genericMqttDevice" />
+        </div>
+        <div class="form-row" id="fullMqttTopic">
+            <label for="node-input-device"><i class="fa fa-microchip"></i> Device</label>
+            <input type="text" id="node-input-device" placeholder="device" />
+        </div>
 
+    </div>
 </script>
 
 <script type="text/html" data-help-name="device-status">
@@ -461,22 +473,24 @@
 </script>
 
 <script type="text/html" data-template-name="get-lamp-state">
+    <div class="zigbee2mqtt-devices-properties">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
-        <input type="text" id="node-input-bridge" placeholder="bridge" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-device"><i class="fa fa-tag"></i> Device</label>
-        <input type="text" id="node-input-device" />
-    </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-device"><i class="fa fa-microchip"></i> Device</label>
+            <input type="text" id="node-input-device" />
+        </div>
 
+    </div>
 </script>
 
 <script type="text/html" data-help-name="get-lamp-state">
-    <p>Requests the current lamp state and adds the payload to the message</p>
+    <p>Requests the current lamp state and adds the payload to the message.</p>
 </script>

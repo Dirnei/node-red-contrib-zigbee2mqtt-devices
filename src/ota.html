@@ -75,34 +75,40 @@
 </script>
 
 <script type="text/html" data-template-name="ota-update">
+    <div class="zigbee2mqtt-devices-properties">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
-        <input type="text" id="node-input-bridge" placeholder="bridge" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-tag"></i> Auto update</label>
-        <input type="checkbox" id="node-input-autoUpdate" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-tag"></i> Verbose Logging</label>
-        <input type="checkbox" id="node-input-verboseLogging" />
-    </div>
-    <div class="form-row">
-        <select id="node-input-deviceName" style="margin-left: 105px;width:45%"></select>
-        <button type="button" class="red-ui-button" id="add-to-blacklist" style="width:25%">add to blacklist</button>
-    </div>
-    <div class="form-row">
-        <label for="node-input-blacklist"><i class="fa fa-tag"></i> Blacklist</label>
-        <select id="node-input-blacklist" style="width:70%" size=10 multiple></select>
-        <button type="button" class="red-ui-button" id="remove-from-blacklist"
-        style="display:block;width:70%;margin-left:105px;margin-top:10px">remove from blacklist</button>
-    </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge" style="width: 120px !important;">
+                <i class="fa fa-magic"></i> Auto update
+            </label>
+            <input type="checkbox" id="node-input-autoUpdate" style="width:30%;" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge" style="width: 120px !important;">
+                <i class="fa fa-info"></i> Verbose Logging
+            </label>
+            <input type="checkbox" id="node-input-verboseLogging" style="width:30%;" />
+        </div>
+        <div class="form-row">
+            <select id="node-input-deviceName" style="margin-left: 105px;width:42%"></select>
+            <button type="button" class="red-ui-button" id="add-to-blacklist" style="width:27%"><i class="fa fa-plus-circle"></i> Add to blacklist</button>
+        </div>
+        <div class="form-row">
+            <label for="node-input-blacklist"><i class="fa fa-ban"></i> Blacklist</label>
+            <select id="node-input-blacklist" style="width:70%" size=10 multiple></select>
+            <button type="button" class="red-ui-button" id="remove-from-blacklist"
+            style="display:block;width:70%;margin-left:105px;margin-top:10px"><i class="fa fa-minus-circle"></i> Remove from blacklist</button>
+        </div>
 
+    </div>
 </script>
 
 <script type="text/html" data-help-name="ota-update">
