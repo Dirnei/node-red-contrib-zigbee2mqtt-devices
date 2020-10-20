@@ -138,9 +138,67 @@
             return this.name || "override-color";
         },
         oneditprepare: function () {
+            var node = this;
             var numInputs = ["#node-input-red", "#node-input-green", "#node-input-blue"];
+            var colors = ["red", "green", "blue"];
+
+            function updateColorPicker() {
+                var hex = RED.bavaria.converters.rgbToHex(node.red || 0, node.green || 0, node.blue || 0)
+                $("#node-input-color").val(hex);
+            }
+
             RED.bavaria.ui.addNumRangeInputs(numInputs, 0, 255);
+
+            colors.forEach(function (input) {
+                $("#node-input-" + input).next().children(".red-ui-typedInput-input-wrap").children().first().change(function () {
+                    node[input] = $(this).val();
+                    updateColorPicker();
+
+                    var change = {};
+                    change[input] = node[input];
+
+                    node.dirty = true;
+                    node.changed = true;
+
+                    RED.nodes.dirty(true);
+                    RED.history.push({
+                        t: 'edit',
+                        node: node,
+                        changes: change,
+                        dirty: node.dirty,
+                        changed: node.changed
+                    });
+                });
+            });
+
+            $("#node-input-color").change(function () {
+                var hex = $(this).val();
+                var color = RED.bavaria.converters.hexToRgb(hex);
+
+                $("#node-input-red").next().children(".red-ui-typedInput-input-wrap").children().first().val(color.r);
+                $("#node-input-green").next().children(".red-ui-typedInput-input-wrap").children().first().val(color.g);
+                $("#node-input-blue").next().children(".red-ui-typedInput-input-wrap").children().first().val(color.b);
+            });
+
+            updateColorPicker();
         },
+        oneditsave: function () {
+
+            // some weird stuff to get node-red to safe it and to show changed...
+            var color = {};
+            color.red = $("#node-input-red").next().children(".red-ui-typedInput-input-wrap").children().first().val();
+            color.green = $("#node-input-green").next().children(".red-ui-typedInput-input-wrap").children().first().val();
+            color.blue = $("#node-input-blue").next().children(".red-ui-typedInput-input-wrap").children().first().val();
+
+            $("#node-input-red").val(color.red);
+            $("#node-input-green").val(color.green);
+            $("#node-input-blue").val(color.blue);
+
+            this.red = color.red;
+            this.green = color.green;
+            this.blue = color.blue
+            console.log(this);
+        }
     });
 </script>
 
@@ -171,6 +229,13 @@
                 <i class="fa fa-paint-brush"></i> Blue
             </label>
             <input type="text" id="node-input-blue">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-color">
+                <i class="fa fa-paint-brush"></i> Color
+            </label>
+            <input type="color" id="node-input-color">
         </div>
 
     </div>
