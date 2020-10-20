@@ -1,16 +1,11 @@
 <!--- BRIDGE CONFIG NODE --->
 <script type="text/javascript">
-    RED.nodes.registerType('zigbee2mqtt-bridge-config', {
-        category: 'config',
+    RED.nodes.registerType("zigbee2mqtt-bridge-config", {
+        category: "config",
         defaults: {
-            name: { value: "zigbee2mqtt", required: true },
+            name: { value: "", required: true },
+            mqtt: { value: "", type: "mqtt-config" },
             baseTopic: { value: "zigbee2mqtt", required: true },
-            broker: { value: "mqtt://localhost", required: true },
-            requireLogin: { value: false },
-        },
-        credentials: {
-            username: { type: "text" },
-            password: { type: "password" },
         },
         label: function () { return this.name; },
         paletteLabel: "bridge config"
@@ -18,29 +13,24 @@
 </script>
 
 <script type="text/html" data-template-name="zigbee2mqtt-bridge-config">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-config-input-name" placeholder="Name" />
-    </div>	
-    <div class="form-row">
-        <label for="node-input-baseTopic"><i class="fa fa-tag"></i> Base MQTT Topic</label>
-        <input type="text" id="node-config-input-baseTopic" placeholder="topic" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
-        <input type="text" id="node-config-input-broker" placeholder="test.mosquitto.org" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-requireLogin"><i class="fa fa-tag"></i> Require login</label>
-        <input type="checkbox" id="node-config-input-requireLogin" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-username"><i class="fa fa-tag"></i> Username</label>
-        <input type="text" id="node-config-input-username" placeholder="Username" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-password"><i class="fa fa-tag"></i> Password</label>
-        <input type="password" id="node-config-input-password" />
+    <style>
+        .zigbee2mqtt-bridge-config-editor label{
+            width:132px !important;
+        }
+    </style>
+    <div class="zigbee2mqtt-bridge-config-editor">
+        <div class="form-row">
+            <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-config-input-name" placeholder="Name" />
+        </div>	
+        <div class="form-row">
+            <label for="node-config-input-broker"><i class="fa fa-server"></i> Broker</label>
+            <input type="text" id="node-config-input-mqtt" />
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-baseTopic"><i class="fa fa-hashtag"></i> Base MQTT Topic</label>
+            <input type="text" id="node-config-input-baseTopic" placeholder="topic" />
+        </div>
     </div>
 </script>
 
@@ -52,27 +42,19 @@
     <dl class="message-properties">
         <dt class="required">Base MQTT Topic <span class="property-type">string</span></dt>
         <dd>The base topic which is configured in the configuration.yml in zigbee2mqtt. Usually: <code>zigbee2mqtt</code></dd>
-        <dt class="required">Broker <span class="property-type">string</span></dt>
-        <dd>Connects to the broker specified by the given URL. The URL can be one of the following protocols: 'mqtt', 'mqtts', 'tcp', 'tls', 'ws', 'wss'.
-            Example: <code>mqtt://localhost</code>
-        </dd>
-        <dt class="optional">Require login <span class="property-type">bool</span></dt>
-        <dd>Check if your MQTT broker needs a login in order to connect. If checked, the username and password below are required.</dd>
-        <dt class="optional">Username <span class="property-type">string</span></dt>
-        <dd>The username to connect to your MQTT broker</dd>
-        <dt class="optional">Password <span class="property-type">string</span></dt>
-        <dd>The password to connect to your MQTT broker</dd>
+        <dt class="required">Broker <span class="property-type">config</span></dt>
+        <dd>MQTT connection configuration</dd>
     </dl>
 </script>
 
 <!--- DEVICE CONFIG NODE --->
 <script type="text/javascript">
-    RED.nodes.registerType('zigbee2mqtt-device-config', {
+    RED.nodes.registerType("zigbee2mqtt-device-config", {
         category: 'config',
         defaults: {
             name: { value: "", required: true },
             bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
-            deviceName: { value: "", required: true },
+            deviceName: { value: "---", required: true },
             brightnessSupport: { value: false },
             temperatureSupport: { value: false },
             colorSupport: { value: false },
@@ -99,9 +81,15 @@
                     node.deviceName = "---";
                 } else {
                     $("#fullMqttTopic").hide()
-                    node.deviceName = "";
+                    $("#node-config-input-deviceName").val(deviceName);
                 }
             })
+
+            $("#node-config-input-deviceName").change(function(){
+                if($(this).val() !== "---"){
+                    $("#select-empty-option").remove();
+                }
+            });
 
             $("#node-config-input-bridge").change(function () {
                 var bridgeId = $("#node-config-input-bridge").val().replace(".", "_");
@@ -110,6 +98,10 @@
                     data.devices.forEach(e => {
                         $("#node-config-input-deviceName").append("<option>" + e.friendly_name + "</option>");
                     });
+                    
+                    if(deviceName === "---"){
+                        $("#node-config-input-deviceName").append("<option value=\"---\" id=\"select-empty-option\"> Select device </option>");
+                    }
 
                     $("#node-config-input-deviceName").val(deviceName);
                 });
