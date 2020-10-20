@@ -38,67 +38,234 @@
 </script>
 
 <script type="text/html" data-template-name="bridge-log">
-    <!-- <style type="text/css" scoped>
+    <style type="text/css" scoped>
         .bridge-log-types label{
-            width:200px !important;
+            width: 70% !important;
         }
-        .bridge-log-types input{
-            width:50px !important;
+
+        .bridge-log-types input[type=checkbox]{
+            display: inline-block;
+            width: auto;
+            vertical-align: top;
         }
-    </style> -->
+        
+        .bridge-log-types p{
+            width:400px !important;
+        }
+    </style>
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
-        <input type="text" id="node-input-bridge" placeholder="bridge" />
-    </div>
-
-    <h3>Types</h3>
-    <div class="bridge-log-types">
+    <div class="zigbee2mqtt-devices-properties">
         
         <div class="form-row">
-            <label for="node-input-type-pairing"><i class="fa fa-tag"></i> pairing</label>
-            <input type="checkbox" id="node-input-type-pairing" />
-            <p>Logged when device is connecting to the network.</p>
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+
+        <h3>Log types</h3>
+        <div class="bridge-log-types">
+            <div class="form-row">
+                <div class="form-tips"><b>Tip:</b> Select the logs you want to have an output for.</div>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-pairing">
+                <label for="node-input-type-pairing"> pairing</label>
+                <p><small>Logged when device is connecting to the network.</small></p>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_connected">
+                <label for="node-input-type-device_connected"> device_connected</label>
+                <p><small>Sent when a new device connects to the network.</small></p>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_ban">
+                <label for="node-input-type-device_ban"> device_ban</label>
+                <p><small>Sent when a device is banned from the network.</small></p>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_ban_failed">
+                <label for="node-input-type-device_ban_failed"> device_ban_failed</label>
+                <p><small>Sent when request to ban a device failed</small></p>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_announced">
+                <label for="node-input-type-device_announced"> device_announced</label>
+                <p><small>Sent when a device announces itself on the network.</small></p>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_removed">
+                <label for="node-input-type-device_removed"> device_removed</label>
+                <p><small>Sent when a device is removed from the network.</small></p>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_removed_failed">
+                <label for="node-input-type-device_removed_failed"> device_removed_failed</label>
+                <p><small>Sent when request to remove a device failed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_force_removed">
+                <label for="node-input-type-device_force_removed"> device_force_removed</label>
+                <p><small>Sent when a device is removed from the network using the forced mode.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_force_removed_failed">
+                <label for="node-input-type-device_force_removed_failed"> device_force_removed_failed</label>
+                <p><small>Sent when request to remove a device failed using the forced mode.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_banned">
+                <label for="node-input-type-device_banned"> device_banned</label>
+                <p><small>Sent when a device is banned from the network.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_whitelisted">
+                <label for="node-input-type-device_whitelisted"> device_whitelisted</label>
+                <p><small>Sent when a device is whitelisted from the network.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_renamed">
+                <label for="node-input-type-device_renamed"> device_renamed</label>
+                <p><small>Sent when a device is renamed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-group_renamed">
+                <label for="node-input-type-group_renamed"> group_renamed</label>
+                <p><small>Sent when a group is renamed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-group_added">
+                <label for="node-input-type-group_added"> group_added</label>
+                <p><small>Sent when a group is added.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-group_removed">
+                <label for="node-input-type-group_removed"> group_removed</label>
+                <p><small>Sent when a group is removed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_bind">
+                <label for="node-input-type-device_bind"> device_bind</label>
+                <p><small>Sent when a device is bound.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_unbind">
+                <label for="node-input-type-device_unbind"> device_unbind</label>
+                <p><small>Sent when a device is unbound.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_group_add">
+                <label for="node-input-type-device_group_add"> device_group_add</label>
+                <p><small>Sent when a device is added to a group.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_group_add_failed">
+                <label for="node-input-type-device_group_add_failed"> device_group_add_failed</label>
+                <p><small>Sent when a request to add a device to a group failed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_group_remove">
+                <label for="node-input-type-device_group_remove"> device_group_remove</label>
+                <p><small>Sent when a device is removed from a group.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_group_remove_failed">
+                <label for="node-input-type-device_group_remove_failed"> device_group_remove_failed</label>
+                <p><small>Sent when a request to removed from a group failed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_group_remove_all">
+                <label for="node-input-type-device_group_remove_all"> device_group_remove_all</label>
+                <p><small>Sent when a device is removed from all groups.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_group_remove_all_failed">
+                <label for="node-input-type-device_group_remove_all_failed"> device_group_remove_all_failed</label>
+                <p><small>Sent when a request to remove a device from all groups failed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-device_group_remove_all_failed">
+                <label for="node-input-type-device_group_remove_all_failed"> device_group_remove_all_failed</label>
+                <p><small>Sent when a request to remove a device from all groups failed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-devices">
+                <label for="node-input-type-devices"> devices</label>
+                <p>
+                    <small>
+                        A list of all devices, this message can be triggered by sending
+                        a message to <code>zigbee2mqtt/bridge/config/devices</code>
+                        (payload doesn’t matter).
+                    </small>
+                </p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-groups">
+                <label for="node-input-type-groups"> groups</label>
+                <p>
+                    <small>
+                        A list of all groups, this message can be triggered by sending
+                        a message to <code>zigbee2mqtt/bridge/config/devices</code>
+                        (payload doesn’t matter).
+                    </small>
+                </p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-zigbee_publish_error">
+                <label for="node-input-type-zigbee_publish_error"> zigbee_publish_error</label>
+                <p>
+                    <small>
+                        Logged when a Zigbee publish errors occurs,<br>
+                        contains the error and metadata containing the device and command.
+                    </small>
+                </p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-ota_update">
+                <label for="node-input-type-ota_update"> ota_update</label>
+                <p><small>Logs related to OTA updates.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type-touchlink">
+                <label for="node-input-type-touchlink"> touchlink</label>
+                <p><small>Logs related to TouchLink.</small></p>
+            </div>
+
         </div>
         
-        <div class="form-row">
-            <label for="node-input-type-device_connected"><i class="fa fa-tag"></i> blub</label>
-            <input type="checkbox" id="node-input-type-device_connected" />
-            <p>Sent when a new device connects to the network.</p>
-        </div>
-
-        <div class="form-row">
-            <label for="node-input-type-device_ban"><i class="fa fa-tag"></i> device_ban</label>
-            <input type="checkbox" id="node-input-type-device_ban" />
-            <p>Sent when a device is banned from the network.</p>
-        </div>
-
-        <div class="form-row">
-            <input type="checkbox" id="node-input-type-device_ban_failed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off">
-            <label for="node-input-type-device_ban_failed" style="width: 70%;"> device_ban_failed</label>
-            <p>Sent when request to ban a device failed</>
-        </div>
-
-        <div class="form-row">
-            <input type="checkbox" id="node-input-type-device_announced" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off">
-            <label for="node-input-type-device_announced" style="width: 70%;"> device_announced</label>
-            <p>Sent when a device announces itself on the network.</>
-        </div>
-
-        <div class="form-row">
-            <input type="checkbox" id="node-input-type-device_removed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off">
-            <label for="node-input-type-device_removed" style="width: 70%;"> device_removed</label>
-            <p>Sent when a device is removed from the network.</p>
-        </div>
-
     </div>
-    
-    <div class="form-tips"><b>Tip:</b> This is here to help.</div>
 </script>
 
 <script type="text/html" data-help-name="bridge-log">
