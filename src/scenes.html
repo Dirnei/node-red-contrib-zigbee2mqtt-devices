@@ -43,16 +43,17 @@
 </script>
 
 <script type="text/html" data-template-name="scene-in">
+    <div class="zigbee2mqtt-devices-properties">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-scene"><i class="fa fa-picture-o"></i> Scene</label>
+            <input type="text" id="node-input-scene">
+        </div>
     </div>
-    <div class="form-row">
-        <label for="node-input-scene"><i class="fa fa-tag"></i> Scene</label>
-        <input type="text" id="node-input-scene">
-    </div>
-
 </script>
 
 <script type="text/html" data-help-name="scene-in">
@@ -138,29 +139,32 @@
 </script>
 
 <script type="text/html" data-template-name="scene-selector">
+    <div class="zigbee2mqtt-devices-properties">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-scene"><i class="fa fa-tag"></i> Scenes</label>
-        <div id="input-scenes" style="display:inline;">
-            <select id="available-scenes">
-            </select>
-            <button type="button" class="red-ui-button" id="scene-add-button">add scene</button>
-            <div>
-                <ul id="selected-scenes" style="margin: 10px 0px 0px 105px;width: 70%;position: relative;right: 0px;"></ul>
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-scene"><i class="fa fa-picture-o"></i> Scenes</label>
+            <div id="input-scenes" style="display:inline;">
+                <select id="available-scenes">
+                </select>
+                <button type="button" class="red-ui-button" id="scene-add-button">add scene</button>
+                <div>
+                    <ul id="selected-scenes" style="margin: 10px 0px 0px 105px;width: 70%;position: relative;right: 0px;"></ul>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-row">
-        <label for="node-input-wrapAround"><i class="fa fa-retweet"></i> Wrap around</label>
-        <input type="checkbox" id="node-input-wrapAround">
-    </div>
-    <div class="form-row">
-        <label for="node-input-changedOutputOnly"><i class="fa fa-envelope"></i> Changed output only</label>
-        <input type="checkbox" id="node-input-changedOutputOnly">
+        <div class="form-row">
+            <label for="node-input-wrapAround"><i class="fa fa-retweet"></i> Wrap around</label>
+            <input type="checkbox" id="node-input-wrapAround">
+        </div>
+        <div class="form-row">
+            <label for="node-input-changedOutputOnly"><i class="fa fa-envelope"></i> Changed output only</label>
+            <input type="checkbox" id="node-input-changedOutputOnly">
+        </div>
+        
     </div>
 </script>
 

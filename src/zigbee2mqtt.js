@@ -98,6 +98,9 @@ module.exports = function (RED) {
         });
 
         node.on("input", function (msg) {
+            if (msg.payload === undefined || typeof msg.payload != "object") {
+                msg.payload = {};
+            }
 
             if (msg.payload.devices === undefined) {
                 msg.payload.devices = [];
@@ -165,6 +168,13 @@ module.exports = function (RED) {
                         element.state = "ON";
                         element[msg.payload.override.action.name] = msg.payload.override.action.value;
                     } else {
+                        if (msg.payload.override.state !== undefined
+                            && msg.payload.override.state !== ""
+                            && element.state !== undefined
+                            && element.state !== "") {
+                            element.state = msg.payload.override.state;
+                        }
+
                         if (msg.payload.override.brightness !== undefined
                             && msg.payload.override.brightness !== ""
                             && element.brightness !== undefined
@@ -195,34 +205,51 @@ module.exports = function (RED) {
             enqueue();
 
             function sendNextMessage() {
-                var topic = messages[i].topic;
-                if (messages[i].target === "z2m" || messages[i].target === undefined) {
-                    topic = bridgeNode.baseTopic + "/" + messages[i].topic + "/set";
+                try {
+                    var topic = messages[i].topic;
+                    var enableGenerator = messages[i].target === "mqtt";
+
+                    if (messages[i].target === "z2m" || messages[i].target === undefined) {
+                        topic = bridgeNode.baseTopic + "/" + messages[i].topic + "/set";
+                    }
+
+                    messages[i].target = undefined;
+                    messages[i].delay = undefined;
+
+                    var message = {
+                        payload: messages[i],
+                        topic: topic,
+                    };
+
+                    message.payload.topic = undefined;
+
+                    if (message.payload.temperature) {
+                        message.payload.color_temp = message.payload.temperature;
+                        message.payload.temperature = undefined;
+                    }
+
+                    if (message.payload.transition === 0) {
+                        message.payload.transition = undefined;
+                    }
+
+                    try {
+                        if (message.payload.payloadGenerator && typeof message.payload.payloadGenerator === "function") {
+                            message.payload = message.payload.payloadGenerator(message.payload);
+                        } else {
+                            message.payload = JSON.stringify(message.payload);
+                        }
+
+                        bridgeNode.publish(message.topic, message.payload);
+                    } catch (err) {
+                        node.error(err);
+                    }
+
+                    if (++i < messages.length) {
+                        enqueue();
+                    }
                 }
-
-                messages[i].target = undefined;
-
-                var message = {
-                    payload: messages[i],
-                    topic: topic,
-                };
-
-                message.payload.topic = undefined;
-
-                if (message.payload.temperature) {
-                    message.payload.color_temp = message.payload.temperature;
-                    message.payload.temperature = undefined;
-                }
-                
-                if(message.payload.transition === 0){
-                    message.payload.transition = undefined;
-                }
-
-                msg.payload.delay = undefined;
-                bridgeNode.publish(message.topic, JSON.stringify(message.payload));
-
-                if (++i < messages.length) {
-                    enqueue();
+                catch (err) {
+                    node.error(err);
                 }
             }
 
@@ -242,12 +269,16 @@ module.exports = function (RED) {
     function buttonSwitch(config) {
         RED.nodes.createNode(this, config);
         var node = this;
-        const inputs = {
-            pressed: utils.createButtonOutput(0, "", ""),
-            hold: utils.createButtonOutput(1, "", ""),
-            released: utils.createButtonOutput(2, "", ""),
-            double: utils.createButtonOutput(3, "", ""),
-        };
+
+        var inputs = {};
+        const types = ["Pressed", "Hold", "Released", "Double"];
+        var currentIndex = 0;
+        types.forEach(type => {
+            if (config["enable" + type]) {
+                inputs[type.toLowerCase()] = utils.createButtonOutput(currentIndex, "", "");
+                currentIndex++;
+            }
+        });
 
         function getPayload(data, type) {
             try {
@@ -268,6 +299,17 @@ module.exports = function (RED) {
 
         node.on("input", function (msg) {
             var actionName = msg.payload.button_type;
+            if(actionName === undefined && msg.action !== undefined)
+            {
+                actionName = msg.action.description;
+            }
+
+            if(config.dynamicOutputLabels.every(e => e.toLowerCase() != actionName))
+            {
+                // output not enabled
+                return;
+            }
+
             var index = inputs[actionName].index;
             actionName = actionName.charAt(0).toUpperCase() + actionName.slice(1);
 

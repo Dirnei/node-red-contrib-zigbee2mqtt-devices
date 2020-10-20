@@ -19,166 +19,78 @@ module.exports = function (RED) {
 
     function bridgeConfig(config) {
         RED.nodes.createNode(this, config);
-        var mqtt = require("mqtt");
-        this.name = config.name;
-        this.baseTopic = config.baseTopic;
-        this.broker = config.broker;
-        this.requireLogin = config.requireLogin;
-        var _subs = [];
-        var knownDevices = [];
+        
+        const EventEmitter = require("events");
+        const emitter = new EventEmitter();
+
         var node = this;
-        var devicesContextName = "z2m_devices_" + node.id.replace(".", "_");
+        var mqttNode = RED.nodes.getNode(config.mqtt);
         var globalContext = node.context().global;
 
-        var options = {};
-        if (node.requireLogin) {
-            options = {
-                username: this.credentials.username,
-                password: this.credentials.password
-            };
-        }
+        this.name = config.name;
+        this.baseTopic = config.baseTopic;
 
-        var client = mqtt.connect(this.broker, options);
+        this.isConnected = mqttNode.isConnected;
+        this.isReconnecting = mqttNode.reconnecting;
+        this.publish = mqttNode.publish;
+        this.knownDevices = globalContext.get("knownDevices" + node.id.replace(".", "_")) || [];
 
-        this.isConnected = function () { return client.connected; };
-        this.isReconnecting = function () { return client.reconnecting; };
-        this.publish = function (topic, message) { client.publish(topic, message); };
-        this.setDeviceState = (device, payload) => {
-            if (device !== undefined && device !== "") {
-                var topic = node.baseTopic + "/" + device + "/set";
-                this.publish(topic, JSON.stringify(payload));
-            }
+        this.on = function(event, listener){
+            emitter.on(event, listener);
         };
-        this.refreshDevice = function (deviceName) {
-            // eslint-disable-next-line quotes
-            client.publish(node.baseTopic + "/" + deviceName + "/get", '{"state": ""}');
-        };
+
         this.getDeviceList = function () {
-            return globalContext.get(devicesContextName) || [];
+            return this.knownDevices;
         };
+
         this.subscribeDevice = function (nodeId, device, callback) {
             var topic = node.baseTopic + "/" + device;
-            subscribeInternal(nodeId, topic, callback, true);
+            mqttNode.subscribeDevice(nodeId, topic, callback, true);
         };
-        this.subscribe = function (nodeId, topic, callback) {
-            subscribeInternal(nodeId, topic, callback, false);
-            client.subscribe(topic);
-            return true;
-        };
-        this.unsubscribe = function (nodeId) {
-            var sub = _subs.find(e => e.nodeId == nodeId);
-            if (sub) {
-                var topic = sub.topic;
-                var index = _subs.indexOf(sub);
-                _subs.splice(index, 1);
-                if (!sub.isDevice && !_subs.some(s => s.topic == topic)) {
-                    client.unsubscribe(sub.topic);
-                }
+        this.subscribe = mqttNode.subscribe;
+        this.unsubscribe = mqttNode.unsubscribe;
+
+        this.refreshDevice = function (deviceName) {
+            if(deviceName !== "" && deviceName !== "---"){
+                // eslint-disable-next-line quotes
+                mqttNode.publish(node.baseTopic + "/" + deviceName + "/get", '{"state": ""}');
             }
         };
 
-        function subscribeInternal(nodeId, topic, callback, isDevice) {
-            var sub = _subs.find(e => e.nodeId == nodeId);
-            if (sub) {
-                if (sub.topic !== topic) {
-                    client.unsubscribe(sub.topic);
-                }
-
-                sub.topic = topic;
-                sub.callback = callback;
-            } else {
-                sub = {
-                    nodeId: nodeId,
-                    topic: topic,
-                    callback: callback,
-                    isDevice: isDevice
-                };
-
-                _subs.push(sub);
-            }
-        }
-
-        var registeredOtaNodeId = "";
-        var otaCallback = (msg) => { };
-        var otaDeviceCallback = (deviceName, msg) => { };
-        this.registerOtaNode = (nodeId, otaStatusCallback, deviceStatusCallback) => {
-            if (registeredOtaNodeId !== "" && registeredOtaNodeId !== nodeId) {
-                return false;
-            }
-
-            registeredOtaNodeId = nodeId;
-            otaCallback = otaStatusCallback;
-            otaDeviceCallback = deviceStatusCallback;
-
-            return true;
-        };
-
-        client.on("message", function (topic, message) {
-            try {
-                message = JSON.parse(message);
-
-                if (topic === node.baseTopic + "/bridge/log") {
-                    bavaria.observer.notify(node.id + "_bridgeLog", message);
-                    if (message.type === "devices") {
-                        message.message.forEach(element => {
-                            if (!knownDevices.some(dev => { return dev.friendly_name == element.friendly_name; })) {
-                                knownDevices.push(element);
-                                bavaria.observer.notify(element.friendly_name, { bridgeLogReceived: true });
+        var subId = bavaria.observer.register(mqttNode.id + "_connected", function (_msg) {
+            mqttNode.subscribe(node.id, node.baseTopic + "/+", (msg) => { });
+            mqttNode.subscribe(node.id + 1, node.baseTopic + "/bridge/log", (msg) => {
+                switch (msg.type) {
+                    case "devices":
+                        msg.message.forEach(device => {
+                            var d = node.knownDevices.find(e => {
+                                return e.ieeeAddr === device.ieeeAddr;
+                            });
+                            if (d) {
+                                var index = node.knownDevices.indexOf(d);
+                                node.knownDevices.splice(index, 1, device);
                             }
+
+                            node.knownDevices.push(device);
                         });
 
-                        globalContext.set(devicesContextName, knownDevices);
-                    } else if (topic == node.baseTopic + "/bridge/log") {
-                        switch (message.type) {
-                            case "zigbee_publish_error":
-                                if (message.message.endsWith("'No network route' (205))'")) {
-                                    var name = message.message.substr(0, message.message.indexOf("failed:") - 2);
-                                    name = name.substr(name.lastIndexOf("'") + 1);
-                                    bavaria.observer.notify(name + "_routeError", {});
-                                }
-                                break;
-                            case "ota_update":
-                                otaCallback({
-                                    device: message.meta.device,
-                                    status: message.meta.status,
-                                    progress: message.meta.progress,
-                                    message: message.message,
-                                });
-                                break;
-                        }
-                    }
-                } else {
-                    var subs = _subs.filter(e => e.topic === topic);
-                    subs.forEach(e => {
-                        try {
-                            e.callback(message);
-                        } catch (err) {
-                            console.log(err);
-                        }
-                    });
-
-                    var deviceName = topic.substr(node.baseTopic.length + 1);
-                    bavaria.observer.notify(deviceName, message);
-                    otaDeviceCallback(deviceName, message);
+                        globalContext.set("knownDevices_" + node.id.replace(".", "_"), node.knownDevices);
+                        break;
+                    case "groups":
+                        break;
                 }
-            } catch (err) {
-                node.error(err);
-            }
-        });
 
-        client.on("connect", function () {
-            client.subscribe(node.baseTopic + "/bridge/log");
-            client.subscribe(node.baseTopic + "/+");
+                emitter.emit("bridge-log", msg);
+            });
 
-            if (node.getDeviceList().length == 0) {
-                client.publish(node.baseTopic + "/bridge/config/devices", "");
-            }
-
-            bavaria.observer.notify(node.id + "_connected", {});
+            mqttNode.publish(config.baseTopic + "/bridge/config/devices", "{}");
+            bavaria.observer.notify(node.id + "_connected");
         });
 
         node.on("close", function () {
-            client.end(true);
+            mqttNode.unsubscribe(node.id);
+            mqttNode.unsubscribe(node.id + 1);
+            bavaria.observer.unregister(subId);
         });
     }
     RED.nodes.registerType("zigbee2mqtt-bridge-config", bridgeConfig, {

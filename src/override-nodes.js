@@ -2,6 +2,26 @@ module.exports = function (RED) {
     const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
 
+    function overrideState(config) {
+        RED.nodes.createNode(this, config);
+        var node = this;
+
+        node.on("input", function (msg) {
+            if (msg.payload === undefined || typeof msg.payload != "object") {
+                msg.payload = {};
+            }
+
+            if (msg.payload.override === undefined) {
+                msg.payload.override = {};
+            }
+
+            msg.payload.override.state = config.state;
+
+            node.send(msg);
+        });
+    }
+    RED.nodes.registerType("override-state", overrideState);
+
     function overrideBrightness(config) {
         RED.nodes.createNode(this, config);
         var node = this;

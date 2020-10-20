@@ -50,31 +50,50 @@
 
 <script type="text/html" data-template-name="tint-remote">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
-        <input type="text" id="node-input-bridge" placeholder="bridge" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
-        <select id="node-input-deviceName"></select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-suppressPowerpayload"><i class="fa fa-tag"></i> Suppress power button payload</label>
-        <input type="checkbox" id="node-input-suppressPowerpayload" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-brightnessChange"><i class="fa fa-tag"></i> Brightness step</label>
-        <input type="text" id="node-input-brightnessChange">
-    </div>
-    <div class="form-row">
-        <label for="node-input-temperatureChange"><i class="fa fa-tag"></i> Temperature step</label>
-        <input type="text" id="node-input-temperatureChange">
-    </div>
+    <style>
+        .tint-remote-config-settings label{
+            width:235px !important;
+        }
+        .tint-remote-config-settings input{
+            width:20px !important;
+        }
+        .tint-remote-config-settings .red-ui-typedInput-container{
+            width:40% !important;
+        }
+    </style>
 
+    <div class="zigbee2mqtt-devices-properties">
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
+            <select id="node-input-deviceName"></select>
+        </div>
+
+        <div class="tint-remote-config-settings">
+            <h3>Tint remote properties</h3>
+            <div class="form-row">
+                <label for="node-input-suppressPowerpayload"><i class="fa fa-ban"></i> Suppress power button payload</label>
+                <input type="checkbox" id="node-input-suppressPowerpayload" />
+            </div>
+            <div class="form-row">
+                <label for="node-input-brightnessChange"><i class="fa fa-sun-o"></i> Brightness step</label>
+                <input type="text" id="node-input-brightnessChange">
+            </div>
+            <div class="form-row">
+                <label for="node-input-temperatureChange"><i class="fa fa-thermometer-empty"></i> Temperature step</label>
+                <input type="text" id="node-input-temperatureChange">
+            </div>
+        </div>
+
+    </div>
 </script>
 
 <script type="text/html" data-help-name="tint-remote">

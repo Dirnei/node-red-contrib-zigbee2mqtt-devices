@@ -13,7 +13,7 @@ The are currently the following ```button_type``` values supported:
 
 ## Configuration
 
-No configuration needed to use the button switch, but you can define a custom ```msg.payload``` for each ```button_type```. You can input the following types:
+To use the button switch, you have to enable the outputs you need. You also can define a custom ```msg.payload``` for each ```button_type```. You can define the following types:
 
 - string
 - number

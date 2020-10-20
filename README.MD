@@ -2,6 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/node-red-contrib-zigbee2mqtt-devices?style=for-the-badge)](https://www.npmjs.com/package/node-red-contrib-zigbee2mqtt-devices)
 [![img](https://img.shields.io/badge/Node--RED-node--red--contrib--zigbee2mqtt--devices-%23aa4444?style=for-the-badge)](https://flows.nodered.org/node/node-red-contrib-zigbee2mqtt-devices)
+[![GitHub license](https://img.shields.io/github/license/Dirnei/node-red-contrib-zigbee2mqtt-devices?style=for-the-badge)](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices/blob/master/LICENSE)
 
 ## Available Nodes
 
@@ -46,6 +47,15 @@ Many nodes are available right now, and there are still new node ideas that will
 Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the documentation is not finished :)
 
 ## Changelog 
+
+### v0.14.0 !! Breaking-change !!
+
+- Moved mqtt configuration into own [node](docs/config/mqtt-config.md)
+- Added support for [Shelly 2.5](https://shelly.cloud/products/shelly-25-smart-home-automation-relay/)
+- Fixed device list request in [device-config](docs/device-config.md)
+- Changed colors of some nodes
+- Added [override-state](docs/nodes/override-state.md) node
+- [button-switch](docs/nodes/button-switch.md) outputs can now be disabled to reduce the number of outputs
 
 ### v0.13.1
 

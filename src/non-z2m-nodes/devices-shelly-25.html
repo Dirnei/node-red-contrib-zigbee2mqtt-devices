@@ -1,0 +1,166 @@
+<!--- SHELLY CONFIG NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('shelly-config', {
+        category: 'config',
+        defaults: {
+            name: { value: "" },
+            prefix: { value: "", required: true },
+        },
+        label: function () { return this.name || "shelly 2.5"; },
+    });
+</script>
+
+<script type="text/html" data-template-name="shelly-config">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name" />
+    </div>	
+    <div class="form-row">
+        <label for="node-input-prefix"><i class="fa fa-tag"></i> MQTT Prefix</label>
+        <input type="text" id="node-config-input-prefix" placeholder="shellies/<shellymodel>-<deviceid>"/>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="shelly-config">
+    <p>
+        Configure your shelly device
+    </p>
+</script>
+
+<!--- SHELLY NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('shelly-25', {
+        category: 'zigbee2mqtt_non_z2m-input',
+        defaults: {
+            name: { value: "" },
+            mqtt: { type: "mqtt-config" },
+            shelly: { type: "shelly-config" },
+            enableInput: { value: true },
+            state: { value: "on" },
+            channel: { value: "0" },
+            inputs: { value: 1 },
+            outputs: { value: 3 },
+            customPayload: { value: true },
+
+            payloadInput0: { value: "" },
+            typeInput0: { value: "str" },
+
+            payloadInput1: { value: "" },
+            typeInput1: { value: "str" },
+        },
+        inputs: 1,
+        outputs: 3,
+        outputLabels: function (i) {
+            var no = parseInt(this.channel) + 1;
+            var labels = ["Channel " + no, "Input " + no, "Message"];
+
+            if (no === 3) {
+                labels[0] = "Both Channels";
+                labels[1] = "Both Inputs";
+            }
+
+            return labels[i];
+        },
+        icon: "remote-black.svg",
+        label: function () { return this.name || "shelly 2.5"; },
+        paletteLabel: "shelly 2.5",
+        oneditprepare: function () {
+            RED.bavaria.ui.addMultiInput(this, "Input0");
+            RED.bavaria.ui.addMultiInput(this, "Input1");
+
+            $("#node-input-customPayload").change(function () {
+                if ($("#node-input-customPayload").is(":checked")) {
+                    $("#customInputPayload").show();
+                } else {
+                    $("#customInputPayload").hide();
+                }
+            });
+
+            $("#node-input-channel").change(function () {
+                var channel = $(this).val();
+                switch (channel) {
+                    case "0":
+                        $("#customInputPayload0").show();
+                        $("#customInputPayload1").hide();
+                        break;
+                    case "1":
+                        $("#customInputPayload0").hide();
+                        $("#customInputPayload1").show();
+                        break;
+                    case "2":
+                        $("#customInputPayload0").show();
+                        $("#customInputPayload1").show();
+                        break;
+                }
+            });
+
+        },
+        oneditsave: function () {
+            if ($("#node-input-enableInput").is(":checked") && (this.inputs !== 1 || !this.inputs)) {
+                this.inputs = 1;
+                this.outputs = 3;
+            } else if (!$("#node-input-enableInput").is(":checked") && (this.inputs !== 0 || !this.inputs)) {
+                this.inputs = 0;
+                this.outputs = 2;
+            }
+
+            RED.bavaria.ui.saveMultiInput(this, "Input0")
+            RED.bavaria.ui.saveMultiInput(this, "Input1")
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="shelly-25">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" />
+    </div>	
+    <div class="form-row">
+        <label for="node-input-mqtt"><i class="fa fa-tag"></i> Broker</label>
+        <input type="text" id="node-input-mqtt"  />
+    </div>
+    <div class="form-row">
+        <label for="node-input-shelly"><i class="fa fa-tag"></i> Device</label>
+        <input type="text" id="node-input-shelly"  />
+    </div>
+    <div class="form-row">
+        <label for="node-input-channel"><i class="fa fa-power-off"></i> Channel</label>
+        <select id="node-input-channel">
+            <option value="0">Channel 1</option>
+            <option value="1">Channel 2</option>
+            <option value="2">Both</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-state"><i class="fa fa-power-off"></i> State</label>
+        <select id="node-input-state">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+            <option value="toggle">Toggle</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-enableInput"><i class="fa fa-tag"></i> Enable Input</label>
+        <input type="checkbox" id="node-input-enableInput"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-customPayload"><i class="fa fa-tag"></i> Enable Custom Payload</label>
+        <input type="checkbox" id="node-input-customPayload"/>
+    </div>
+    <div id="customInputPayload">
+        <div class="form-row" id="customInputPayload0">
+            <label for="node-input-payloadInput0"><i class="fa fa-tag"></i> Custom Payload 1</label>
+            <input type="text" id="node-input-payloadInput0">
+        </div>
+        <div class="form-row" id="customInputPayload1">
+            <label for="node-input-payloadInput1"><i class="fa fa-tag"></i> Custom Payload 2</label>
+            <input type="text" id="node-input-payloadInput1">
+        </div>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="shelly-25">
+    <p>
+        Configure your shelly device
+    </p>
+</script>
