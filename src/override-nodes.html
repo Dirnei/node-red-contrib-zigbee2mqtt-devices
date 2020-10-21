@@ -46,8 +46,7 @@
         color: '#d1a932',
         defaults: {
             name: { value: "" },
-            brightness: { value: 255, validate: RED.bavaria.validators.range(0, 255) },
-
+            brightness: { value: 255 },
         },
         inputs: 1,
         outputs: 1,
@@ -56,23 +55,31 @@
             return this.name || "override-brightness";
         },
         oneditprepare: function () {
-            RED.bavaria.ui.addNumRangeInput("#node-input-brightness", 0, 255);
-        },
+            $("#node-input-brightness").on('input', function () {
+                var b = $(this).val();
+                $("#node-selected-brightness").val(b);
+            });
+            
+            $("#node-selected-brightness").on('change', function () {
+                var b = $(this).val();
+                $("#node-input-brightness").val(b);
+            });
+
+            $("#node-selected-brightness").val(this.brightness);
+        }
     });
 </script>
 
 <script type="text/html" data-template-name="override-brightness">
-
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
     </div>
-
-    <div class="form-row">
+    <div class="form-row zigbee2mqtt-devices-slider">
         <label for="node-input-brightness"><i class="fa fa-sun-o"></i> Brightness</label>
-        <input type="text" id="node-input-brightness">
+        <input type="range" min="0" max="254" id="node-input-brightness">
+        <input type="text" id="node-selected-brightness">
     </div>
-
 </script>
 
 <script type="text/html" data-help-name="override-brightness">
