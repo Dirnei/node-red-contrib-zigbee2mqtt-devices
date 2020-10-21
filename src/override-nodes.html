@@ -138,12 +138,18 @@
             return this.name || "override-color";
         },
         oneditprepare: function () {
-            var node = this;
+            this.color = {
+                red : this.red,
+                green : this.green,
+                blue : this.blue 
+            };
+
+            const node = this;
             var numInputs = ["#node-input-red", "#node-input-green", "#node-input-blue"];
             var colors = ["red", "green", "blue"];
 
             function updateColorPicker() {
-                var hex = RED.bavaria.converters.rgbToHex(node.red || 0, node.green || 0, node.blue || 0)
+                var hex = RED.bavaria.converters.rgbToHex(node.color.red || 0, node.color.green || 0, node.color.blue || 0)
                 $("#node-input-color").val(hex);
             }
 
@@ -151,7 +157,7 @@
 
             colors.forEach(function (input) {
                 $("#node-input-" + input).next().children(".red-ui-typedInput-input-wrap").children().first().change(function () {
-                    node[input] = $(this).val();
+                    node.color[input] = $(this).val();
 
                     updateColorPicker();
 
@@ -176,32 +182,31 @@
                 var hex = $(this).val();
                 var color = RED.bavaria.converters.hexToRgb(hex);
 
-                node.red = color.r;
-                node.green = color.g;
-                node.blue = color.b;
+                node.color.red = color.r;
+                node.color.green = color.g;
+                node.color.blue = color.b;
 
                 colors.forEach(c => {
-                    $("#node-input-" + c).next().children(".red-ui-typedInput-input-wrap").children().first().val(node[c]);
+                    $("#node-input-" + c).next().children(".red-ui-typedInput-input-wrap").children().first().val(node.color[c]);
                 })
             });
 
             updateColorPicker();
         },
         oneditsave: function () {
-
             // some weird stuff to get node-red to safe it and to show changed...
-            var color = {};
-            color.red = $("#node-input-red").next().children(".red-ui-typedInput-input-wrap").children().first().val();
-            color.green = $("#node-input-green").next().children(".red-ui-typedInput-input-wrap").children().first().val();
-            color.blue = $("#node-input-blue").next().children(".red-ui-typedInput-input-wrap").children().first().val();
+            this.color = {};
+            this.color.red = $("#node-input-red").next().children(".red-ui-typedInput-input-wrap").children().first().val();
+            this.color.green = $("#node-input-green").next().children(".red-ui-typedInput-input-wrap").children().first().val();
+            this.color.blue = $("#node-input-blue").next().children(".red-ui-typedInput-input-wrap").children().first().val();
 
-            $("#node-input-red").val(color.red);
-            $("#node-input-green").val(color.green);
-            $("#node-input-blue").val(color.blue);
+            $("#node-input-red").val(this.color.red);
+            $("#node-input-green").val(this.color.green);
+            $("#node-input-blue").val(this.color.blue);
 
-            this.red = color.red;
-            this.green = color.green;
-            this.blue = color.blue
+            this.red = this.color.red;
+            this.green = this.color.green;
+            this.blue = this.color.blue
         }
     });
 </script>
