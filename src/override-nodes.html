@@ -152,6 +152,7 @@
             colors.forEach(function (input) {
                 $("#node-input-" + input).next().children(".red-ui-typedInput-input-wrap").children().first().change(function () {
                     node[input] = $(this).val();
+
                     updateColorPicker();
 
                     var change = {};
@@ -175,9 +176,13 @@
                 var hex = $(this).val();
                 var color = RED.bavaria.converters.hexToRgb(hex);
 
-                $("#node-input-red").next().children(".red-ui-typedInput-input-wrap").children().first().val(color.r);
-                $("#node-input-green").next().children(".red-ui-typedInput-input-wrap").children().first().val(color.g);
-                $("#node-input-blue").next().children(".red-ui-typedInput-input-wrap").children().first().val(color.b);
+                node.red = color.r;
+                node.green = color.g;
+                node.blue = color.b;
+
+                colors.forEach(c => {
+                    $("#node-input-" + c).next().children(".red-ui-typedInput-input-wrap").children().first().val(node[c]);
+                })
             });
 
             updateColorPicker();
