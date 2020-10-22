@@ -138,9 +138,76 @@
             return this.name || "override-color";
         },
         oneditprepare: function () {
+            this.color = {
+                red : this.red,
+                green : this.green,
+                blue : this.blue 
+            };
+
+            const node = this;
             var numInputs = ["#node-input-red", "#node-input-green", "#node-input-blue"];
+            var colors = ["red", "green", "blue"];
+
+            function updateColorPicker() {
+                var hex = RED.bavaria.converters.rgbToHex(node.color.red || 0, node.color.green || 0, node.color.blue || 0)
+                $("#node-input-color").val(hex);
+            }
+
             RED.bavaria.ui.addNumRangeInputs(numInputs, 0, 255);
+
+            colors.forEach(function (input) {
+                $("#node-input-" + input).next().children(".red-ui-typedInput-input-wrap").children().first().change(function () {
+                    node.color[input] = $(this).val();
+
+                    updateColorPicker();
+
+                    var change = {};
+                    change[input] = node[input];
+
+                    node.dirty = true;
+                    node.changed = true;
+
+                    RED.nodes.dirty(true);
+                    RED.history.push({
+                        t: 'edit',
+                        node: node,
+                        changes: change,
+                        dirty: node.dirty,
+                        changed: node.changed
+                    });
+                });
+            });
+
+            $("#node-input-color").change(function () {
+                var hex = $(this).val();
+                var color = RED.bavaria.converters.hexToRgb(hex);
+
+                node.color.red = color.r;
+                node.color.green = color.g;
+                node.color.blue = color.b;
+
+                colors.forEach(c => {
+                    $("#node-input-" + c).next().children(".red-ui-typedInput-input-wrap").children().first().val(node.color[c]);
+                })
+            });
+
+            updateColorPicker();
         },
+        oneditsave: function () {
+            // some weird stuff to get node-red to safe it and to show changed...
+            this.color = {};
+            this.color.red = $("#node-input-red").next().children(".red-ui-typedInput-input-wrap").children().first().val();
+            this.color.green = $("#node-input-green").next().children(".red-ui-typedInput-input-wrap").children().first().val();
+            this.color.blue = $("#node-input-blue").next().children(".red-ui-typedInput-input-wrap").children().first().val();
+
+            $("#node-input-red").val(this.color.red);
+            $("#node-input-green").val(this.color.green);
+            $("#node-input-blue").val(this.color.blue);
+
+            this.red = this.color.red;
+            this.green = this.color.green;
+            this.blue = this.color.blue
+        }
     });
 </script>
 
@@ -171,6 +238,13 @@
                 <i class="fa fa-paint-brush"></i> Blue
             </label>
             <input type="text" id="node-input-blue">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-color">
+                <i class="fa fa-paint-brush"></i> Color
+            </label>
+            <input type="color" id="node-input-color">
         </div>
 
     </div>
