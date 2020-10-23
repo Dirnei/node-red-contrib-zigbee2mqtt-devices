@@ -57,6 +57,7 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 - Added [override-state](docs/nodes/override-state.md) node
 - [button-switch](docs/nodes/button-switch.md) outputs can now be disabled to reduce the number of outputs
 - added color picker to [override-color](docs/nodes/override-color.md) node
+- added range input to [override-brightness](docs/nodes/override-brightness.md) node
 
 ### v0.13.1
 
