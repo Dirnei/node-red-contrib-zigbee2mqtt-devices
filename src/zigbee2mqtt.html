@@ -230,6 +230,11 @@
             customPayloadHold: { value: false },
             customPayloadReleased: { value: false },
             customPayloadDouble: { value: false },
+
+            repeatHold: { value: false },
+            repeatHoldDelay: { value: 500 },
+            repeatHoldMax: { value: 20 },
+
             dynamicOutputLabels: { value: [] },
             outputs: { value: 3 },
         },
@@ -245,6 +250,10 @@
         oneditprepare: function () {
             var node = this;
             var names = ["Pressed", "Hold", "Released", "Double"];
+            
+            RED.bavaria.ui.addNumInput("#node-input-repeatHoldDelay");
+            RED.bavaria.ui.addNumInput("#node-input-repeatHoldMax");
+
             names.forEach(name => {
                 RED.bavaria.ui.addMultiInput(node, name);
                 $("#node-input-enable" + name).change(function () {
@@ -264,6 +273,13 @@
                 });
             });
 
+            $("#node-input-repeatHold").change(function () {
+                if ($(this).is(":checked")) {
+                    $("#repeatHold-config").show();
+                } else {
+                    $("#repeatHold-config").hide();
+                }
+            });
         },
         oneditsave: function () {
             var names = ["Pressed", "Hold", "Released", "Double"];
@@ -321,6 +337,16 @@
                 </div>
                 <div class="form-row" id="custom-output-hold">
                     <input type="text" id="node-input-payloadHold">
+                </div>
+                <div class="form-row">
+                    <input type="checkbox" id="node-input-repeatHold" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                    <label for="node-input-repeatHold" style="width: 70%;"> Repeat sending message until <code>released</code></label>
+                </div>
+                <div class="form-row" id="repeatHold-config">
+                    <label for="node-input-delay" style="width: 70%;"> Delay between messages (ms)</label>
+                    <input type="text" id="node-input-repeatHoldDelay">
+                    <label for="node-input-max" style="width: 70%;"> Maximum amount of messages</label>
+                    <input type="text" id="node-input-repeatHoldMax">
                 </div>
             </div>
         </div>
