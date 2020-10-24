@@ -50,7 +50,13 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ### v0.14.1
 
-- changed ikea-dimmer click property to action, because click is now legacy
+- Fixed Ikea dimmer payload. It is also differnet then before.
+- Fixed the [device-status](docs/nodes/device-status.md) node.
+
+### v0.14.1
+
+- Changed ikea-dimmer click property to action, because click is now legacy
+- Fixed the device
 
 ### v0.14.0 !! Breaking-change !!
 
@@ -72,14 +78,6 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 - Added _Müller Licht - tint_ remote device support
 - Added [override-action](docs/nodes/override-action.md) node
 - Removed ```delay``` property from mqtt payload, as it is only used internally
-
-### v0.12.0
-
-- Added [ota-node](docs/nodes/ota-node.md)
-- Updated dashboard for ota updates
-- Some code restructuring
-- Smaller bugfixes
-- Probably added some bugs that need to be fixed later :)
 
 ## You want to contribute?
 
