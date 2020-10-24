@@ -337,7 +337,7 @@ module.exports = function (RED) {
         function subscriptionCallback(msg) {
             node.send({
                 device: config.genericMqttDevice === true ? deviceNode.statusTopic : config.deviceName,
-                deviceName: deviceNode.name || config.deviceName,
+                deviceName: config.genericMqttDevice === true ? deviceNode.name : undefined,
                 payload: msg,
             });
         }
