@@ -16,7 +16,9 @@ module.exports = function (RED) {
                     on: utils.createButtonOutput(0, "on", "pressed"),
                     off: utils.createButtonOutput(1, "off", "pressed"),
                     brightness_up: utils.createButtonOutput(2, "dimm_up", "hold"),
+                    brightness_move_up: utils.createButtonOutput(2, "dimm_up", "hold"),
                     brightness_down: utils.createButtonOutput(3, "dimm_down", "hold"),
+                    brightness_move_down: utils.createButtonOutput(3, "dimm_down", "hold"),
                     brightness_stop: utils.createButtonOutput(4, "dimm_stop", "released"),
                 };
 
