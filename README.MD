@@ -48,7 +48,7 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ## Changelog 
 
-### v0.14.1
+### v0.14.2
 
 - Fixed Ikea dimmer payload. It is also differnet then before.
 - Fixed the [device-status](docs/nodes/device-status.md) node.
