@@ -48,6 +48,10 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ## Changelog 
 
+### v0.14.1
+
+- changed ikea-dimmer click property to action, because click is now legacy
+
 ### v0.14.0 !! Breaking-change !!
 
 - Moved mqtt configuration into own [node](docs/config/mqtt-config.md)

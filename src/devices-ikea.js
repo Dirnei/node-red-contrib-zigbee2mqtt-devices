@@ -20,7 +20,7 @@ module.exports = function (RED) {
                     brightness_stop: utils.createButtonOutput(4, "dimm_stop", "released"),
                 };
 
-                var output = ioMap[message.click];
+                var output = ioMap[message.action];
                 utils.sendAt(node, output.index, {
                     payload: {
                         button_name: output.button_name,
