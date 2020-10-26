@@ -268,6 +268,9 @@ module.exports = function (RED) {
 
     function buttonSwitch(config) {
         RED.nodes.createNode(this, config);
+        var isHolding = false;
+        var currentCount = 0;
+
         var node = this;
 
         var inputs = {};
@@ -299,13 +302,15 @@ module.exports = function (RED) {
 
         node.on("input", function (msg) {
             var actionName = msg.payload.button_type;
-            if(actionName === undefined && msg.action !== undefined)
-            {
+            if (actionName === undefined && msg.action !== undefined) {
                 actionName = msg.action.description;
             }
 
-            if(config.dynamicOutputLabels.every(e => e.toLowerCase() != actionName))
-            {
+            if (actionName === "released") {
+                isHolding = false;
+            }
+
+            if (config.dynamicOutputLabels.every(e => e.toLowerCase() != actionName)) {
                 // output not enabled
                 return;
             }
@@ -317,7 +322,23 @@ module.exports = function (RED) {
                 msg = { payload: getPayload(config["payload" + actionName], config["type" + actionName]) };
             }
 
-            utils.sendAt(node, index, msg);
+            if (actionName === "Hold" && config.repeatHold) {
+                currentCount = 0;
+                isHolding = true;
+                repeateMessage();
+            } else {
+                utils.sendAt(node, index, msg);
+            }
+
+            function repeateMessage() {
+                if (isHolding && currentCount < config.repeatHoldMax) {
+                    currentCount++;
+                    utils.sendAt(node, index, msg);
+                    setTimeout(repeateMessage, config.repeatHoldDelay);
+                } else {
+                    isHolding = false;
+                }
+            }
         });
     }
     RED.nodes.registerType("button-switch", buttonSwitch);
