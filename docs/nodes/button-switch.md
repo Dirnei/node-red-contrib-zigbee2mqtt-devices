@@ -24,9 +24,9 @@ To use the button switch, you have to enable the outputs you need. You also can 
 
 ## Repeatedly send hold message
 
-In some cases you may want to send multiple message while a button is hold down. If that is the case, you can enable it after you enabled the output for ```hold```. The ```released``` output has not to be enabled for this.
+In some cases, you may want to send multiple messages while a button is held down. If that is the case, you can enable it after you enabled the output for ```hold```. The ```released``` output has not to be enabled for this to work.
 
-> To not end up in a endless loop you have to specify a ```maximum amount of messages```! If your amount is 0 or less it will not produce any output!
+> To not end up in an endless loop, you have to specify a ```maximum amount of messages```! If your amount is 0 or less, it will not produce any output!
 
 ![img](img/button-switch-config-hold-repeat.png)
 
