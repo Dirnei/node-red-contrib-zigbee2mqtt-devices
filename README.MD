@@ -48,6 +48,11 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ## Changelog 
 
+### v0.15
+
+- Added option "Repeatedly send hold message until button released" to [button-siwtch](docs/nodes/button-switch.md)
+- Added fallback for legacy payload of Ikea dimmer
+
 ### v0.14.2
 
 - Fixed Ikea dimmer payload. It is also differnet then before.
@@ -69,15 +74,6 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 - added color picker to [override-color](docs/nodes/override-color.md) node
 - added range input to [override-brightness](docs/nodes/override-brightness.md) node
 
-### v0.13.1
-
-- Fixed validation on newly added [override-action](docs/nodes/override-action.md) node
-
-### v0.13.0
-
-- Added _Müller Licht - tint_ remote device support
-- Added [override-action](docs/nodes/override-action.md) node
-- Removed ```delay``` property from mqtt payload, as it is only used internally
 
 ## You want to contribute?
 

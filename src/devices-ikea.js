@@ -23,6 +23,12 @@ module.exports = function (RED) {
                 };
 
                 var output = ioMap[message.action];
+                if(output == undefined)
+                {
+                    // fallback for legacy payload
+                    output = ioMap[message.click];
+                }
+                
                 utils.sendAt(node, output.index, {
                     payload: {
                         button_name: output.button_name,
