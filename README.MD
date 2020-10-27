@@ -48,10 +48,12 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ## Changelog 
 
-### v0.15
+### v0.15.0 / 0.15.1
 
 - Added option "Repeatedly send hold message until button released" to [button-siwtch](docs/nodes/button-switch.md)
 - Added fallback for legacy payload of Ikea dimmer
+
+> When installed right after release the depenceny mqtt (v4.2.2) got also released which was not able to connect. I fixed the version to 4.2.1 for now and published again.
 
 ### v0.14.2
 
