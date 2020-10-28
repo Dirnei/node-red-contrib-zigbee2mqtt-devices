@@ -19,7 +19,7 @@ module.exports = function (RED) {
 
     function bridgeConfig(config) {
         RED.nodes.createNode(this, config);
-        
+
         const EventEmitter = require("events");
         const emitter = new EventEmitter();
 
@@ -35,7 +35,7 @@ module.exports = function (RED) {
         this.publish = mqttNode.publish;
         this.knownDevices = globalContext.get("knownDevices" + node.id.replace(".", "_")) || [];
 
-        this.on = function(event, listener){
+        this.on = function (event, listener) {
             emitter.on(event, listener);
         };
 
@@ -51,7 +51,7 @@ module.exports = function (RED) {
         this.unsubscribe = mqttNode.unsubscribe;
 
         this.refreshDevice = function (deviceName) {
-            if(deviceName !== "" && deviceName !== "---"){
+            if (deviceName !== "" && deviceName !== "---") {
                 // eslint-disable-next-line quotes
                 mqttNode.publish(node.baseTopic + "/" + deviceName + "/get", '{"state": ""}');
             }
@@ -67,11 +67,13 @@ module.exports = function (RED) {
                                 return e.ieeeAddr === device.ieeeAddr;
                             });
                             if (d) {
+                                // replace allready known device
                                 var index = node.knownDevices.indexOf(d);
                                 node.knownDevices.splice(index, 1, device);
+                            } else {
+                                // new device
+                                node.knownDevices.push(device);
                             }
-
-                            node.knownDevices.push(device);
                         });
 
                         globalContext.set("knownDevices_" + node.id.replace(".", "_"), node.knownDevices);
