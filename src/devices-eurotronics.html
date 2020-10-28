@@ -1,0 +1,35 @@
+<!--- DEVICES-EUROTRONICS NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('devices-eurotronics', {
+        category: 'zigbee2mqtt_thermostats-eurotronics',
+        color: '#59a27a',
+        defaults: {
+            name: { value: "" },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "feed.png",
+        label: function () {
+            return this.name || "Eurotronics Spirit";
+        },
+        oneditprepare: function () {
+        },
+        oneditsave: function () {
+        },
+        oneditcancel: function () {
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="devices-eurotronics">
+    <div class="zigbee2mqtt-devices-properties">
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>    
+    </div>
+</script>
+
+<script type="text/html" data-help-name="devices-eurotronics">
+    
+</script>
