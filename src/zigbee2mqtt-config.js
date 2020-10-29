@@ -19,7 +19,7 @@ module.exports = function (RED) {
 
     function bridgeConfig(config) {
         RED.nodes.createNode(this, config);
-        
+
         const EventEmitter = require("events");
         const emitter = new EventEmitter();
 
@@ -35,7 +35,7 @@ module.exports = function (RED) {
         this.publish = mqttNode.publish;
         this.knownDevices = globalContext.get("knownDevices" + node.id.replace(".", "_")) || [];
 
-        this.on = function(event, listener){
+        this.on = function (event, listener) {
             emitter.on(event, listener);
         };
 
@@ -51,14 +51,33 @@ module.exports = function (RED) {
         this.unsubscribe = mqttNode.unsubscribe;
 
         this.refreshDevice = function (deviceName) {
-            if(deviceName !== "" && deviceName !== "---"){
+            if (deviceName !== "" && deviceName !== "---") {
                 // eslint-disable-next-line quotes
                 mqttNode.publish(node.baseTopic + "/" + deviceName + "/get", '{"state": ""}');
             }
         };
 
+        var registeredOtaNodeId = "";
+        var otaCallback = (msg) => { };
+        var otaDeviceCallback = (deviceName, msg) => { };
+        this.registerOtaNode = (nodeId, otaStatusCallback, deviceStatusCallback) => {
+            if (registeredOtaNodeId !== "" && registeredOtaNodeId !== nodeId) {
+                return false;
+            }
+
+            registeredOtaNodeId = nodeId;
+            otaCallback = otaStatusCallback;
+            otaDeviceCallback = deviceStatusCallback;
+
+            return true;
+        };
+
         var subId = bavaria.observer.register(mqttNode.id + "_connected", function (_msg) {
-            mqttNode.subscribe(node.id, node.baseTopic + "/+", (msg) => { });
+            mqttNode.subscribe(node.id, node.baseTopic + "/+", (msg, topic) => { 
+                var deviceName = topic.substr(node.baseTopic.length + 1);
+                bavaria.observer.notify(deviceName, msg);
+                otaDeviceCallback(deviceName, msg);
+            });
             mqttNode.subscribe(node.id + 1, node.baseTopic + "/bridge/log", (msg) => {
                 switch (msg.type) {
                     case "devices":
@@ -75,6 +94,14 @@ module.exports = function (RED) {
                         });
 
                         globalContext.set("knownDevices_" + node.id.replace(".", "_"), node.knownDevices);
+                        break;
+                    case "ota_update":
+                        otaCallback({
+                            device: msg.meta.device,
+                            status: msg.meta.status,
+                            progress: msg.meta.progress,
+                            message: msg.message,
+                        });
                         break;
                     case "groups":
                         break;

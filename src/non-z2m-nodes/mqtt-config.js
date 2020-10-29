@@ -73,10 +73,10 @@ module.exports = function (RED) {
                     message = JSON.parse(message);
                 }
 
-                var subs = _subs.filter(e => e.topic === topic);
+                var subs = _subs.filter(e => comapreTopic(e.topic, topic));
                 subs.forEach(e => {
                     try {
-                        e.callback(message);
+                        e.callback(message, topic);
                     } catch (err) {
                         console.log(err);
                     }
@@ -85,6 +85,33 @@ module.exports = function (RED) {
                 node.error(topic + " - " + err);
             }
         });
+
+        function comapreTopic(subscriptionTopic, messageTopic) {
+            if (subscriptionTopic === messageTopic) {
+                return true;
+            }
+
+            if (subscriptionTopic.endsWith("+")) {
+                var subSegments = subscriptionTopic.split("/");
+                var topicSegments = messageTopic.split("/");
+
+                if (subSegments.length === topicSegments.length) {
+                    subSegments.pop();
+                    topicSegments.pop();
+
+                    for (var i = 0; i < subSegments.length; i++) {
+                        if (subSegments[i] !== topicSegments[i]) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+                return false;
+            }
+
+            return false;
+        }
 
         client.on("connect", function () {
             bavaria.observer.notify(node.id + "_connected", {});
