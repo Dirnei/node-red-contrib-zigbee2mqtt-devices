@@ -47,8 +47,16 @@ module.exports = function (RED) {
             var topic = node.baseTopic + "/" + device;
             mqttNode.subscribeDevice(nodeId, topic, callback, true);
         };
+        
         this.subscribe = mqttNode.subscribe;
         this.unsubscribe = mqttNode.unsubscribe;
+
+        this.setDeviceState = (device, payload) => {
+            if (device !== undefined && device !== "") {
+                var topic = node.baseTopic + "/" + device + "/set";
+                this.publish(topic, JSON.stringify(payload));
+            }
+        };
 
         this.refreshDevice = function (deviceName) {
             if (deviceName !== "" && deviceName !== "---") {
@@ -73,7 +81,7 @@ module.exports = function (RED) {
         };
 
         var subId = bavaria.observer.register(mqttNode.id + "_connected", function (_msg) {
-            mqttNode.subscribe(node.id, node.baseTopic + "/+", (msg, topic) => { 
+            mqttNode.subscribe(node.id, node.baseTopic + "/+", (msg, topic) => {
                 var deviceName = topic.substr(node.baseTopic.length + 1);
                 bavaria.observer.notify(deviceName, msg);
                 otaDeviceCallback(deviceName, msg);
