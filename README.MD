@@ -48,6 +48,10 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ## Changelog 
 
+### v0.15.2
+
+- Fixed [ota-update](docs/nodes/ota-node.md) node. It was not working since v0.14.0
+
 ### v0.15.0 / 0.15.1
 
 - Added option "Repeatedly send hold message until button released" to [button-siwtch](docs/nodes/button-switch.md)

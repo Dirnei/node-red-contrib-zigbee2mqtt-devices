@@ -47,8 +47,16 @@ module.exports = function (RED) {
             var topic = node.baseTopic + "/" + device;
             mqttNode.subscribeDevice(nodeId, topic, callback, true);
         };
+        
         this.subscribe = mqttNode.subscribe;
         this.unsubscribe = mqttNode.unsubscribe;
+
+        this.setDeviceState = (device, payload) => {
+            if (device !== undefined && device !== "") {
+                var topic = node.baseTopic + "/" + device + "/set";
+                this.publish(topic, JSON.stringify(payload));
+            }
+        };
 
         this.refreshDevice = function (deviceName) {
             if (deviceName !== "" && deviceName !== "---") {
@@ -57,8 +65,27 @@ module.exports = function (RED) {
             }
         };
 
+        var registeredOtaNodeId = "";
+        var otaCallback = (msg) => { };
+        var otaDeviceCallback = (deviceName, msg) => { };
+        this.registerOtaNode = (nodeId, otaStatusCallback, deviceStatusCallback) => {
+            if (registeredOtaNodeId !== "" && registeredOtaNodeId !== nodeId) {
+                return false;
+            }
+
+            registeredOtaNodeId = nodeId;
+            otaCallback = otaStatusCallback;
+            otaDeviceCallback = deviceStatusCallback;
+
+            return true;
+        };
+
         var subId = bavaria.observer.register(mqttNode.id + "_connected", function (_msg) {
-            mqttNode.subscribe(node.id, node.baseTopic + "/+", (msg) => { });
+            mqttNode.subscribe(node.id, node.baseTopic + "/+", (msg, topic) => {
+                var deviceName = topic.substr(node.baseTopic.length + 1);
+                bavaria.observer.notify(deviceName, msg);
+                otaDeviceCallback(deviceName, msg);
+            });
             mqttNode.subscribe(node.id + 1, node.baseTopic + "/bridge/log", (msg) => {
                 switch (msg.type) {
                     case "devices":
@@ -77,6 +104,14 @@ module.exports = function (RED) {
                         });
 
                         globalContext.set("knownDevices_" + node.id.replace(".", "_"), node.knownDevices);
+                        break;
+                    case "ota_update":
+                        otaCallback({
+                            device: msg.meta.device,
+                            status: msg.meta.status,
+                            progress: msg.meta.progress,
+                            message: msg.message,
+                        });
                         break;
                     case "groups":
                         break;
