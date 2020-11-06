@@ -171,6 +171,19 @@
                     node["customPayload" + name] = $("#node-input-payload" + name).val() !== "";
                     node["type" + name] = type;
                 }
+            },
+            devices: {
+                loadDevices: function(selectedDevice, deviceType, vendor, model){
+                    var bridgeId = $("#node-input-bridge").val().replace(".", "_");
+                    $.getJSON(`/z2m/devices/${bridgeId}/${deviceType}/${vendor}/${model}`, function (data) {
+                        $("#node-input-deviceName").empty();
+                        data.devices.forEach(e => {
+                            $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
+                        });
+
+                        $("#node-input-deviceName").val(selectedDevice);
+                    });
+                }
             }
         }
     }

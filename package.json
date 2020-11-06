@@ -28,6 +28,7 @@
             "devices-sonoff": "src/devices-sonoff.js",
             "devices-scenic": "src/devices-scenic.js",
             "devices-tint": "src/devices-tint.js",
+            "devices-eurotronics": "src/devices-eurotronics.js",
             "non-z2m-devices-shelly-25": "src/non-z2m-nodes/devices-shelly-25.js"
         }
     },
