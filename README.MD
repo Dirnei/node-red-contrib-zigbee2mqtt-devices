@@ -48,6 +48,27 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ## Changelog 
 
+### v0.15.2
+
+- Fixed [ota-update](docs/nodes/ota-node.md) node. It was not working since v0.14.0
+
+### v0.15.0 / 0.15.1
+
+- Added option "Repeatedly send hold message until button released" to [button-siwtch](docs/nodes/button-switch.md)
+- Added fallback for legacy payload of Ikea dimmer
+
+> When installed right after release the depenceny mqtt (v4.2.2) got also released which was not able to connect. I fixed the version to 4.2.1 for now and published again.
+
+### v0.14.2
+
+- Fixed Ikea dimmer payload. It is also differnet then before.
+- Fixed the [device-status](docs/nodes/device-status.md) node.
+
+### v0.14.1
+
+- Changed ikea-dimmer click property to action, because click is now legacy
+- Fixed the device
+
 ### v0.14.0 !! Breaking-change !!
 
 - Moved mqtt configuration into own [node](docs/config/mqtt-config.md)
@@ -56,24 +77,9 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 - Changed colors of some nodes
 - Added [override-state](docs/nodes/override-state.md) node
 - [button-switch](docs/nodes/button-switch.md) outputs can now be disabled to reduce the number of outputs
+- added color picker to [override-color](docs/nodes/override-color.md) node
+- added range input to [override-brightness](docs/nodes/override-brightness.md) node
 
-### v0.13.1
-
-- Fixed validation on newly added [override-action](docs/nodes/override-action.md) node
-
-### v0.13.0
-
-- Added _Müller Licht - tint_ remote device support
-- Added [override-action](docs/nodes/override-action.md) node
-- Removed ```delay``` property from mqtt payload, as it is only used internally
-
-### v0.12.0
-
-- Added [ota-node](docs/nodes/ota-node.md)
-- Updated dashboard for ota updates
-- Some code restructuring
-- Smaller bugfixes
-- Probably added some bugs that need to be fixed later :)
 
 ## You want to contribute?
 

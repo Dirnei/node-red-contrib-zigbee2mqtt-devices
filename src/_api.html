@@ -17,9 +17,19 @@
 
     /* PROPERTIES PANELS */
     /* Font Awesome Icons shall have all the same width */
-    .zigbee2mqtt-devices-properties .form-row > label > .fa {
+    .zigbee2mqtt-devices-properties .form-row>label>.fa {
         width: 16px;
         text-align: center;
+    }
+
+    .zigbee2mqtt-devices-slider input[type=range] {
+        width: 60%;
+        display: inline;
+    }
+
+    .zigbee2mqtt-devices-slider input[type=text] {
+        width: 9%;
+        display: inline;
     }
 </style>
 
@@ -49,6 +59,46 @@
                     return function (v) {
                         return v <= max && v >= min;
                     }
+                }
+            },
+            converters: {
+                hexToRgb: function (hex) {
+                    if (hex.startsWith("#")) {
+                        hex = hex.substring(1);
+                    }
+
+                    if (hex.length === 3) {
+                        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+                    }
+
+                    if (hex.length != 6) {
+                        return {
+                            r: 0,
+                            g: 0,
+                            b: 0
+                        }
+                    }
+
+                    var int16 = parseInt(hex, 16);
+                    return {
+                        r: (int16 >> 16) & 255,
+                        g: (int16 >> 8) & 255,
+                        b: int16 & 255
+                    }
+                },
+                rgbToHex: function (r, g, b) {
+                    r = parseInt(r).toString(16);
+                    g = parseInt(g).toString(16);
+                    b = parseInt(b).toString(16);
+
+                    if (r.length == 1)
+                        r = "0" + r;
+                    if (g.length == 1)
+                        g = "0" + g;
+                    if (b.length == 1)
+                        b = "0" + b;
+ 
+                    return "#" + r + g + b;
                 }
             },
             ui: {
