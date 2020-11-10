@@ -1,4 +1,5 @@
 module.exports = function (RED) {
+    const OutputHandler = require("../lib/outputHandler.js");
     const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
 
@@ -23,12 +24,11 @@ module.exports = function (RED) {
                 };
 
                 var output = ioMap[message.action];
-                if(output == undefined)
-                {
+                if (output == undefined) {
                     // fallback for legacy payload
                     output = ioMap[message.click];
                 }
-                
+
                 utils.sendAt(node, output.index, {
                     payload: {
                         button_name: output.button_name,
@@ -79,4 +79,36 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("ikea-remote", ikeaRemote);
+
+    function ikeaRoundDimmer(config) {
+        RED.nodes.createNode(this, config);
+        var bridgeNode = RED.nodes.getNode(config.bridge);
+        var node = this;
+
+        var handler = new OutputHandler();
+        handler
+            .addOutput(0, "up", "brightness_move_up", "pressed", (msg) => { return utils.payloads.createBrightnessMove(msg.action_rate); })
+            .addOutput(0, "down", "brightness_move_down", "pressed", (msg) => { return utils.payloads.createBrightnessMove(-msg.action_rate); })
+            .addOutput(0, "stop", "brightness_stop", "pressed", utils.payloads.createBrightnessMove("stop"))
+            .addOutput(0, "move_to", "brightness_move_to_level", "pressed", (msg) => {
+                return utils.payloads.overrides.createBrightnessOverride(msg.action_level);
+            });
+
+        utils.setConnectionState(bridgeNode, node);
+        var id = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+            node.status({ fill: "green", text: "connected" });
+            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
+                message.action = message.action.replace("-", "_");
+                var out = handler.prepareOutput("action", message);
+                node.send(out);
+            });
+        });
+
+        node.on("close", function () {
+            bavaria.observer.unregister(id);
+            bridgeNode.unsubscribe(node.id);
+        });
+    }
+
+    RED.nodes.registerType("ikea-round-dimmer", ikeaRoundDimmer);
 };
