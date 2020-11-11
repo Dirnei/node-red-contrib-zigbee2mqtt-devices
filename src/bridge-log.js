@@ -7,10 +7,17 @@ module.exports = function (RED) {
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
+        node.warn("warninger");
+        node.warn(config);
+        node.warn(config.type_device_announced);
+        
+
         utils.setConnectionState(bridgeNode, node);
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             
+            
+
             bavaria.observer.register(bridgeNode.id + "_bridgeLog", message => {
                 node.send({ payload: message.message });
             });
