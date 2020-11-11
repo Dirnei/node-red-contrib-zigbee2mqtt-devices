@@ -233,18 +233,25 @@
 </script>
 
 <script type="text/html" data-help-name="ikea-dimmer-v2">
-    <p>Sends a new message when an Ikea wireless dimmer is used. (Small round device which you can turn)</p>
-    <p>It is only compatible with the Ikea wireless dimmer (Model: <code>ICTC-G-1</code>)</p>
+    <p>Sends a new message when an Ikea dimmer is used.</p>
+    <p>This node supports the small round dimmer (Model: <code>ICTC-G-1</code>) and the small quadratic dimmer (Model: <code>E1743</code>)</p>
     <h3>Output</h3>
     <dl class="message-properties">
-        <dt> button_name <span class="property-type"> string </span> </dt>
-        <dd> The name of the button that was pressed </dd>
-        <dt> button_type  <span class="property-type"> string </span> </dt>
-        <dd>
-            The type in wich way the button was pressed. Following types are available:
-            <ul>
-                <li><code>pressed</code> - althoug the "buttons" are never pressed this is the only button_type availyable for this device</li>
-            </ul>
-        </dd>
+        <dt> "on"-button pressed</dt>
+        <dd> Sends a <code>state-override</code> message with full brightness.</dd>
+        <dt> "on"-button hold</dt>
+        <dd> Sends a <code>brightness-move</code> action with positive <code>move</code> value. (Dimm up)</dd>
+        <dt> "off"-button pressed</dt>
+        <dd> Sends a <code>state-override</code> message with 0 brightness.</dd>
+        <dt> "off"-button hold</dt>
+        <dd> Sends a <code>brightness-move</code> action with negative <code>move</code> value. (Dimm down)</dd>
+        <dt> "on/off"-button released</dt>
+        <dd> Sends a <code>brightness-move</code> action with 0 <code>move</code> value. (Dimm stop)</dd>
+        <dt> "move_to"-button pressed</dt>
+        <dd> Only for <code>ICTC-G-1</code>. It sends a <code>brightness-override</code> with the value from the remote. (action_level)</dd>
+    </dl>
+    <h3>ExtendedOutput</h3>
+    <dl class="message-properties">
+        <dd>When the extended output is enabled, each button is assigned to its own output. It will send the button-events to each output with empty payload. Only <code>msg.action.name</code> (e.g. "on") and <code>msg.action.description</code>(e.g. "pressed") is set.</dd>
     </dl>
 </script>
