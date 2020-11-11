@@ -150,7 +150,7 @@
     </dl>
 </script>
 
-<!--- IKEA REMOTE NODE --->
+<!--- IKEA DIMMER V2 NODE --->
 <script type="text/javascript">
 
     RED.nodes.registerType('ikea-dimmer-v2', {
@@ -160,9 +160,18 @@
             name: { value: "" },
             bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
             deviceName: { value: "", required: true },
+            extendedOutput: { value: 1 },
+            outputs: { value: 1 },
         },
         inputs: 0,
-        outputs: 6,
+        outputs: 1,
+        outputLabels: function (e) {
+            if(this.extendedOutput === true){
+                var outputs = ["on", "off", "stop", "move_to"];
+                return outputs[e];
+            }
+            return "";
+        },
         icon: "remote.svg",
         label: function () {
             return this.name || "Ikea Dimmer v2";
@@ -173,7 +182,8 @@
 
             $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON((window.location) .protocol + "//" + (window.location).host + "/" + (window.location).pathname.split('/')[1] + '/z2m/devices/' + bridgeId + '/endDevice/IKEA/ICTC-G-1,E1743', function (data) {
+
+                $.getJSON(window.location.pathname + 'z2m/devices/' + bridgeId + '/endDevice/IKEA/ICTC-G-1,E1743', function (data) {
                     $("#node-input-deviceName").empty();
                     data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
@@ -182,6 +192,17 @@
                     $("#node-input-deviceName").val(deviceName);
                 });
             });
+        },
+        oneditsave: function () {
+            var outputcount = 1;
+            console.log($("#node-input-extendedOutput").val());
+            if ($("#node-input-extendedOutput").is(":checked") === true) {
+                outputcount = 4;
+            }
+
+            if(outputcount != this.outputs){
+                this.outputs = outputcount;
+            }
         }
     });
 
@@ -202,7 +223,12 @@
             <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
             <select id="node-input-deviceName"></select>
         </div>
-
+        <div class="config-group">
+            <div class="form-row">
+                <input type="checkbox" id="node-input-extendedOutput" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-extendedOutput" style="width: 70%;"><code>ExtendedOutput</code> - This will expose each button as seperate output.</label>
+            </div>
+        </div>
     </div>
 </script>
 

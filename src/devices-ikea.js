@@ -86,15 +86,27 @@ module.exports = function (RED) {
         var node = this;
 
         var handler = new OutputHandler();
-        handler
-            .addOutput(0, "up", "on", "pressed", utils.payloads.overrides.createStateOverride("ON"))
-            .addOutput(0, "up", "brightness_move_up", "hold", (msg) => { return utils.payloads.createBrightnessMove(msg.action_rate); })
-            .addOutput(0, "down", "off", "pressed", utils.payloads.overrides.createStateOverride("OFF"))
-            .addOutput(0, "down", "brightness_move_down", "hold", (msg) => { return utils.payloads.createBrightnessMove(-msg.action_rate); })
-            .addOutput(0, "stop", "brightness_stop", "released", utils.payloads.createBrightnessMove("stop"))
-            .addOutput(0, "move_to", "brightness_move_to_level", "pressed", (msg) => {
-                return utils.payloads.overrides.createBrightnessOverride(msg.action_level);
-            });
+
+        if (config.extendedOutput === true) {
+            handler
+                .addOutput(0, "on", "on", "pressed")
+                .addOutput(0, "on", "brightness_move_up", "hold")
+                .addOutput(1, "off", "off", "pressed")
+                .addOutput(1, "off", "brightness_move_down", "hold")
+                .addOutput(2, "stop", "brightness_stop", "released")
+                .addOutput(3, "move_to", "brightness_move_to_level");
+        } else {
+            handler
+                .addOutput(0, "on", "on", "pressed", utils.payloads.overrides.createStateOverride("ON"))
+                .addOutput(0, "on", "brightness_move_up", "hold", (msg) => { return utils.payloads.createBrightnessMove(msg.action_rate); })
+                .addOutput(0, "off", "off", "pressed", utils.payloads.overrides.createStateOverride("OFF"))
+                .addOutput(0, "off", "brightness_move_down", "hold", (msg) => { return utils.payloads.createBrightnessMove(-msg.action_rate); })
+                .addOutput(0, "stop", "brightness_stop", "released", utils.payloads.createBrightnessMove("stop"))
+                .addOutput(0, "move_to", "brightness_move_to_level", "pressed", (msg) => {
+                    return utils.payloads.overrides.createBrightnessOverride(msg.action_level);
+                });
+        }
+
 
         utils.setConnectionState(bridgeNode, node);
         var id = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
