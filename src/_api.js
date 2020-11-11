@@ -5,10 +5,23 @@ module.exports = function (RED) {
     RED.httpAdmin.get("/z2m/devices/:broker/:deviceType/:vendor/:model", function (req, res) {
         try {
             var broker = RED.nodes.getNode(req.params.broker.replace("_", "."));
+
+            if(broker === undefined || broker === null)
+            {
+                res.end("{}");
+                return;
+            }
+
             var devices = broker.getDeviceList();
             var type = req.params.deviceType.toLowerCase();
             var vendor = decodeURI(req.params.vendor).toLowerCase();
             var model = decodeURI(req.params.model).toLowerCase();
+            if (model !== "all" && model.includes(",")) {
+                model = model.split(",");
+            } 
+            else if (model !== "all") {
+                model = [model];
+            }
 
             res.end(JSON.stringify({
                 devices: devices.filter(e => {
@@ -27,7 +40,7 @@ module.exports = function (RED) {
 
                         return (dt == type || (type == "enddevice" && dt == "greenpower") || (type == "all" && dt !== "coordinator")) &&
                             (dv == vendor || (vendor == "all")) &&
-                            (dm == model || (model == "all"));
+                            ((model == "all") || model.includes(dm));
                     } catch (err) {
                         console.log(err);
                         console.log(e);
