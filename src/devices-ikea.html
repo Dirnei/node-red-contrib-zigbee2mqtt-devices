@@ -153,7 +153,7 @@
 <!--- IKEA REMOTE NODE --->
 <script type="text/javascript">
 
-    RED.nodes.registerType('ikea-round-dimmer', {
+    RED.nodes.registerType('ikea-dimmer-v2', {
         category: 'zigbee2mqtt_remotes-ikea',
         color: '#feca1e',
         defaults: {
@@ -162,10 +162,10 @@
             deviceName: { value: "", required: true },
         },
         inputs: 0,
-        outputs: 1,
+        outputs: 6,
         icon: "remote.svg",
         label: function () {
-            return this.name || "Ikea Round Dimmer";
+            return this.name || "Ikea Dimmer v2";
         },
         oneditprepare: function () {
             var node = this;
@@ -173,7 +173,7 @@
 
             $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/IKEA/ICTC-G-1', function (data) {
+                $.getJSON((window.location) .protocol + "//" + (window.location).host + "/" + (window.location).pathname.split('/')[1] + '/z2m/devices/' + bridgeId + '/endDevice/IKEA/ICTC-G-1,E1743', function (data) {
                     $("#node-input-deviceName").empty();
                     data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
@@ -187,7 +187,7 @@
 
 </script>
 
-<script type="text/html" data-template-name="ikea-round-dimmer">
+<script type="text/html" data-template-name="ikea-dimmer-v2">
     <div class="zigbee2mqtt-devices-properties">
 
         <div class="form-row">
@@ -206,7 +206,7 @@
     </div>
 </script>
 
-<script type="text/html" data-help-name="ikea-round-dimmer">
+<script type="text/html" data-help-name="ikea-dimmer-v2">
     <p>Sends a new message when a Ikea wireless dimmer is used. (Small round device which you can turn)</p>
     <p>It is only compatible with the Ikea wireless dimmer (Model: <code>ICTC-G-1</code>)</p>
     <h3>Output</h3>

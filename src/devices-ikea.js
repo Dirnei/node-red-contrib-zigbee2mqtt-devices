@@ -80,16 +80,18 @@ module.exports = function (RED) {
     }
     RED.nodes.registerType("ikea-remote", ikeaRemote);
 
-    function ikeaRoundDimmer(config) {
+    function ikeaDimmerV2(config) {
         RED.nodes.createNode(this, config);
         var bridgeNode = RED.nodes.getNode(config.bridge);
         var node = this;
 
         var handler = new OutputHandler();
         handler
-            .addOutput(0, "up", "brightness_move_up", "pressed", (msg) => { return utils.payloads.createBrightnessMove(msg.action_rate); })
-            .addOutput(0, "down", "brightness_move_down", "pressed", (msg) => { return utils.payloads.createBrightnessMove(-msg.action_rate); })
-            .addOutput(0, "stop", "brightness_stop", "pressed", utils.payloads.createBrightnessMove("stop"))
+            .addOutput(0, "up", "on", "pressed", utils.payloads.overrides.createStateOverride("ON"))
+            .addOutput(0, "up", "brightness_move_up", "hold", (msg) => { return utils.payloads.createBrightnessMove(msg.action_rate); })
+            .addOutput(0, "down", "off", "pressed", utils.payloads.overrides.createStateOverride("OFF"))
+            .addOutput(0, "down", "brightness_move_down", "hold", (msg) => { return utils.payloads.createBrightnessMove(-msg.action_rate); })
+            .addOutput(0, "stop", "brightness_stop", "released", utils.payloads.createBrightnessMove("stop"))
             .addOutput(0, "move_to", "brightness_move_to_level", "pressed", (msg) => {
                 return utils.payloads.overrides.createBrightnessOverride(msg.action_level);
             });
@@ -110,5 +112,5 @@ module.exports = function (RED) {
         });
     }
 
-    RED.nodes.registerType("ikea-round-dimmer", ikeaRoundDimmer);
+    RED.nodes.registerType("ikea-dimmer-v2", ikeaDimmerV2);
 };
