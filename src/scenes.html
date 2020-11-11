@@ -82,7 +82,7 @@
     }
 
     function refreshScenes() {
-        $.getJSON('/z2m/scenes', function (data) {
+        $.getJSON((window.location) .protocol + "//" + (window.location).host + "/" + (window.location).pathname.split('/')[1] + '/z2m/scenes', function (data) {
             var selection = getSelection();
 
             var scenes = data.scenes.filter(f => {

@@ -24,7 +24,7 @@
 
             $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/all/all', function (data) {
+                $.getJSON((window.location) .protocol + "//" + (window.location).host + "/" + (window.location).pathname.split('/')[1] + '/z2m/devices/' + bridgeId + '/endDevice/all/all', function (data) {
                     $("#node-input-deviceName").empty();
                     data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
@@ -90,7 +90,7 @@
 
             $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/all/all', function (data) {
+                $.getJSON((window.location) .protocol + "//" + (window.location).host + "/" + (window.location).pathname.split('/')[1] + '/z2m/devices/' + bridgeId + '/endDevice/all/all', function (data) {
                     $("#node-input-deviceName").empty();
                     data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
@@ -158,7 +158,7 @@
 
             $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/all/all', function (data) {
+                $.getJSON((window.location) .protocol + "//" + (window.location).host + "/" + (window.location).pathname.split('/')[1] + '/z2m/devices/' + bridgeId + '/endDevice/all/all', function (data) {
                     $("#node-input-deviceName").empty();
                     data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
