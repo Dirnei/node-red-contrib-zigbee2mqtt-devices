@@ -173,15 +173,15 @@
                 }
             },
             devices: {
-                loadDevices: function(selectedDevice, deviceType, vendor, model){
+                loadDevices: function(selectedDevice, deviceType, vendor, model, inputId = "#node-input-deviceName"){
                     var bridgeId = $("#node-input-bridge").val().replace(".", "_");
                     $.getJSON(`/z2m/devices/${bridgeId}/${deviceType}/${vendor}/${model}`, function (data) {
-                        $("#node-input-deviceName").empty();
+                        $(inputId).empty();
                         data.devices.forEach(e => {
-                            $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
+                            $(inputId).append("<option>" + e.friendly_name + "</option>");
                         });
 
-                        $("#node-input-deviceName").val(selectedDevice);
+                        $(inputId).val(selectedDevice);
                     });
                 }
             }
