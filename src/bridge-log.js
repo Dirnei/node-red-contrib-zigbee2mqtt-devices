@@ -11,21 +11,21 @@ module.exports = function (RED) {
         const outputHandler = new OutputHandler();
         
         outputHandler.addOutput(0, "Consolidated logs", "consolidated_logs", "Consolidated logs from te bridge log", msg => { msg.message; });
-
+        
         let outputCount = 1;
 
         // Create a list of log message types to listen to
         const enabledLogTypes = new Array();
 
-
+        
         
         
 
         Object.keys(config).forEach(function(key) {
             if(key.startsWith("type_") && config[key]) {
-                let logType = key.replace("type_", "");
+                const logType = key.replace("type_", "");
                 enabledLogTypes.push(logType);
-
+                node.warn(logType);
                 outputHandler.addOutput(outputCount, logType, logType, "Logs with the type: " + logType, msg => { msg.message; });
                 outputCount++;
             }
@@ -40,10 +40,8 @@ module.exports = function (RED) {
             
             bavaria.observer.register(bridgeNode.id + "_bridgeLog", message => {
                 // Check if the log type is configured
-                if (enabledLogTypes.indexOf(message.payload) >= 0){
-                    outputHandler.prepareOutput("type", message);
-                    
-                    node.send({ payload: message.message });
+                if (enabledLogTypes.indexOf(message.payload) >= 0) {
+                    node.send(outputHandler.prepareOutput("type", message));
                 }
             });
             

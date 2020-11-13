@@ -34,11 +34,67 @@
             type_groups: { value: false },
             type_zigbee_publish_error: { value: false },
             type_ota_update: { value: false },
-            type_touchlink: { value: false }
+            type_touchlink: { value: false },
+            outputs: { value: 1 },
+            dynamicOutputLabels: { value: [] },
         },
-        inputs: 0,
         outputs: 1,
-        outputLabels: ["closed"],
+        inputs: 0,
+        // enabledlogtypes: ["all"],
+        outputLabels: function (e) {
+            return this.dynamicOutputLabels[e];
+        },
+        // oneditprepare: function() {
+        //     console.log("Prepare");
+        //     this.outputLabelsList = this.enabledlogtypes;
+        // }, 
+        oneditsave: function() {
+            console.log(this);
+
+            const node = this;
+            node.dynamicOutputLabels = [];
+
+            var enabledLogTypesNew = ["all"];
+            
+            // todo: get values from the html, not the this obj.
+            Object.keys(node).forEach(function (key) {
+                
+                if (key.startsWith("type_") && node[key] == true) {
+                    // console.log(key);
+                    const logType = key.replace("type_", "");
+                    enabledLogTypesNew.push(logType);
+                    // console.log(logType);
+                }
+            });
+
+            console.log(enabledLogTypesNew);
+            
+
+            //if changed?
+            if(node.dynamicOutputLabels != enabledLogTypesNew){
+                console.log("output labels changed");
+                node.outputs = enabledLogTypesNew.length;
+            } else {
+                console.log("output labels did not change");
+            }
+            // todo: only update if changed?
+            node.outputs = enabledLogTypesNew.length;
+            node.dynamicOutputLabels = enabledLogTypesNew;
+
+            console.log(node.dynamicOutputLabels);
+            console.log(enabledLogTypesNew);
+
+
+            
+
+            // todo: update the number of outputs
+
+            // todo:
+
+            
+            console.log(this);
+        },
+
         icon: "debug.png", // todo: log icon
         label: function () {
             return this.name || "Bridge log";
