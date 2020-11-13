@@ -22,7 +22,7 @@
 
             $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/GreenPower/GreenPower_On_Off_Switch', function (data) {
+                $.getJSON(window.location.pathname + 'z2m/devices/' + bridgeId + '/endDevice/GreenPower/GreenPower_On_Off_Switch', function (data) {
                     $("#node-input-deviceName").empty();
                     data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
@@ -37,20 +37,22 @@
 </script>
 
 <script type="text/html" data-template-name="scenic-foh-switch">
+    <div class="zigbee2mqtt-devices-properties">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
-        <input type="text" id="node-input-bridge" placeholder="bridge" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
-        <select id="node-input-deviceName"></select>
-    </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
+            <select id="node-input-deviceName"></select>
+        </div>
 
+    </div>
 </script>
 
 <script type="text/html" data-help-name="scenic-foh-switch">

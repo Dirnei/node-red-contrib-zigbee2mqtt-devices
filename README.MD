@@ -2,6 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/node-red-contrib-zigbee2mqtt-devices?style=for-the-badge)](https://www.npmjs.com/package/node-red-contrib-zigbee2mqtt-devices)
 [![img](https://img.shields.io/badge/Node--RED-node--red--contrib--zigbee2mqtt--devices-%23aa4444?style=for-the-badge)](https://flows.nodered.org/node/node-red-contrib-zigbee2mqtt-devices)
+[![GitHub license](https://img.shields.io/github/license/Dirnei/node-red-contrib-zigbee2mqtt-devices?style=for-the-badge)](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices/blob/master/LICENSE)
 
 This project contains Node-RED nodes that allows you to build Smart Home szenarios with your Zigbee devices connected to [ZigBee2MQTT](https://www.zigbee2mqtt.io/). 
 
@@ -31,23 +32,38 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 
 ## Changelog 
 
-### v0.13.1
+### v0.15.2
 
-- Fixed validation on newly added [override-action](docs/nodes/override-action.md) node
+- Fixed [ota-update](docs/nodes/ota-node.md) node. It was not working since v0.14.0
 
-### v0.13.0
+### v0.15.0 / 0.15.1
 
-- Added _Müller Licht - tint_ remote device support
-- Added [override-action](docs/nodes/override-action.md) node
-- Removed ```delay``` property from mqtt payload, as it is only used internally
+- Added option "Repeatedly send hold message until button released" to [button-siwtch](docs/nodes/button-switch.md)
+- Added fallback for legacy payload of Ikea dimmer
 
-### v0.12.0
+> When installed right after release the depenceny mqtt (v4.2.2) got also released which was not able to connect. I fixed the version to 4.2.1 for now and published again.
 
-- Added [ota-node](docs/nodes/ota-node.md)
-- Updated dashboard for ota updates
-- Some code restructuring
-- Smaller bugfixes
-- Probably added some bugs that need to be fixed later :)
+### v0.14.2
+
+- Fixed Ikea dimmer payload. It is also differnet then before.
+- Fixed the [device-status](docs/nodes/device-status.md) node.
+
+### v0.14.1
+
+- Changed ikea-dimmer click property to action, because click is now legacy
+- Fixed the device
+
+### v0.14.0 !! Breaking-change !!
+
+- Moved mqtt configuration into own [node](docs/config/mqtt-config.md)
+- Added support for [Shelly 2.5](https://shelly.cloud/products/shelly-25-smart-home-automation-relay/)
+- Fixed device list request in [device-config](docs/device-config.md)
+- Changed colors of some nodes
+- Added [override-state](docs/nodes/override-state.md) node
+- [button-switch](docs/nodes/button-switch.md) outputs can now be disabled to reduce the number of outputs
+- added color picker to [override-color](docs/nodes/override-color.md) node
+- added range input to [override-brightness](docs/nodes/override-brightness.md) node
+
 
 More changelogs are available [here](docs/changelog.md)
 

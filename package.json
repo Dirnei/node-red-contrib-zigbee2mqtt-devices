@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-zigbee2mqtt-devices",
-    "version": "0.13.1",
+    "version": "0.15.2",
     "description": "Nodes to interact with zigbee2mqtt for Node-RED",
     "author": "Christian Dirnhofer",
     "license": "MIT",
@@ -16,9 +16,10 @@
     "node-red": {
         "nodes": {
             "api": "src/_api.js",
+            "mqtt-config": "src/non-z2m-nodes/mqtt-config.js",
+            "config": "src/zigbee2mqtt-config.js",
             "generic-lamp": "src/zigbee2mqtt.js",
             "override": "src/override-nodes.js",
-            "config": "src/zigbee2mqtt-config.js",
             "scenes": "src/scenes.js",
             "sensors": "src/sensors.js",
             "ota": "src/ota.js",
@@ -26,11 +27,12 @@
             "devices-ikea": "src/devices-ikea.js",
             "devices-sonoff": "src/devices-sonoff.js",
             "devices-scenic": "src/devices-scenic.js",
-            "devices-tint": "src/devices-tint.js"
+            "devices-tint": "src/devices-tint.js",
+            "non-z2m-devices-shelly-25": "src/non-z2m-nodes/devices-shelly-25.js"
         }
     },
     "dependencies": {
-        "mqtt": "^4.2.1",
+        "mqtt": "4.2.1",
         "node-red-ext-bavaria-black": "0.3.0"
     },
     "devDependencies": {

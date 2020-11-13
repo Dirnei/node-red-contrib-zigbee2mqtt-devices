@@ -4,7 +4,7 @@
 
     RED.nodes.registerType('hue-dimmer-switch', {
         category: 'zigbee2mqtt_remotes-hue',
-        color: '#7da6e1',
+        color: '#6ea2ed',
         defaults: {
             name: { value: "" },
             bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
@@ -23,7 +23,7 @@
 
             $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/Philips/324131092621', function (data) {
+                $.getJSON(window.location.pathname + 'z2m/devices/' + bridgeId + '/endDevice/Philips/324131092621', function (data) {
                     $("#node-input-deviceName").empty();
                     data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
@@ -38,20 +38,22 @@
 </script>
 
 <script type="text/html" data-template-name="hue-dimmer-switch">
+    <div class="zigbee2mqtt-devices-properties">
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name">
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
+            <select id="node-input-deviceName"></select>
+        </div>
+        
     </div>
-    <div class="form-row">
-        <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
-        <input type="text" id="node-input-bridge" placeholder="bridge" />
-    </div>
-    <div class="form-row">
-        <label for="node-input-deviceName"><i class="fa fa-tag"></i> Device</label>
-        <select id="node-input-deviceName"></select>
-    </div>
-
 </script>
 
 <script type="text/html" data-help-name="hue-dimmer-switch">
