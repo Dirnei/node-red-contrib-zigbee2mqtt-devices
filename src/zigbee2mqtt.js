@@ -5,7 +5,6 @@ module.exports = function (RED) {
     const bavaria = utils.bavaria();
 
     function genericLamp(config) {
-
         RED.nodes.createNode(this, config);
         var deviceConfig = RED.nodes.getNode(config.device);
         var bridgeNode = RED.nodes.getNode(config.bridge);
@@ -165,7 +164,8 @@ module.exports = function (RED) {
                         element.color_temp = undefined;
                         element.color = undefined;
                         element.delay = undefined;
-                        element.state = "ON";
+                        element.transition = undefined;
+                        element.state = undefined;
                         element[msg.payload.override.action.name] = msg.payload.override.action.value;
                     } else {
                         if (msg.payload.override.state !== undefined
@@ -228,7 +228,7 @@ module.exports = function (RED) {
                         message.payload.temperature = undefined;
                     }
 
-                    if (message.payload.transition === 0) {
+                    if (message.payload.transition === 0 || message.payload.transition === "0") {
                         message.payload.transition = undefined;
                     }
 

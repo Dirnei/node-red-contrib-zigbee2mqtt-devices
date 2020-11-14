@@ -21,7 +21,7 @@
 
             $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/sonoff/SNZB-01', function (data) {
+                $.getJSON(window.location.pathname + 'z2m/devices/' + bridgeId + '/endDevice/sonoff/SNZB-01', function (data) {
                     $("#node-input-deviceName").empty();
                     data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");

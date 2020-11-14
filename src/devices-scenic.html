@@ -22,7 +22,7 @@
 
             $("#node-input-bridge").change(function () {
                 var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/' + bridgeId + '/endDevice/GreenPower/GreenPower_On_Off_Switch', function (data) {
+                $.getJSON(window.location.pathname + 'z2m/devices/' + bridgeId + '/endDevice/GreenPower/GreenPower_On_Off_Switch', function (data) {
                     $("#node-input-deviceName").empty();
                     data.devices.forEach(e => {
                         $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
