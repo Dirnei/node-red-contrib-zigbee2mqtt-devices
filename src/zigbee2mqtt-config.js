@@ -45,7 +45,6 @@ module.exports = function (RED) {
 
         this.subscribeDevice = function (nodeId, device, callback) {
             var topic = node.baseTopic + "/" + device;
-            node.warn(topic);
             mqttNode.subscribeDevice(nodeId, topic, callback, true);
         };
 
