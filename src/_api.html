@@ -173,10 +173,14 @@
                 }
             },
             devices: {
-                loadDevices: function(selectedDevice, deviceType, vendor, model, inputId = "#node-input-deviceName"){
+                loadDevices: function(selectedDevice, deviceType, vendor, model, emptyOption = false, inputId = "#node-input-deviceName"){
                     var bridgeId = $("#node-input-bridge").val().replace(".", "_");
                     $.getJSON(`/z2m/devices/${bridgeId}/${deviceType}/${vendor}/${model}`, function (data) {
                         $(inputId).empty();
+                        if(emptyOption === true){
+                            $(inputId).append("<option disabled selected value> -- select an option -- </option>");
+                        }
+
                         data.devices.forEach(e => {
                             $(inputId).append("<option>" + e.friendly_name + "</option>");
                         });
