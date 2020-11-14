@@ -1,0 +1,76 @@
+<!--- DEVICES-EUROTRONICS NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('eurotronic-spirit', {
+        category: 'zigbee2mqtt_thermostats-eurotronics',
+        color: '#59a27a',
+        defaults: {
+            name: { value: "" },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
+            windowSensor: { value: "" },
+            mirrorDisplay: { value: false },
+            childProtection: { value: false },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "feed.png",
+        label: function () {
+            return this.name || "Eurotronics Spirit";
+        },
+        oneditprepare: function () {
+            var node = this;
+            var deviceName = node.deviceName;
+            var windowSensor = node.windowSensor;
+
+            $("#removeSensor").click(function () {
+                document.getElementById("node-input-windowSensor").selectedIndex = -1;
+            });
+
+            $("#node-input-bridge").change(function () {
+                RED.bavaria.devices.loadDevices(deviceName, "EndDevice", "Eurotronic", "SPZB0001");
+                RED.bavaria.devices.loadDevices(windowSensor, "EndDevice", "all", "all", true, "#node-input-windowSensor");
+            });
+        },
+        oneditsave: function () {
+            if (document.getElementById("node-input-windowSensor").selectedIndex == -1) {
+                this.windowSensor = "";
+            }
+        },
+        oneditcancel: function () {
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="eurotronic-spirit">
+    <div class="zigbee2mqtt-devices-properties">
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
+            <select id="node-input-deviceName"></select>
+        </div>
+        <div class="form-row">
+            <label for="node-input-mirrorDisplay"><i class="fa fa-arrows-h"></i> Mirror Display</label>
+            <input type="checkbox" id="node-input-mirrorDisplay"/>
+        </div>
+        <div class="form-row">
+            <label for="node-input-childProtection"><i class="fa fa-lock"></i> Child Protection</label>
+            <input type="checkbox" id="node-input-childProtection"/>
+        </div>
+        <div class="form-row">
+            <label for="node-input-windowSensor"><i class="fa fa-microchip"></i> Window Sensor</label>
+            <select id="node-input-windowSensor"></select>
+            <button type="button" id="removeSensor" class="red-ui-button">remove</button>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="eurotronic-spirit">
+
+</script>

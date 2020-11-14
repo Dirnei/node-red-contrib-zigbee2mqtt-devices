@@ -47,6 +47,15 @@ module.exports = function (RED) {
             var topic = node.baseTopic + "/" + device;
             mqttNode.subscribeDevice(nodeId, topic, callback, true);
         };
+
+        this.publishDevice = function (device, msg) {
+            var topic = node.baseTopic + "/" + device + "/set";
+            if(typeof msg !== "string"){
+                msg = JSON.stringify(msg);
+            }
+
+            mqttNode.publish(topic, msg);
+        };
         
         this.subscribe = mqttNode.subscribe;
         this.unsubscribe = mqttNode.unsubscribe;
