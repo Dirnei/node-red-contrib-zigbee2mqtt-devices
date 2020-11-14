@@ -93,7 +93,7 @@
 
             $("#node-config-input-bridge").change(function () {
                 var bridgeId = $("#node-config-input-bridge").val().replace(".", "_");
-                $.getJSON('/z2m/devices/' + bridgeId + '/router/all/all', function (data) {
+                $.getJSON(window.location.pathname + 'z2m/devices/' + bridgeId + '/router/all/all', function (data) {
                     $("#node-config-input-deviceName").empty();
                     data.devices.forEach(e => {
                         $("#node-config-input-deviceName").append("<option>" + e.friendly_name + "</option>");
