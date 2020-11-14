@@ -64,5 +64,5 @@ module.exports = function (RED) {
         });
     }
 
-    RED.nodes.registerType("devices-eurotronics", createEurotronicsSpirit);
+    RED.nodes.registerType("eurotronic-spirit", createEurotronicsSpirit);
 };
