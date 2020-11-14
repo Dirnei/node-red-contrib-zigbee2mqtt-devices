@@ -50,9 +50,9 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ### v0.16.0
 
-- Added new Ikea Dimmer node which supports model ICTC-G-1 and E1743
+- Added new Ikea Dimmer node, which supports the models ICTC-G-1 and E1743
 - Added node for Eurotronic Spirit Thermostat
-- Fixed Devices not listed when node-red is using httpAdminRoot setting
+- Fixed Devices not listed when Node-RED is using httpAdminRoot setting
 
 ### v0.15.2
 
