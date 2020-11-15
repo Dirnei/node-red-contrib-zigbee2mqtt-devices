@@ -7,6 +7,8 @@ services:
     volumes:
       - /run/udev:/run/udev:ro
       - ${PWD}/z2m:/app/data
+    ports:
+        - "8080:8080"
     environment:
       - TZ=Europe/Berlin
     devices:

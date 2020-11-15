@@ -22,7 +22,7 @@ In this section, we will demonstrate a exemplary setup for [Zigbee2MQTT](https:/
 You have a Linux machine with Docker installed.
 We tested this on:
 - An Intel NUC running Ubuntu Server 20.04 LTS
-- A Raspberry PI 2,3,4 running Raspian / Raspberry Pi OS.
+- A Raspberry PI 2 and 4 running Raspian / Raspberry Pi OS.
 
 And you have a supported Zigbee adapter for Zigbee2MQTT.
 See [Zigbee2MQTT Docs: What do I need?](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html). If you have a bit of money to spend, we suggest the [Texas Instruments LAUNCHXL-CC1352P-2 Zigbee adapter](https://www.zigbee2mqtt.io/information/supported_adapters.html#texas-instruments-launchxl-cc1352p-2) because the range is better and supports way more devices.
@@ -95,6 +95,8 @@ See [Zigbee2MQTT Docs: What do I need?](https://www.zigbee2mqtt.io/getting_start
         volumes:
           - /run/udev:/run/udev:ro
           - ${PWD}/z2m:/app/data
+        ports:
+            - "8080:8080"
         environment:
           - TZ=Europe/Berlin
         devices:
@@ -189,6 +191,7 @@ See [Zigbee2MQTT Docs: What do I need?](https://www.zigbee2mqtt.io/getting_start
 
     At the end of the configuration, we add the advanced section. It defines a custom PAN ID and a channel. This is a best practice because, if a neighbor suddenly uses the same default PAN ID, re-pairing all the devices would be necessary.
     For more settings, check out the [Zigbee2MQTT configuration docs](https://www.zigbee2mqtt.io/information/configuration.html).
+    Also enable the [frontend](https://www.zigbee2mqtt.io/information/frontend.html) and the experimental API, so we can see rename our devices.
 
     ``` yml
     advanced:
@@ -198,6 +201,10 @@ See [Zigbee2MQTT Docs: What do I need?](https://www.zigbee2mqtt.io/getting_start
       # (Note: use a ZLL channel: 11, 15, 20, or 25 to avoid Problems)
       # (default: 11)
       channel: 15
+    frontend:
+      port: 8080
+    experimental:
+      new_api: true
     ```
 
 6. **Run your containers in the background**
@@ -211,10 +218,22 @@ See [Zigbee2MQTT Docs: What do I need?](https://www.zigbee2mqtt.io/getting_start
     If you want to stop the detached containers later to change the settings, you can run `docker-compose down`.
 
 
-7. **Check Node-RED is running** 
-  
+7. **Check everything is running** 
+
+    Open `http://ip-of-your-device:8080/` in your browser, to view the Zigbee2MQTT frontend.
+
     Open `http://ip-of-your-device:1880/` in your browser.
-    If an empty Node-RED dashboard loads, I'd like to congratulate you - you finished the setup.
+    If an empty Node-RED dashboard loads, I'd like to congratulate you - you finished the Node-RED setup.
+
+8. **Install the Zigbee2MQTT Nodes for Node-RED**
+
+    1. The the Palettte: `Menu` > `Manage palette` > `Install tab`
+
+    2. Search for `node-red-contrib-zigbee2mqtt-devices` and install it.
+
+    ![Install node-red-contrib-zigbee2mqtt-devices](img/getting-started-install-palette.png)
+
+
 
 
 ## After setup considerations
@@ -234,4 +253,11 @@ Currently, Zigbee2MQTT is configured to [let new devices join](https://www.zigbe
 After you have added all your devices and are done with the initial setup, you should disable this by setting `permit_join: false` in the `z2m/configuration.yaml`.
 
 
-# Dashboard.
+# Pairing our devices with Z2M
+Now it's time to [pair](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html) our devices.
+
+For my demonstration I use:
+- [IKEA Trådfri ON/OFF switch (E1743)](https://www.zigbee2mqtt.io/devices/E1743.html)
+
+
+# Define your first flow with
