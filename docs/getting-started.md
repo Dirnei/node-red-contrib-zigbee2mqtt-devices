@@ -27,6 +27,7 @@ We tested this on:
 And you have a supported Zigbee adapter for Zigbee2MQTT.
 See [Zigbee2MQTT Docs: What do I need?](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html). If you have a bit of money to spend, we suggest the [Texas Instruments LAUNCHXL-CC1352P-2 Zigbee adapter](https://www.zigbee2mqtt.io/information/supported_adapters.html#texas-instruments-launchxl-cc1352p-2) because the range is better and supports way more devices.
 
+
 ## Setup Process
 
 1. **Verify that Docker and Docker Compose are installed.**
@@ -235,7 +236,6 @@ See [Zigbee2MQTT Docs: What do I need?](https://www.zigbee2mqtt.io/getting_start
 
 
 
-
 ## After setup considerations
 
 This setup is very basic. We suggest a few things that should be done but would be too much for this tutorial's scope. Have a look at the [Zigbee2MQTT](https://www.zigbee2mqtt.io/), [Node-RED](https://nodered.org/docs/getting-started/) and [Mosquitto](https://mosquitto.org/man/mosquitto-8.html) documentation on how to configure them.
@@ -253,11 +253,39 @@ Currently, Zigbee2MQTT is configured to [let new devices join](https://www.zigbe
 After you have added all your devices and are done with the initial setup, you should disable this by setting `permit_join: false` in the `z2m/configuration.yaml`.
 
 
-# Pairing our devices with Z2M
-Now it's time to [pair](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html) our devices.
 
-For my demonstration I use:
+
+# Pairing our devices with Zigbee2MQTT
+Now it's time to [pair](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html) some devices.
+
+For my demonstration I use the following devices and pair them.
 - [IKEA Trådfri ON/OFF switch (E1743)](https://www.zigbee2mqtt.io/devices/E1743.html)
 
+    ![IKEA Trådfri ON/OFF switch (E1743)](https://www.zigbee2mqtt.io/images/devices/E1743.jpg)
 
-# Define your first flow with
+- [Philips Hue white ambiance E27 bulb (9290022169)](https://www.zigbee2mqtt.io/devices/E1743.html)
+
+    ![Philips Hue white ambiance E27 bulb (9290022169)](https://www.zigbee2mqtt.io/images/devices/9290022169.jpg)
+
+ Each device is a bit different to pair, so check the [Zigbee2MQTT Supported Devices docs](https://www.zigbee2mqtt.io/information/supported_devices.html) or your manurfacturers documentation on how to pair or reset devices. The switch for example requires me to press the pair button 4 times, the (brand new) bulb I just have to plugin.
+
+After you paired your devices you should see them in the Zigbee2MQTT frontend.
+For better distinction between the devices is advisable to rename your devices.
+
+![Zigbee2MQTT fontend with renamed devices](img/getting-started-z2m-renamed.png)
+
+
+
+
+# Define your first flow
+
+Now that we get everything setup, we can start to define our first flow. Lets start to switch the lamp from software first.
+
+Todo: General Idea is always Modify your message in the payload. Then send the changes via send messages.
+
+1. **To control the lamp we pull the generic lamp node into our flow.**
+    
+    Since this is our first node, we have have to configure how to connect to the Zigbee2MQTT bridge first. Click on the little edit icon to define a new bridge.
+    
+    ![generic lamp node](img/getting-started-flow01-generic-lamp.png)
+
