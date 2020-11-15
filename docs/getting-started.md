@@ -281,11 +281,32 @@ For better distinction between the devices is advisable to rename your devices.
 
 Now that we get everything setup, we can start to define our first flow. Lets start to switch the lamp from software first.
 
-Todo: General Idea is always Modify your message in the payload. Then send the changes via send messages.
+------------------------
+//Todo: General Idea is always Modify your message in the payload. Then send the changes via send messages.
+One way is to use the generic node to "hardcoded" set some settings.
+Another to use the override settings.
+Future - swicht sends modify flow messages.
 
-1. **To control the lamp we pull the generic lamp node into our flow.**
+Delay, for is the order important.
+
+Concept is as follows: Modify the payload. Send message node does the work
+
+------------------------
+
+1. **Pull the send messages node into the flow.**
     
     Since this is our first node, we have have to configure how to connect to the Zigbee2MQTT bridge first. Click on the little edit icon to define a new bridge.
-    
-    ![generic lamp node](img/getting-started-flow01-generic-lamp.png)
 
+    ![generic lamp node](img/getting-started-flow01-send-messages.png)
+
+    To define the bridge we enter a name, levae the default MQTT topic and continue to configure a broker via the edit icon.
+
+    ![bridge config](img/getting-started-flow02-bridge-config.png)
+
+    We then can configure the Mosquitto server as our broker. I had to use the device IP and not localhost to get it working. Since authentication is not configured, I left it blank.
+
+    ![bridge config](img/getting-started-flow02-bridge-config.png)
+    
+    **Important**: Before we continue we have to **deploy** the flow once, so the configured Zigbee2MQTT bridge is available to all the nodes. If everything worked out, we should see a little connected indicator.
+
+    ![connected](img/getting-started-flow04-connected.png)
