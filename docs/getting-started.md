@@ -281,11 +281,71 @@ For better distinction between the devices is advisable to rename your devices.
 
 Now that we get everything setup, we can start to define our first flow. Lets start to switch the lamp from software first.
 
-Todo: General Idea is always Modify your message in the payload. Then send the changes via send messages.
+------------------------
+//Todo: General Idea is always Modify your message in the payload. Then send the changes via send messages.
+One way is to use the generic node to "hardcoded" set some settings.
+Another to use the override settings.
+Future - swicht sends modify flow messages.
 
-1. **To control the lamp we pull the generic lamp node into our flow.**
+Delay, for is the order important.
+
+Concept is as follows: Modify the payload. Send message node does the work
+
+------------------------
+
+1. **Pull the send messages node into the flow.**
     
     Since this is our first node, we have have to configure how to connect to the Zigbee2MQTT bridge first. Click on the little edit icon to define a new bridge.
-    
-    ![generic lamp node](img/getting-started-flow01-generic-lamp.png)
 
+    ![generic lamp node](img/getting-started-flow01-send-messages.png)
+
+    To define the bridge we enter a name, levae the default MQTT topic and continue to configure a broker via the edit icon.
+
+    ![bridge config](img/getting-started-flow02-bridge-config.png)
+
+    We then can configure the Mosquitto server as our broker. I had to use the device IP and not localhost to get it working. Since authentication is not configured, I left it blank.
+
+    ![bridge config](img/getting-started-flow02-bridge-config.png)
+    
+    **Important**: Before we continue, we have to **deploy** the flow once so the configured Zigbee2MQTT bridge is available to all the nodes. If everything worked out, we should see a little green connected indicator.
+
+    ![connected](img/getting-started-flow04-connected.png)
+
+2. **Add the generic lamp node**
+
+    Add the *generic lamp* node, connect it's output to the *send messages* node.
+    Next, define a new *device config* for your lamp via the little edit icon.
+    ![generic lamp](img/getting-started-flow05-generic-lamp.png)
+
+    Give the light a name, select a Zigbee2MQTT device you paired and define it's capabilities.
+    In our case it is dimmable, can change the color temperature but has no RGB color support.
+
+    ![generic lamp](img/getting-started-flow06-hue-device-config.png)
+
+    Back in the *generic-lamp* config we can define to set the brightness to 30 (range from 0 to 255).
+    And the color to 153 (around 6500° Kelvin). The color uses the Mirek scale, with values usually between 50 and 400.
+    
+    `Mirek = 1.000.000 / Temp. in Kevin`
+
+    More on that in [Zigbee2MQTT Set topic](https://www.zigbee2mqtt.io/information/mqtt_topics_and_message_structure.html#zigbee2mqttfriendly_nameset) or on [Wikipedia Mired](https://en.wikipedia.org/wiki/Mired).
+
+    ![Change color and brightness](img/getting-started-flow07-brightness-color-hue.png)
+
+    // ToDo: Document that:
+    > Generic lamp node does two things:
+    > 1. Add the lamp to the payload so it will be triggered by send messages.
+    > 2. Adjust values per device.
+
+3. **Inject a message to trigger the lamp change**
+
+    Drag a *inject* node into your flow and connect it to the lamp node (no special setting needed). Now you can deploy the changes.
+
+    If you now click on the button next to the inject node, you should see your light turn darker and to cold white!
+
+    ![Flow with added inject node](img/getting-started-flow08-inject-node.png)
+
+
+4. **Toggle**
+5. **On / Off**
+6. **Add Switch**
+7. **Override nodes**
