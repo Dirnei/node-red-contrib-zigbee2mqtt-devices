@@ -30,6 +30,8 @@ Have a look at [this](docs/getting-started.md). All you need are some allready p
 
 Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth support or problems that aren't metioned anywhere :)
 
+[![node-red-contrib-zigbee2mqtt-devices](https://discordapp.com/api/guilds/760063909465686067/widget.png?style=banner2)](https://discord.gg/4qCMEhJ)
+
 ## Changelog 
 
 ### v0.15.2
