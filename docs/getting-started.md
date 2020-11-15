@@ -4,9 +4,7 @@ This getting started guide shows you how to exemplary create a simple Zigbee2MQT
 
 // ToDo: Add graphic of the devices.
 // ToDo: Add graphic of the final lamp installation.
-
-// Todo: test setup on raspberry pi 2
-// Todo: test setup on raspberry pi 3
+// ToDo: change the readme.md text to reference this guide
 
 
 
@@ -41,9 +39,9 @@ See [Zigbee2MQTT Docs: What do I need?](https://www.zigbee2mqtt.io/getting_start
 
 2. **Plugin the Zigbee Adapter into your device.**
     
-    It should appear as a device in `/dev`. Most of the time, the location is `/dev/ttyACM0`. See [Zigbee2MQTT docs](https://www.zigbee2mqtt.io/getting_started/running_zigbee2mqtt.html#1-determine-location-of-cc2531-usb-sniffer-and-checking-user-permissions).
+    It should appear as a device in `/dev`. Most of the time, the location is `/dev/ttyACM0`. See [Zigbee2MQTT docs](https://www.zigbee2mqtt.io/getting_started/running_zigbee2mqtt.html#1-determine-location-of-cc2531-usb-sniffer-and-checking-user-permissions). 
 
-    You can find the adapter in `/dev`
+    To look for the adapter in `/dev` run:
     ``` console
     andreas@nuc:~$ ls -d /dev/*ACM*
     /dev/ttyACM0
@@ -228,9 +226,9 @@ See [Zigbee2MQTT Docs: What do I need?](https://www.zigbee2mqtt.io/getting_start
 
 8. **Install the Zigbee2MQTT Nodes for Node-RED**
 
-    1. The the Palettte: `Menu` > `Manage palette` > `Install tab`
+    Open the the Palettte: `Menu` > `Manage palette` > `Install tab`
 
-    2. Search for `node-red-contrib-zigbee2mqtt-devices` and install it.
+    Search for `node-red-contrib-zigbee2mqtt-devices` and install it.
 
     ![Install node-red-contrib-zigbee2mqtt-devices](img/getting-started-install-palette.png)
 
@@ -315,6 +313,7 @@ Concept is as follows: Modify the payload. Send message node does the work
 
     Add the *generic lamp* node, connect it's output to the *send messages* node.
     Next, define a new *device config* for your lamp via the little edit icon.
+    
     ![generic lamp](img/getting-started-flow05-generic-lamp.png)
 
     Give the light a name, select a Zigbee2MQTT device you paired and define it's capabilities.
