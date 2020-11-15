@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="128" height="128" src="resources/logo.svg">
+</p>
+
 # Zigbee2MQTT Nodes for Node-RED
 
 [![npm](https://img.shields.io/npm/v/node-red-contrib-zigbee2mqtt-devices?style=for-the-badge)](https://www.npmjs.com/package/node-red-contrib-zigbee2mqtt-devices)
