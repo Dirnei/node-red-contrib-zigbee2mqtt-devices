@@ -49,25 +49,25 @@
         //     this.outputLabelsList = this.enabledlogtypes;
         // }, 
         oneditsave: function() {
-            console.log(this);
+            // console.log(this);
 
             const node = this;
             node.dynamicOutputLabels = [];
 
             var enabledLogTypesNew = ["all"];
             
-            // todo: get values from the html, not the this obj.
-            Object.keys(node).forEach(function (key) {
-                
-                if (key.startsWith("type_") && node[key] == true) {
-                    // console.log(key);
-                    const logType = key.replace("type_", "");
-                    enabledLogTypesNew.push(logType);
-                    // console.log(logType);
+            // Todo: comine all with these types
+            const all = $("[id^=node-input-type_]").map(function() {
+                if(this.checked){
+                    return this.id.replace("node-input-type_", "");
                 }
-            });
+                return null;
+            }).get();
 
-            console.log(enabledLogTypesNew);
+            console.log(all);
+
+
+            // console.log(enabledLogTypesNew);
             
 
             //if changed?
