@@ -8,5 +8,5 @@ services:
         volumes:
           - ./debug/:/data
         ports:
-          - "555:1880"
+          - "1880:1880"
         privileged: true
