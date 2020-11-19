@@ -32,19 +32,18 @@ module.exports = function (RED) {
         });
 
         node.warn(enabledLogTypes);
-
-
         utils.setConnectionState(bridgeNode, node);
+
+        bridgeNode.on("bridge-log", (message)=>{
+            node.warn(message);
+            // Check if the log type is configured
+            if (enabledLogTypes.indexOf(message.payload) >= 0) {
+                node.send(outputHandler.prepareOutput("type", message));
+            }
+        });
+
         bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
-            
-            bavaria.observer.register(bridgeNode.id + "_bridgeLog", message => {
-                // Check if the log type is configured
-                if (enabledLogTypes.indexOf(message.payload) >= 0) {
-                    node.send(outputHandler.prepareOutput("type", message));
-                }
-            });
-            
         });
     }
     RED.nodes.registerType("bridge-log", bridgeLog);
