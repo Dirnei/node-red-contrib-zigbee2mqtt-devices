@@ -344,7 +344,46 @@ Concept is as follows: Modify the payload. Send message node does the work
     ![Flow with added inject node](img/getting-started-flow08-inject-node.png)
 
 
+
+
+
+
+
+    **So how does this work?**
+    The Z2M nodes pack the information that shall be sent all into the payload/message of the flow.
+
+    After the inject node:
+    ``` json
+    ```
+
+    After the generic lamp node:
+    ``` json
+    ```
+
+    Send: Send takes the payload.
+
+ 
+
 4. **Toggle**
+Toggle sends the Lamp a Toggle command. The toggle is not implemented in Software in Zigbee2MQTT, but rather by the Lamp itself.
+The Phillips HUE Bulb for example always switches between 0% and 100% brightness. It does not consider the set brightness.
+// ToDo: Digg in why?
+
 5. **On / Off**
+Two Inject nodes.
+
 6. **Add Switch**
+Replace the Inject nodes by a switch.
+
 7. **Override nodes**
+Add another lamp.
+
+Configuring the settings in the single lamp node is simple and easy if you have one lamp or want to set very specific settings per lamp.
+If you want to switch a group of lamps, we created override nodes.
+Override nodes set (override) the values for all the lamps in the message.
+So if you want to sitch a group of devices, you can apply to all the lamps in the message.
+Multiple overrides in a row work.
+
+
+switch -> set brightness 50% -> lamp1 -> lamp2 -> lamp3 ->
+// ToDo: Add the same json outputs here.
