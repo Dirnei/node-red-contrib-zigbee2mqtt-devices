@@ -37,6 +37,7 @@
             type_touchlink: { value: false },
             outputs: { value: 1 },
             enabledLogTypes: { value: [] },
+            consolidateOutputs: { value: false }
         },
         outputs: 1,
         inputs: 0,
@@ -79,11 +80,22 @@
             
             console.log(this);
         },
-
         icon: "font-awesome/fa-heartbeat",
         label: function () {
             return this.name || "Bridge log";
+        },
+        oneditprepare: function() {
+            // Select all type_ checkboxes
+            $("#select-all-types").click(function() {
+                $("[id^=node-input-type_]").prop("checked", true);
+            });
+
+            // Deselect all type_ checkboxes
+            $("#deselect-all-types").click(function() {
+                $("[id^=node-input-type_]").prop("checked", false);
+            });
         }
+
     });
 
 </script>
@@ -117,11 +129,19 @@
             <input type="text" id="node-input-bridge" placeholder="bridge" />
         </div>
 
-        <h3>Log types</h3>
+
         <div class="bridge-log-types">
+
             <div class="form-row">
-                <div class="form-tips"><b>Tip:</b> Select the logs you want to have an output for.</div>
+                <input type="checkbox" id="node-input-consolidate-output">
+                <label for="node-input-consolidate-output"> Consolidate output</label>
+                <p><small>Consolidate all the selected log types down there into a single output.</small></p>
             </div>
+
+            <h3>Log types
+                <button type="button" id="select-all-types" class="red-ui-button red-ui-button-small"> select all <i class="fa fa-check-square-o"></i></button>
+                <button type="button" id="deselect-all-types" class="red-ui-button red-ui-button-small"> select none <i class="fa fa-square-o"></i></button>
+            </h3>
 
             <div class="form-row">
                 <input type="checkbox" id="node-input-type_pairing">
