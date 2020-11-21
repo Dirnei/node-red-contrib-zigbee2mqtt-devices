@@ -1,12 +1,13 @@
 <!--- BRIDGE LOG NODE --->
 <script type="text/javascript">
 
-    RED.nodes.registerType('bridge-log', {
-        category: 'zigbee2mqtt', //todo: change category
-        color: '#C0D3C5',
+    RED.nodes.registerType("bridge-log", {
+        category: "zigbee2mqtt", //todo: change category
+        color: "#C0D3C5",
         defaults: {
             name: { value: "" },
             bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            consolidate_output: { value: false },
             type_pairing: { value: false },
             type_device_connected: { value: false },
             type_device_ban: { value: false },
@@ -35,16 +36,15 @@
             type_zigbee_publish_error: { value: false },
             type_ota_update: { value: false },
             type_touchlink: { value: false },
-            outputs: { value: 1 },
             enabledLogTypes: { value: [] },
-            consolidate_output: { value: false }
+            outputs: { value: 1 }
         },
         outputs: 1,
         inputs: 0,
         outputLabels: function (outputIndex) {
             // With consolidated enabled there is only one output
             if(this.consolidate_output) {
-                var logTypes = this.enabledLogTypes;
+                let logTypes = this.enabledLogTypes;
                 if(this.enabledLogTypes.length > 6) {
                     // Omit elements after index 6
                     logTypes = this.enabledLogTypes.slice(0, 6);
@@ -52,7 +52,7 @@
                 }
 
                 const logTypeString = logTypes.join(", ");
-                return "Consolidated: " + logTypeString;
+                return `Consolidated: ${logType}`;
             }
 
             // Get the log type as a label
@@ -72,7 +72,7 @@
             }).get();
 
             // Consolidate outputs to one option checked?
-            var consolidateOutput = false;
+            let consolidateOutput = false;
             $("#node-input-consolidate_output").map(function () {
                 consolidateOutput = this.checked;
             });
