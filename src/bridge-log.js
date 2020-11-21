@@ -10,35 +10,32 @@ module.exports = function (RED) {
 
         const outputHandler = new OutputHandler();
         
-        outputHandler.addOutput(0, "Consolidated logs", "consolidated_logs", "Consolidated logs from te bridge log", msg => { msg.message; });
+        outputHandler.addOutput(0, "Consolidated logs", "consolidated_logs", "Consolidated logs from te bridge log", msg => { return msg.message; });
         
         let outputCount = 1;
 
         // Create a list of log message types to listen to
         const enabledLogTypes = new Array();
 
-        
-        
-        
-
         Object.keys(config).forEach(function(key) {
             if(key.startsWith("type_") && config[key]) {
                 const logType = key.replace("type_", "");
                 enabledLogTypes.push(logType);
                 node.warn(logType);
-                outputHandler.addOutput(outputCount, logType, logType, "Logs with the type: " + logType, msg => { msg.message; });
+                outputHandler.addOutput(outputCount, logType, logType, "Logs with the type: " + logType, msg => { return msg.message; });
                 outputCount++;
             }
         });
 
-        node.warn(enabledLogTypes);
         utils.setConnectionState(bridgeNode, node);
 
-        bridgeNode.on("bridge-log", (message)=>{
-            node.warn(message);
+        bridgeNode.on("bridge-log", (message) => {
+            
             // Check if the log type is configured
-            if (enabledLogTypes.indexOf(message.payload) >= 0) {
-                node.send(outputHandler.prepareOutput("type", message));
+            if (enabledLogTypes.indexOf(message.type) >= 0) {
+                const leberkas = outputHandler.prepareOutput("type", message);
+                //leberkas.tail.payload = message;
+                node.send();
             }
         });
 

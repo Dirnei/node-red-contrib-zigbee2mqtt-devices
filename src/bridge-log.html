@@ -37,23 +37,31 @@
             type_touchlink: { value: false },
             outputs: { value: 1 },
             enabledLogTypes: { value: [] },
-            consolidateOutputs: { value: false }
+            consolidate_output: { value: false }
         },
         outputs: 1,
         inputs: 0,
         outputLabels: function (outputIndex) {
-            // Fist label is always the output for all the logs
-            if(outputIndex === 0) {
-                return "all"
+            // With consolidated enabled there is only one output
+            if(this.consolidate_output) {
+                var logTypes = this.enabledLogTypes;
+                if(this.enabledLogTypes.length > 6) {
+                    // Omit elements after index 6
+                    logTypes = this.enabledLogTypes.slice(0, 6);
+                    logTypes.push("...");
+                }
+
+                const logTypeString = logTypes.join(", ");
+                return "Consolidated: " + logTypeString;
             }
-            // shift log type index by -1, because the first label is fixed
-            const index = outputIndex - 1;
-            return this.enabledLogTypes[index];
+
+            // Get the log type as a label
+            return this.enabledLogTypes[outputIndex];
         },
         oneditsave: function() {
 
             const node = this;
-                        
+            
             // Find all the checked type checkboxes (id starts with node-input_type_)
             const enabledLogTypesNew = $("[id^=node-input-type_]").map(function () {
                 if(this.checked){
@@ -62,23 +70,27 @@
                 }
                 return null;
             }).get();
-                       
-            console.log(enabledLogTypesNew);
+
+            // Consolidate outputs to one option checked?
+            var consolidateOutput = false;
+            $("#node-input-consolidate_output").map(function () {
+                consolidateOutput = this.checked;
+            });
+            
+            // Update the outputs to one - only if neccessary
+            if(consolidateOutput && node.outputs !== 1){
+                node.outputs = 1;
+            }
 
             // Settings changed?
-            if(JSON.stringify(node.enabledLogTypes) !== JSON.stringify(enabledLogTypesNew)){
-                console.log("enabled log types changed");
+            if(JSON.stringify(node.enabledLogTypes) !== JSON.stringify(enabledLogTypesNew) || this.consolidate_output !== consolidateOutput){
                 node.enabledLogTypes = enabledLogTypesNew;
-
-                if(node.outputs !== enabledLogTypesNew.length + 1){
-                    console.log("Number of outputs changed");
-                    node.outputs = enabledLogTypesNew.length + 1;
+                
+                // Only touch the outputs if neccessary.
+                if(!consolidateOutput && node.outputs !== enabledLogTypesNew.length){
+                    node.outputs = enabledLogTypesNew.length;
                 }
-            } else {
-                console.log("enabled log types did not change");
-            }
-            
-            console.log(this);
+            }             
         },
         icon: "font-awesome/fa-heartbeat",
         label: function () {
@@ -95,7 +107,6 @@
                 $("[id^=node-input-type_]").prop("checked", false);
             });
         }
-
     });
 
 </script>
@@ -133,8 +144,8 @@
         <div class="bridge-log-types">
 
             <div class="form-row">
-                <input type="checkbox" id="node-input-consolidate-output">
-                <label for="node-input-consolidate-output"> Consolidate output</label>
+                <input type="checkbox" id="node-input-consolidate_output">
+                <label for="node-input-consolidate_output"> Consolidate output</label>
                 <p><small>Consolidate all the selected log types down there into a single output.</small></p>
             </div>
 
