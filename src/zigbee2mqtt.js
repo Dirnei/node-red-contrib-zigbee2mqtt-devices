@@ -161,7 +161,7 @@ module.exports = function (RED) {
                 if (msg.payload.override !== undefined) {
                     if (msg.payload.override.action) {
                         element.brightness = undefined;
-                        element.color_temp = undefined;
+                        element.temperature = undefined;
                         element.color = undefined;
                         element.delay = undefined;
                         element.transition = undefined;
