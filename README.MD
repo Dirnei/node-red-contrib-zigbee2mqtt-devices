@@ -16,6 +16,7 @@ Many nodes are available right now, and there are still new node ideas that will
 - [scene-in](docs/nodes/scene-in.md)
 - [scene-selector](docs/nodes/scene-selector.md)
 - [ota-node](docs/nodes/ota-node.md)
+- [bridge-log](docs/nodes/bridge-log.md)
 
 ### Undocumented
 - device status
