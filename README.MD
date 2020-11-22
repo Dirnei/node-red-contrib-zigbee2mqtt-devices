@@ -48,6 +48,11 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ## Changelog 
 
+### v0.16.1
+
+- Fixed Color Temperature change when sending an action command
+- Fixed a bug when brightness was a empty string
+
 ### v0.16.0
 
 - Added new Ikea Dimmer node, which supports the models ICTC-G-1 and E1743
