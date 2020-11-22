@@ -52,7 +52,7 @@
                 }
 
                 const logTypeString = logTypes.join(", ");
-                return `Consolidated: ${logType}`;
+                return "Consolidated: " + logTypeString;
             }
 
             // Get the log type as a label
@@ -94,7 +94,7 @@
         },
         icon: "font-awesome/fa-heartbeat",
         label: function () {
-            return this.name || "Bridge log";
+            return this.name || "bridge log";
         },
         oneditprepare: function() {
             // Select all type_ checkboxes

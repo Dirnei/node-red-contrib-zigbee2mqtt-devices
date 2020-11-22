@@ -9,6 +9,8 @@ module.exports = function (RED) {
         const node = this;
         const outputHandler = new OutputHandler();
 
+        utils.setConnectionState(bridgeNode, node);
+
         // Create a list of log message types to listen to
         const enabledLogTypes = new Array();
         let outputCount = 0;
@@ -17,12 +19,10 @@ module.exports = function (RED) {
             if(key.startsWith("type_") && config[key]) {
                 const logType = key.replace("type_", "");
                 enabledLogTypes.push(logType);
-                outputHandler.addOutput(outputCount, logType, logType, `Logs with the type: ${logType}`, msg => { return msg.message; });
+                outputHandler.addOutput(outputCount, logType, logType, "Logs with the type: " + logType, msg => { return msg.message; });
                 outputCount++;
             }
         });
-
-        utils.setConnectionState(bridgeNode, node);
 
         bridgeNode.on("bridge-log", (message) => {
             
