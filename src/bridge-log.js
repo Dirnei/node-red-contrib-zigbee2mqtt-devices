@@ -3,6 +3,13 @@ module.exports = function (RED) {
     const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
 
+    /**
+     * The bridge log provides an easy way to filter logs that are
+     * published into the zigbee2mqtt/bridge/log MQTT topic.
+     * You configure the types you are interested in,
+     * and the node creates one output for each type.
+     * @param {*} config for the node
+     */
     function bridgeLog(config) {
         RED.nodes.createNode(this, config);
         const bridgeNode = RED.nodes.getNode(config.bridge);
@@ -31,10 +38,10 @@ module.exports = function (RED) {
                 let messageForNOutputs = outputHandler.prepareOutput("type", message);
 
                 if(config.consolidate_output) {
-                    // If all messages shall be consolidated into one output,
+                    // If all messages should be consolidated into one output,
                     // use the last element of the array.
-                    // Because the output handler set's all the other
-                    // indexes to null - so nothing is sent to those outputs.
+                    // Because the output handler sets all the other indexes to null,
+                    // nothing is sent to those outputs.
                     messageForNOutputs = messageForNOutputs.slice(-1);
                 }
                 

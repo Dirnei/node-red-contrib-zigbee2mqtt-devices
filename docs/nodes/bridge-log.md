@@ -18,6 +18,10 @@ The following configuration creates the node in the example above with two outpu
 
 The bridge log node supports all 28 types. For more details about the types, look at the description in the configuration window or the [Zigbee2MQTT MQTT Topics and Message structure documentation](https://www.zigbee2mqtt.io/information/mqtt_topics_and_message_structure.html#zigbee2mqttbridgelog).
 
+### Bridge
+
+The Zigbee2MQTT bridge. For more information see [bridge-config](../config/bridge-config.md).
+
 ### Consolidated output
 
 The consolidate output option is attractive if you want all or certain log types, but every log message results in the same action. If the consolidate output option is selected, all the selected log types will be sent over a single output.

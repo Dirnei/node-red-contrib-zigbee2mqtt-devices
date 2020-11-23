@@ -157,7 +157,7 @@
             <div class="form-row">
                 <input type="checkbox" id="node-input-type_pairing">
                 <label for="node-input-type_pairing"> pairing</label>
-                <p><small>Logged when device is connecting to the network.</small></p>
+                <p><small>Logged when a device is connecting to the network.</small></p>
             </div>
 
             <div class="form-row">
@@ -175,7 +175,7 @@
             <div class="form-row">
                 <input type="checkbox" id="node-input-type_device_ban_failed">
                 <label for="node-input-type_device_ban_failed"> device_ban_failed</label>
-                <p><small>Sent when request to ban a device failed</small></p>
+                <p><small>Sent when a request to ban a device failed</small></p>
             </div>
 
             <div class="form-row">
@@ -193,7 +193,7 @@
             <div class="form-row">
                 <input type="checkbox" id="node-input-type_device_removed_failed">
                 <label for="node-input-type_device_removed_failed"> device_removed_failed</label>
-                <p><small>Sent when request to remove a device failed.</small></p>
+                <p><small>Sent when a request to remove a device failed.</small></p>
             </div>
             
             <div class="form-row">
@@ -205,7 +205,7 @@
             <div class="form-row">
                 <input type="checkbox" id="node-input-type_device_force_removed_failed">
                 <label for="node-input-type_device_force_removed_failed"> device_force_removed_failed</label>
-                <p><small>Sent when request to remove a device failed using the forced mode.</small></p>
+                <p><small>Sent when a request to remove a device failed using the forced mode.</small></p>
             </div>
             
             <div class="form-row">
@@ -340,19 +340,45 @@
             </div>
 
         </div>
-        
+
     </div>
 </script>
 
 <script type="text/html" data-help-name="bridge-log">
-    <p>Filtered input for the Zigbee2MQTT log.</p>
-    <h3>Output</h3>
+    <p>
+        The bridge log provides an easy way to filter logs that are published into the
+        <code>zigbee2mqtt/bridge/log</code> MQTT topic. You configure the types you are
+        interested in, and the node creates one output for each type.
+        This can be helpful if you only want to see specific logs (with the debug node)
+        or perform actions based on the logs.
+    </p>
+
+    <h3>Outputs</h3>
     <dl class="message-properties">
-        <!-- todo: Describe message properties-->
         <dt> payload <span class="property-type"> object </span> </dt>
-        <dd> The MQTT payload of the device </dd>
+        <dd> The encapsulated message property from the bridge log MQTT message.</dd>
+
+        <dt> action.name <span class="property-type"> string </span> </dt>
+        <dd> The bridge log type e.g. <i>"device_announced"</i>. </dd>
     </dl>
-    <h3>Details</h3>
-    <!-- todo: detailed documentation -->
-    <p>Some more information about the node.</p>
+
+    <h3>Configuration</h3>
+    <dl class="message-properties">
+        <h4>Bridge</h4>
+
+        <p>Configures the Zigbee2MQTT bridge where the logs shall be retrieved from.</p>
+
+        <h4>Log types</h4>
+        <p>
+            Only messages with the selected log types are sent by the node.
+            The node generates one output for each log type.
+        </p>
+        <h4>Consolidated output</h4>
+        <p>
+            The consolidate output option is attractive if you want all or certain
+            log types, but every log message results in the same action.
+            If the consolidate output option is selected,
+            all the selected log types will be sent over a single output.
+        </p>
+    </dl>
 </script>
