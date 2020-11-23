@@ -1,5 +1,5 @@
 # Changelog for the upcomming version
-This document is an internal note for the changelog of the upcomming releas.
+This document is an internal note for the changelog of the upcomming release.
 
 ## Current Release: `0.16.1`
 ## Next Release: `0.17.0`
