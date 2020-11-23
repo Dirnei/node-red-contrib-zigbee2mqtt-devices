@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-zigbee2mqtt-devices",
-    "version": "0.15.2",
+    "version": "0.16.1",
     "description": "Nodes to interact with zigbee2mqtt for Node-RED",
     "author": "Christian Dirnhofer",
     "license": "MIT",
@@ -28,6 +28,7 @@
             "devices-sonoff": "src/devices-sonoff.js",
             "devices-scenic": "src/devices-scenic.js",
             "devices-tint": "src/devices-tint.js",
+            "devices-eurotronics": "src/devices-eurotronic.js",
             "non-z2m-devices-shelly-25": "src/non-z2m-nodes/devices-shelly-25.js"
         }
     },
