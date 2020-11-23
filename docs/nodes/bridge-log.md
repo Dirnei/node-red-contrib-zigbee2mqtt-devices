@@ -1,6 +1,6 @@
 # Bridge log
 
-The bridge log provides an easy way to filter logs that are published into the 
+The bridge log node provides an easy way to filter logs that are published into the 
 `zigbee2mqtt/bridge/log` topic. You configure the types you are interested in, and the node creates one output for each type. This can be helpful if you only want to see specific logs (with the debug node) or perform actions based on the logs.
 
 In this example, only the log types `pairing` and `device_announced` are selected. The `pairing` logs trigger a web request, the `device_announced` logs are sent to the debug node.
