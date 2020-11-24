@@ -16,6 +16,7 @@ Many nodes are available right now, and there are still new node ideas that will
 - [scene-in](docs/nodes/scene-in.md)
 - [scene-selector](docs/nodes/scene-selector.md)
 - [ota-node](docs/nodes/ota-node.md)
+- [bridge-log](docs/nodes/bridge-log.md)
 
 ### Undocumented
 - device status
@@ -47,6 +48,11 @@ Many nodes are available right now, and there are still new node ideas that will
 Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the documentation is not finished :)
 
 ## Changelog 
+
+### v0.16.1
+
+- Fixed Color Temperature change when sending an action command
+- Fixed a bug when brightness was a empty string
 
 ### v0.16.0
 

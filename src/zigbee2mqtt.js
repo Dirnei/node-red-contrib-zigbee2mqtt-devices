@@ -161,40 +161,20 @@ module.exports = function (RED) {
                 if (msg.payload.override !== undefined) {
                     if (msg.payload.override.action) {
                         element.brightness = undefined;
-                        element.color_temp = undefined;
+                        element.temperature = undefined;
                         element.color = undefined;
                         element.delay = undefined;
                         element.transition = undefined;
                         element.state = undefined;
                         element[msg.payload.override.action.name] = msg.payload.override.action.value;
                     } else {
-                        if (msg.payload.override.state !== undefined
-                            && msg.payload.override.state !== ""
-                            && element.state !== undefined
-                            && element.state !== "") {
-                            element.state = msg.payload.override.state;
-                        }
-
-                        if (msg.payload.override.brightness !== undefined
-                            && msg.payload.override.brightness !== ""
-                            && element.brightness !== undefined
-                            && element.brightness !== "") {
-                            element.brightness = msg.payload.override.brightness;
-                        }
-
-                        if (msg.payload.override.temperature !== undefined
-                            && msg.payload.override.temperature !== ""
-                            && element.temperature !== undefined
-                            && element.temperature !== "") {
-                            element.temperature = msg.payload.override.temperature;
-                        }
-
-                        if (msg.payload.override.color !== undefined
-                            && msg.payload.override.color !== ""
-                            && element.color !== undefined
-                            && element.color !== "") {
-                            element.color = msg.payload.override.color;
-                        }
+                        const properties = ["state", "brightness", "temperature", "color"];
+                        properties.forEach((name) => {
+                            if (utils.propertyExists(msg.payload.override, name)
+                                && utils.propertyExists(element, name)) {
+                                element[name] = msg.payload.override[name];
+                            }
+                        });
                     }
                 }
 
@@ -207,7 +187,6 @@ module.exports = function (RED) {
             function sendNextMessage() {
                 try {
                     var topic = messages[i].topic;
-                    var enableGenerator = messages[i].target === "mqtt";
 
                     if (messages[i].target === "z2m" || messages[i].target === undefined) {
                         topic = bridgeNode.baseTopic + "/" + messages[i].topic + "/set";
