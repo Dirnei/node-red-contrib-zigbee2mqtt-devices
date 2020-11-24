@@ -11,6 +11,7 @@ If new features are added, increase the minor version || if bug fixes are added,
 #### Features:
 
 - Added the **bridge log node** to provide an easy way to receive and filter logs that are published into the `zigbee2mqtt/bridge/log` topic.
+- Added the **tasmode node** to control mqtt devices flashed with tasmota firmware like the Sonoff Basic.
 
 #### Bug fixes:
 
