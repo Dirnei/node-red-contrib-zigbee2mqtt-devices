@@ -14,3 +14,5 @@ If new features are added, increase the minor version || if bug fixes are added,
 
 #### Bug fixes:
 
+- Fixed typo in Shelly 2.5 node.
+- Fixed toggle relay in Shelly 2.5 node.
