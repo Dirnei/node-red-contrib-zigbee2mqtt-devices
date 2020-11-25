@@ -70,9 +70,9 @@ module.exports = function (RED) {
 
         function publishState(index) {
             if (channel === 2) {
-                node.send({ paload: status.relay });
+                node.send({ payload: status.relay });
             } else {
-                node.send({ paload: status.relay[index] });
+                node.send({ payload: status.relay[index] });
             }
         }
 
