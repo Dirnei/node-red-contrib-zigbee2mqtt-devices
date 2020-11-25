@@ -24,6 +24,7 @@ Many nodes are available right now, and there are still new node ideas that will
 - [scene-in](docs/nodes/scene-in.md)
 - [scene-selector](docs/nodes/scene-selector.md)
 - [ota-node](docs/nodes/ota-node.md)
+- [bridge-log](docs/nodes/bridge-log.md)
 - And many more for sensors and remotes...
 
 ## Getting started:
@@ -37,6 +38,17 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 [![node-red-contrib-zigbee2mqtt-devices](https://discordapp.com/api/guilds/760063909465686067/widget.png?style=banner2)](https://discord.gg/4qCMEhJ)
 
 ## Changelog 
+
+### v0.16.1
+
+- Fixed Color Temperature change when sending an action command
+- Fixed a bug when brightness was a empty string
+
+### v0.16.0
+
+- Added new Ikea Dimmer node, which supports the models ICTC-G-1 and E1743
+- Added node for Eurotronic Spirit Thermostat
+- Fixed Devices not listed when Node-RED is using httpAdminRoot setting
 
 ### v0.15.2
 
