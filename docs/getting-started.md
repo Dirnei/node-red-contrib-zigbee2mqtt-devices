@@ -324,16 +324,11 @@ Concept is as follows: Modify the payload. Send message node does the work
     Back in the *generic-lamp* config we can define to set the brightness to 30 (range from 0 to 255).
     And the color to 153 (around 6500° Kelvin). The color uses the Mirek scale, with values usually between 50 and 400.
     
-    `Mirek = 1.000.000 / Temp. in Kevin`
+    `Mirek = 1.000.000 / Temp. in Kelvin`
 
     More on that in [Zigbee2MQTT Set topic](https://www.zigbee2mqtt.io/information/mqtt_topics_and_message_structure.html#zigbee2mqttfriendly_nameset) or on [Wikipedia Mired](https://en.wikipedia.org/wiki/Mired).
 
     ![Change color and brightness](img/getting-started-flow07-brightness-color-hue.png)
-
-    // ToDo: Document that:
-    > Generic lamp node does two things:
-    > 1. Add the lamp to the payload so it will be triggered by send messages.
-    > 2. Adjust values per device.
 
 3. **Inject a message to trigger the lamp change**
 
@@ -344,38 +339,75 @@ Concept is as follows: Modify the payload. Send message node does the work
     ![Flow with added inject node](img/getting-started-flow08-inject-node.png)
 
 
-
-
-
-
-
     **So how does this work?**
-    The Z2M nodes pack the information that shall be sent all into the payload/message of the flow.
 
-    After the inject node:
+    The Z2M nodes always append the information that shall be sent to the current message of the flow.
+    The *send messages node* then interprets the changes to be made, and publishes them via MQTT.
+    In this case we only have one lamp and we defined the values directly within the *generic lamp node*.
+
+    After the *inject node* you start with just a random message object. For our usecase this does not really matter.
     ``` json
+    {
+      "_msgid":"b0db48e0.9cf638",
+      "payload":1606336827099,
+      "topic":""
+    }
     ```
 
-    After the generic lamp node:
+    After the *generic lamp node* the message object now contains one device in the payload, with he settings specified.
     ``` json
+    {
+        "_msgid":"b0db48e0.9cf638",
+        "payload":{
+            "devices":[
+                {
+                    "topic":"Phillips Hue white ambience",
+                    "state":"ON",
+                    "delay":0,
+                    "target":"z2m",
+                    "brightness":"30",
+                    "transition":"2",
+                    "temperature":"153"
+                }
+            ]
+        },
+        "topic":""
+    }
     ```
 
-    Send: Send takes the payload.
+    As mentioned, the send message interpretes that payload and generates and sends the MQTT messages.
 
+    At this point, you are probably asking yourself: Why this has to be so complicated. Why can the generic lamp node not directley send the message to Zigbee2MQTT?
+
+    The thing is, usually we don't only wan't to switch one lamp - we wan't to switch multiple lamps.
+    With the current implementation we would add one *generic lamp* to turn our lamp on and one *generic lamp* to turn it off. This can quickley escalate.
+    Because of this reason we will later introduce *override nodes*. Override nodes allow you to set values for multiple devices. We will come back to that later, after we added a few more devices.
+
+    > **For now you shall note, that the *generic lamp node* does two things:**
+    > 1. Adds the lamp as a device to the payload so it will be triggered by send messages.
+    > 2. Adjusts values for this individual devices.
  
 
-4. **Toggle**
-Toggle sends the Lamp a Toggle command. The toggle is not implemented in Software in Zigbee2MQTT, but rather by the Lamp itself.
-The Phillips HUE Bulb for example always switches between 0% and 100% brightness. It does not consider the set brightness.
-// ToDo: Digg in why?
+4. **Toggle the Lamp**
+
+    For now we got a lamp that we can turn on. Let's continue, by also let us turn the lamp off.
+    The simpelest form to do that is just to tell the lamp to Toggle. If we send a Toggle command to the lamp, the lamp itself decides to turn on or off based on it's current state. The toggle is not implemented in Software in Zigbee2MQTT, but rather by the Lamp itself. So it can vary from lamp to lamp. The Phillips HUE Bulb for example always switches between 0% and the brightness that was last configured. It does not consider the set brightness in that case.
+
+    To get the lamp to toggle, we open *generic lamp node* config and change the state form on to toggle and **deploy** the changes.
+    
+    ![State: Toggle generic lamp config](img/getting-started-flow09-toggle-device-config.png)
+    
+    If we now click the inject button multiple times, the lamp should turn off and on again. You can also see that the lamp indicator now turns off an on again.
+
+    ![Toggeling generic lamp node](img/getting-started-flow10-toggle.gif)
+
 
 5. **On / Off**
-Two Inject nodes.
 
-6. **Add Switch**
-Replace the Inject nodes by a switch.
+  Two Inject nodes.
 
-7. **Override nodes**
+
+6. **Override nodes**
 Add another lamp.
 
 Configuring the settings in the single lamp node is simple and easy if you have one lamp or want to set very specific settings per lamp.
@@ -387,3 +419,7 @@ Multiple overrides in a row work.
 
 switch -> set brightness 50% -> lamp1 -> lamp2 -> lamp3 ->
 // ToDo: Add the same json outputs here.
+
+
+7. **Add Switch**
+Replace the Inject nodes by a switch.
