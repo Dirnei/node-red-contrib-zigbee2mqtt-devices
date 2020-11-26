@@ -404,22 +404,42 @@ Concept is as follows: Modify the payload. Send message node does the work
 
 5. **On / Off**
 
-  Two Inject nodes.
+    Toggeling can be fine if you use a button. But if you use a switch, than you usually want to turn them off with dedicated buttons.
+
+    So lets add another *inject node* and rename the two inject nodes *On* and *Off*. They will represent our switch.
+
+    ![On button](img/getting-started-flow12-on-off-flow-1.png) 
+
+    Then change the state of the *generic lamp node* to **ON**.
+
+    ![Set the State to ON](img/getting-started-flow07-brightness-color-hue.png)
+
+    We are now back where we started, and the lamp only turns on.
+    Let's now duplicate the *generic lamp node* wire it to the *off inject node* and the *send messages node*
+
+    ![On off buttons](img/getting-started-flow12-on-off-flow-2.png) 
+
+    Then we configure the second *generic lamp node* state to **OFF**
+
+    ![Set the State to OFF](img/getting-started-flow11-off-device-config.png)
+
+    If we deploy the changes, we can turn the lamps on and off.
+    //ToDo: Screen to GIF 
 
 
 6. **Override nodes**
-Add another lamp.
+    Add another lamp.
 
-Configuring the settings in the single lamp node is simple and easy if you have one lamp or want to set very specific settings per lamp.
-If you want to switch a group of lamps, we created override nodes.
-Override nodes set (override) the values for all the lamps in the message.
-So if you want to sitch a group of devices, you can apply to all the lamps in the message.
-Multiple overrides in a row work.
+    Configuring the settings in the single lamp node is simple and easy if you have one lamp or want to set very specific settings per lamp.
+    If you want to switch a group of lamps, we created override nodes.
+    Override nodes set (override) the values for all the lamps in the message.
+    So if you want to sitch a group of devices, you can apply to all the lamps in the message.
+    Multiple overrides in a row work.
 
 
-switch -> set brightness 50% -> lamp1 -> lamp2 -> lamp3 ->
-// ToDo: Add the same json outputs here.
+    switch -> set brightness 50% -> lamp1 -> lamp2 -> lamp3 ->
+    // ToDo: Add the same json outputs here.
 
 
 7. **Add Switch**
-Replace the Inject nodes by a switch.
+    Replace the Inject nodes by a switch.
