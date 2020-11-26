@@ -423,8 +423,8 @@ Concept is as follows: Modify the payload. Send message node does the work
 
     ![Set the State to OFF](img/getting-started-flow11-off-device-config.png)
 
-    If we deploy the changes, we can turn the lamps on and off.
-    //ToDo: Screen to GIF 
+    If we deploy the changes, we can turn the lamp on and off.
+    ![Toggeling the lamp](img/getting-started-flow13-on-off-flow-3.png.gif)
 
 
 6. **Override nodes**
