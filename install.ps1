@@ -1,3 +1,7 @@
+# Install script to setup the project in a Test Node-RED docker container for development.
+# Tested under Windows and Linux (Ubuntu 20.04 with powershell)
+# Required software: powsershell, docker, docker-compose, nodejs, npm
+
 function copy-files {
     PARAM (
         $src,
