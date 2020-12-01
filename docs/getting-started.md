@@ -1,6 +1,7 @@
 # Getting started guide
 
-This getting started guide shows you how to exemplary create a simple Zigbee2MQTT and Node-RED setup. And then how to use the "Zigbee2MQTT Nodes for Node-RED" to create a basic home automation system with a few devices.
+This getting started guide shows you how to exemplary create a simple Zigbee2MQTT and Node-RED setup.
+And then how to use the "Zigbee2MQTT Nodes for Node-RED" to create a basic home automation system with a few devices.
 
 // ToDo: Add graphic of the devices.
 // ToDo: Add graphic of the final lamp installation.
@@ -11,7 +12,8 @@ This getting started guide shows you how to exemplary create a simple Zigbee2MQT
 
 # Exemplary Zigbee2MQTT and Node-RED setup
 
-In this section, we will demonstrate a exemplary setup for [Zigbee2MQTT](https://www.zigbee2mqtt.io/), [Node-RED](https://nodered.org/docs/getting-started/) and [Mosquitto](https://mosquitto.org/man/mosquitto-8.html) using Docker. For more detailed documentation on how to set up these components, we recommend the linked documentation.
+In this section, we will demonstrate a exemplary setup for [Zigbee2MQTT](https://www.zigbee2mqtt.io/), [Node-RED](https://nodered.org/docs/getting-started/) and [Mosquitto](https://mosquitto.org/man/mosquitto-8.html) using Docker.
+For more detailed documentation on how to set up these components, we recommend the linked documentation.
 
 > **Note**: If you already have a working Zigbee2MQTT, MQTT-Broker, and Node-RED installation, you can skip this section.
 
@@ -23,7 +25,8 @@ We tested this on:
 - A Raspberry PI 2 and 4 running Raspian / Raspberry Pi OS.
 
 And you have a supported Zigbee adapter for Zigbee2MQTT.
-See [Zigbee2MQTT Docs: What do I need?](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html). If you have a bit of money to spend, we suggest the [Texas Instruments LAUNCHXL-CC1352P-2 Zigbee adapter](https://www.zigbee2mqtt.io/information/supported_adapters.html#texas-instruments-launchxl-cc1352p-2) because the range is better and supports way more devices.
+See [Zigbee2MQTT Docs: What do I need?](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html).
+If you have a bit of money to spend, we suggest the [Texas Instruments LAUNCHXL-CC1352P-2 Zigbee adapter](https://www.zigbee2mqtt.io/information/supported_adapters.html#texas-instruments-launchxl-cc1352p-2) because the range is better and supports way more devices.
 
 
 ## Setup Process
@@ -261,9 +264,13 @@ For my demonstration I use the following devices and pair them.
 
     ![IKEA Trådfri ON/OFF switch (E1743)](https://www.zigbee2mqtt.io/images/devices/E1743.jpg)
 
-- [Philips Hue white ambiance E27 bulb (9290022169)](https://www.zigbee2mqtt.io/devices/E1743.html)
+- [Philips Hue white ambiance E27 bulb (9290022169)](https://www.zigbee2mqtt.io/devices/9290022169.html)
 
     ![Philips Hue white ambiance E27 bulb (9290022169)](https://www.zigbee2mqtt.io/images/devices/9290022169.jpg)
+
+- [TRADFRI LED bulb, dimmable, warm white (LED1836G9)](https://www.zigbee2mqtt.io/devices/LED1836G9.html)
+
+    ![TRADFRI LED bulb E26/E27 806 lumen, dimmable, warm white](https://www.zigbee2mqtt.io/images/devices/LED1836G9.jpg)
 
  Each device is a bit different to pair, so check the [Zigbee2MQTT Supported Devices docs](https://www.zigbee2mqtt.io/information/supported_devices.html) or your manurfacturers documentation on how to pair or reset devices. The switch for example requires me to press the pair button 4 times, the (brand new) bulb I just have to plugin.
 
@@ -424,22 +431,66 @@ Concept is as follows: Modify the payload. Send message node does the work
     ![Set the State to OFF](img/getting-started-flow11-off-device-config.png)
 
     If we deploy the changes, we can turn the lamp on and off.
+
     ![Toggeling the lamp](img/getting-started-flow13-on-off-flow-3.png.gif)
 
 
-6. **Override nodes**
-    Add another lamp.
+6. **More lamps**
+    Let's add another lamp and first illustrate how we would implement the lamp with the knowlege from the previeous step. Add a new *generic lamp node* and define a new device config in the lamp. In my case I configured a Ikea Trådfri blub that is warm white but dimmable. Set the State to On and the brightness to 255.
+    Connect it to the *on inject node* and the *send message node*. Then duplicate the *generic lamp node* and just change the state to Off and connect it to the *off inject node* and to the *send messages node*.
 
-    Configuring the settings in the single lamp node is simple and easy if you have one lamp or want to set very specific settings per lamp.
-    If you want to switch a group of lamps, we created override nodes.
+    Now the two lamps are wired up in parallel and can switched on/off with the same inject node.
+
+    ![Lamps in parallel](img/getting-started-flow14-second-lamp-paralell.png)
+
+    If you have a lot of lamps, this can get a bit messy. Let's clean that up a bit by connecting the lamps in series.
+
+    ![Lamps in parallel](img/getting-started-flow15-second-lamp-series.png)
+
+
+    Message object after the first generic lamp.
+    ``` json
+    {
+        "_msgid":"b0db48e0.9cf638",
+        "payload":{
+            "devices":[
+                {
+                    "topic":"Phillips Hue white ambience",
+                    "state":"ON",
+                    "delay":0,
+                    "target":"z2m",
+                    "brightness":"30",
+                    "transition":"2",
+                    "temperature":"153"
+                }
+            ]
+        },
+        "topic":""
+    }
+    ```
+
+    Message object after the second generic lamp.
+    //ToDo: Add explanation and dump of messages
+
+    => As you can see - the two devices are now in the payload.
+
+7. **Override nodes**
+
+
+
+    Configuring the settings in the single lamp node is simple and easy
+    if you have one lamp or want to set specific settings per lamp.
+    If you want to controll values for a group of lamps instead, we created override nodes.
     Override nodes set (override) the values for all the lamps in the message.
     So if you want to sitch a group of devices, you can apply to all the lamps in the message.
     Multiple overrides in a row work.
 
 
+    
+
     switch -> set brightness 50% -> lamp1 -> lamp2 -> lamp3 ->
     // ToDo: Add the same json outputs here.
 
 
-7. **Add Switch**
+8. **Add Switch**
     Replace the Inject nodes by a switch.
