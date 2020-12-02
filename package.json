@@ -40,7 +40,8 @@
         "node-red-ext-bavaria-black": "0.3.0"
     },
     "scripts": {
-        "build": "tsc && rsync -rv --exclude='*.js' --exclude='*.ts' ./src/ ./dist/"
+        "build": "tsc && rsync -rv --exclude='*.js' --exclude='*.ts' ",
+        "buildwin": "tsc ; robocopy.exe ./src/ ./dist/ /MIR /xf *.js /xf *.ts"
     },
     "devDependencies": {
         "@types/jquery": "^3.5.4",
