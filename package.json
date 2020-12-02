@@ -42,7 +42,8 @@
     "scripts": {
         "build": "tsc && rsync -rv --exclude='*.js' --exclude='*.ts' ./src/ ./dist/",
         "buildwin": "tsc && robocopy.exe ./src/ ./dist/ /MIR /xf *.js /xf *.ts /NFL /NDL /NJH /NJS /nc /ns /np",
-        "builddocker": "npm run buildwin || @powershell -NoProfile -Command ./install.ps1"
+        "builddocker": "npm run buildwin || @powershell -NoProfile -Command ./install.ps1",
+        "lint": "eslint './src/**/*.js'"
     },
     "devDependencies": {
         "@types/jquery": "^3.5.4",

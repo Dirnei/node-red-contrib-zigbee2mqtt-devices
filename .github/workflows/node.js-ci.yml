@@ -28,4 +28,4 @@ jobs:
     - run: npm run build --if-present
     # Include test run as soon as unit tests are added
     #- run: npm test
-    - run: ./node_modules/.bin/eslint src/*.js src/lib/*.js
+    - run: npm run lint
