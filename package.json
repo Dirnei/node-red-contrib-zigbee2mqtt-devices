@@ -15,30 +15,38 @@
     },
     "node-red": {
         "nodes": {
-            "api": "src/_api.js",
-            "mqtt-config": "src/non-z2m-nodes/mqtt-config.js",
-            "config": "src/zigbee2mqtt-config.js",
-            "generic-lamp": "src/zigbee2mqtt.js",
-            "override": "src/override-nodes.js",
-            "scenes": "src/scenes.js",
-            "sensors": "src/sensors.js",
-            "ota": "src/ota.js",
-            "devices-hue": "src/devices-hue.js",
-            "devices-ikea": "src/devices-ikea.js",
-            "devices-sonoff": "src/devices-sonoff.js",
-            "devices-scenic": "src/devices-scenic.js",
-            "devices-tint": "src/devices-tint.js",
-            "devices-eurotronics": "src/devices-eurotronic.js",
-            "brdige-log": "src/bridge-log.js",
-            "devices-tasmota": "src/devices-tasmota.js",
-            "non-z2m-devices-shelly-25": "src/non-z2m-nodes/devices-shelly-25.js"
+            "api": "dist/_api.js",
+            "brdige-log": "dist/bridge-log.js",
+            "config": "dist/zigbee2mqtt-config.js",
+            "devices-eurotronics": "dist/nodes/devices-eurotronic.js",
+            "devices-hue": "dist/nodes/devices-hue.js",
+            "devices-ikea": "dist/nodes/devices-ikea.js",
+            "devices-scenic": "dist/nodes/devices-scenic.js",
+            "devices-sonoff": "dist/nodes/devices-sonoff.js",
+            "devices-tasmota": "dist/nodes/devices-tasmota.js",
+            "devices-tint": "dist/nodes/devices-tint.js",
+            "generic-lamp": "dist/zigbee2mqtt.js",
+            "non-z2m-devices-shelly-25": "dist/non-z2m-nodes/devices-shelly-25.js",
+            "mqtt-config": "dist/non-z2m-nodes/mqtt-config.js",
+            "ota": "dist/ota.js",
+            "override": "dist/override-nodes.js",
+            "scenes": "dist/nodes/scenes.js",
+            "sensors": "dist/nodes/sensors.js"
         }
     },
     "dependencies": {
         "mqtt": "4.2.1",
+        "node-red": "^1.2.6",
         "node-red-ext-bavaria-black": "0.3.0"
     },
+    "scripts": {
+        "build": "tsc && rsync -rv --exclude='*.js' --exclude='*.ts' ./src/ ./dist/"
+    },
     "devDependencies": {
-        "eslint": "^7.10.0"
+        "@types/jquery": "^3.5.4",
+        "@types/node": "^14.14.10",
+        "@types/node-red": "^1.1.1",
+        "eslint": "^7.10.0",
+        "zigbee-herdsman": "^0.13.37"
     }
 }

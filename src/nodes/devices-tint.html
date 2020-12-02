@@ -1,0 +1,120 @@
+<!--- SONOFF BUTTON NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('tint-remote', {
+        category: 'zigbee2mqtt_remotes-tint',
+        color: '#f5f5f5',
+        defaults: {
+            name: { value: "" },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
+            suppressPowerpayload: { value: false },
+            brightnessChange: { value: 25.4, required: true },
+            temperatureChange: { value: 50, required: true }
+        },
+        inputs: 0,
+        outputs: 6,
+        icon: "remote-black.svg",
+        label: function () {
+            return this.name || "Tint Remote";
+        },
+        outputLabels: ["power", "color", "temperature", "brightness up", "brightness down", "scene"],
+        oneditprepare: function () {
+            var node = this;
+            var deviceName = node.deviceName;
+
+            $("#node-input-bridge").change(function () {
+                var bridgeId = $("#node-input-bridge").val().replace(".", "_");
+                $.getJSON(window.location.pathname + 'z2m/devices/' + bridgeId + '/endDevice/müller licht/mli-404011', function (data) {
+                    $("#node-input-deviceName").empty();
+                    data.devices.forEach(e => {
+                        $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
+                    });
+
+                    $("#node-input-deviceName").val(deviceName);
+                });
+            });
+
+            RED.bavaria.ui.addNumInput("#node-input-brightnessChange");
+            RED.bavaria.ui.addNumInput("#node-input-temperatureChange");
+        },
+        oneditsave: function() {
+            this.brightnessChange = parseFloat(this.brightnessChange);
+            this.temperatureChange = parseInt(this.temperatureChange);
+
+            console.log(this);
+        }
+    });
+
+</script>
+
+<script type="text/html" data-template-name="tint-remote">
+
+    <style>
+        .tint-remote-config-settings label{
+            width:235px !important;
+        }
+        .tint-remote-config-settings input{
+            width:20px !important;
+        }
+        .tint-remote-config-settings .red-ui-typedInput-container{
+            width:40% !important;
+        }
+    </style>
+
+    <div class="zigbee2mqtt-devices-properties">
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
+            <select id="node-input-deviceName"></select>
+        </div>
+
+        <div class="tint-remote-config-settings">
+            <h3>Tint remote properties</h3>
+            <div class="form-row">
+                <label for="node-input-suppressPowerpayload"><i class="fa fa-ban"></i> Suppress power button payload</label>
+                <input type="checkbox" id="node-input-suppressPowerpayload" />
+            </div>
+            <div class="form-row">
+                <label for="node-input-brightnessChange"><i class="fa fa-sun-o"></i> Brightness step</label>
+                <input type="text" id="node-input-brightnessChange">
+            </div>
+            <div class="form-row">
+                <label for="node-input-temperatureChange"><i class="fa fa-thermometer-empty"></i> Temperature step</label>
+                <input type="text" id="node-input-temperatureChange">
+            </div>
+        </div>
+
+    </div>
+</script>
+
+<script type="text/html" data-help-name="tint-remote">
+    <p>Sends a new message when a Müller Licht - tint remote is pressed.</p>
+    <p>It is only compatible with Müller Licht - tint remote (Model: mli-404011)</p>
+    <h3>Output</h3>
+    <p>The output depends on the button that was pressed and some buttons behave a bit weird. The device has a bit of memory which may interfere with the logic you want to build.</p>
+    <p>All of the buttons will set <code>msg.action</code> with 2 properties.</p>
+    <ul>
+        <li><code>name</code> - name of the button</li>
+        <li><code>description</code> - the type of how the button was pressed</li>
+    </ul>
+    <h4>Power button</h4>
+    <p>The remote has a small memory that will save the power state. The state will be set to <code>msg.payload</code>. You can suppress the power button payload in the config. If you do, the payload is <b>toggle</b>.</p>
+    <h4>Color wheel</h4>
+    <p>The color is also stored on the remote itself. You can press the same spot on the wheel more than once and it will shift the color slightly to the color you pressed.</p>
+    <p>The <code>msg.payload</code> of this node will be a color-override. Place the lamps you want to control behind this node, followed by a send-message node.</p>
+    <h4>Color temperature</h4>
+    <p>It will output a <code>color_temp-move/step</code> when you press the color temperature buttons. The very first press of the button, after the deploy, may be unrecognized.</p>
+    <h4>Brightness</h4>
+    <p>It will send a <code>brightness-step</code> command when you press the buttons. If you hold it, a <code>brightness-move</code> will be send. When you release the button, the brightness move will stop.</p>
+    <h4>Scene selection</h4>
+    <p>The scene buttons will swich between <code>scenes</code> by <code>index</code>, so it is the best way to place a scene-selector node right behind it.</p>
+</script>

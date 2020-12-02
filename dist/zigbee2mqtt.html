@@ -1,0 +1,522 @@
+<!--- GENERIC LAMP NODE --->
+<script type="text/javascript">
+    function showInput(name) {
+        $("#node-input-" + name).parent().show();
+    }
+
+    function hideInput(name) {
+        $("#node-input-" + name).parent().hide();
+    }
+
+    function prepareView() {
+        var config = RED.nodes.node($("#node-input-device").val());
+
+        if (config === undefined || config === null) {
+            return;
+        }
+
+        if (config.brightnessSupport) {
+            showInput("transition");
+            showInput("brightness");
+        }
+        else {
+            hideInput("brightness");
+            hideInput("transition");
+        }
+
+        if (config.temperatureSupport) {
+            showInput("temperature");
+        }
+        else {
+            hideInput("temperature");
+        }
+
+        if (config.colorSupport) {
+            showInput("red");
+            showInput("green");
+            showInput("blue");
+        }
+        else {
+            hideInput("red");
+            hideInput("green");
+            hideInput("blue");
+        }
+
+        return true;
+    }
+
+    RED.nodes.registerType('generic-lamp', {
+        category: 'zigbee2mqtt',
+        color: '#bada66',
+        defaults: {
+            device: {
+                value: "",
+                type: "zigbee2mqtt-device-config",
+                validate: function (value) {
+                    prepareView();
+                    return true;
+                }
+            },
+
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+
+            name: { value: "" },
+            state: { value: "ON" },
+
+            brightness: { value: 0, validate: RED.bavaria.validators.range(0, 255) },
+
+            temperature: { value: 50, validate: RED.bavaria.validators.range(0, 500000) },
+
+            red: { value: 0, validate: RED.bavaria.validators.range(0, 255) },
+            green: { value: 0, validate: RED.bavaria.validators.range(0, 255) },
+            blue: { value: 0, validate: RED.bavaria.validators.range(0, 255) },
+
+            transition: { value: 2 },
+            delay: { value: 0 },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "light.png",
+        label: function () {
+            return this.name || "generic lamp";
+        },
+        oneditprepare: function () {
+            var numInputs = [
+                "#node-input-brightness",
+                "#node-input-red",
+                "#node-input-green",
+                "#node-input-blue",
+            ]
+
+            RED.bavaria.ui.addNumRangeInput("#node-input-temperature", 0, 500000);
+
+            RED.bavaria.ui.addNumRangeInputs(numInputs, 0, 255);
+
+            RED.bavaria.ui.addNumInput("#node-input-delay");
+            RED.bavaria.ui.addNumInput("#node-input-transition");
+
+            prepareView();
+        },
+        oneditsave: function () {
+            var config = RED.nodes.node($("#node-input-device").val());
+            $("#node-input-name").val(config.name);
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="generic-lamp">
+    <div class="zigbee2mqtt-devices-properties">
+            
+        <div class="form-row">
+            <label for="node-input-device"><i class="fa fa-tag"></i> Device</label>
+            <input type="text" id="node-input-device" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge"  />
+        </div>
+        <div class="form-row" style="display:none">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="hidden" id="node-input-name">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-state"><i class="fa fa-power-off"></i> State</label>
+            <select id="node-input-state">
+                <option value="ON">On</option>
+                <option value="OFF">Off</option>
+                <option value="TOGGLE">Toggle</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="node-input-brightness"><i class="fa fa-sun-o"></i> Brightness</label>
+            <input type="text" id="node-input-brightness">
+        </div>
+        <div class="form-row">
+            <label for="node-input-temperature"><i class="fa fa-thermometer-full"></i> Temperature</label>
+            <input type="text" id="node-input-temperature">
+        </div>
+        <div class="form-row">
+            <label for="node-input-red" style="color:red;"><i class="fa fa-paint-brush"></i> Red</label>
+            <input type="text" id="node-input-red">
+        </div>
+        <div class="form-row">
+            <label for="node-input-green" style="color:green;"><i class="fa fa-paint-brush"></i> Green</label>
+            <input type="text" id="node-input-green">
+        </div>
+        <div class="form-row">
+            <label for="node-input-blue" style="color:blue;"><i class="fa fa-paint-brush"></i> Blue</label>
+            <input type="text" id="node-input-blue">
+        </div>
+        <div class="form-row">
+            <label for="node-input-transition"><i class="fa fa-clock-o"></i> Transition</label>
+            <input type="text" id="node-input-transition">
+        </div>
+        <div class="form-row">
+            <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
+            <input type="text" id="node-input-delay" >
+        </div>
+
+    </div>
+</script>
+
+<script type="text/html" data-help-name="generic-lamp">
+    <p>Node for generic lamp devices</p>
+</script>
+
+<!--- PREPARE MESSAGES NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('send-messages', {
+        category: 'zigbee2mqtt',
+        color: '#bada66',
+        defaults: {
+            name: { value: "" },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+        },
+        inputs: 1,
+        outputs: 0,
+        icon: "bridge.svg",
+        label: function () {
+            return this.name || "send messages";
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="send-messages">
+    <div class="zigbee2mqtt-devices-properties">
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+
+    </div>
+</script>
+
+<script type="text/html" data-help-name="send-messages">
+    <p>Node to send messages to devices</p>
+</script>
+
+<!--- BUTTON SWITCH NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('button-switch', {
+        category: 'zigbee2mqtt-utils',
+        color: '#defec8',
+        defaults: {
+            name: { value: "" },
+
+            enablePressed: { value: true },
+            enableHold: { value: true },
+            enableReleased: { value: true },
+            enableDouble: { value: false },
+
+            payloadPressed: { value: "" },
+            payloadHold: { value: "" },
+            payloadReleased: { value: "" },
+            payloadDouble: { value: "" },
+
+            typePressed: { value: "str" },
+            typeHold: { value: "str" },
+            typeReleased: { value: "str" },
+            typeDouble: { value: "str" },
+
+            customPayloadPressed: { value: false },
+            customPayloadHold: { value: false },
+            customPayloadReleased: { value: false },
+            customPayloadDouble: { value: false },
+
+            repeatHold: { value: false },
+            repeatHoldDelay: { value: 500 },
+            repeatHoldMax: { value: 20 },
+
+            dynamicOutputLabels: { value: [] },
+            outputs: { value: 3 },
+        },
+        inputs: 1,
+        outputs: 3,
+        icon: "function.png",
+        label: function () {
+            return this.name || "button-switch";
+        },
+        outputLabels: function (e) {
+            return this.dynamicOutputLabels[e];
+        },
+        oneditprepare: function () {
+            var node = this;
+            var names = ["Pressed", "Hold", "Released", "Double"];
+            
+            RED.bavaria.ui.addNumInput("#node-input-repeatHoldDelay");
+            RED.bavaria.ui.addNumInput("#node-input-repeatHoldMax");
+
+            names.forEach(name => {
+                RED.bavaria.ui.addMultiInput(node, name);
+                $("#node-input-enable" + name).change(function () {
+                    if ($(this).is(":checked")) {
+                        $("#output-enabled-" + name.toLocaleLowerCase()).show();
+                    } else {
+                        $("#output-enabled-" + name.toLocaleLowerCase()).hide();
+                    }
+                });
+
+                $("#node-input-customPayload" + name).change(function () {
+                    if ($(this).is(":checked")) {
+                        $("#custom-output-" + name.toLocaleLowerCase()).show();
+                    } else {
+                        $("#custom-output-" + name.toLocaleLowerCase()).hide();
+                    }
+                });
+            });
+
+            $("#node-input-repeatHold").change(function () {
+                if ($(this).is(":checked")) {
+                    $("#repeatHold-config").show();
+                } else {
+                    $("#repeatHold-config").hide();
+                }
+            });
+        },
+        oneditsave: function () {
+            var names = ["Pressed", "Hold", "Released", "Double"];
+            var node = this;
+            var outputCount = 0;
+            node.dynamicOutputLabels = [];
+
+            names.forEach(name => {
+                RED.bavaria.ui.saveMultiInput(node, name)
+                if ($("#node-input-enable" + name).is(":checked")) {
+                    node.dynamicOutputLabels.push(name);
+                    outputCount += 1;
+                }
+            });
+            if (this.outputs != outputCount) {
+                this.outputs = outputCount;
+            }
+        }
+    });
+</script>
+
+
+
+<script type="text/html" data-template-name="button-switch">
+    <div class="zigbee2mqtt-devices-properties">
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="config-group">
+            <div class="form-row">
+                <input type="checkbox" id="node-input-enablePressed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-enablePressed" style="width: 70%;"> Enable output for <code>pressed</code></label>
+            </div>
+            <div class="config-sub-group" id="output-enabled-pressed">
+                <div class="form-row">
+                    <input type="checkbox" id="node-input-customPayloadPressed" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                    <label for="node-input-customPayloadPressed" style="width: 70%;"> Enable custom output</label>
+                </div>
+                <div class="form-row" id="custom-output-pressed">
+                    <input type="text" id="node-input-payloadPressed">
+                </div>
+            </div>
+        </div>
+        <div class="config-group">
+            <div class="form-row">
+                <input type="checkbox" id="node-input-enableHold" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-enableHold" style="width: 70%;"> Enable output for <code>hold</code></label>
+            </div>
+            <div class="config-sub-group" id="output-enabled-hold">
+                <div class="form-row">
+                    <input type="checkbox" id="node-input-customPayloadHold" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                    <label for="node-input-customPayloadHold" style="width: 70%;"> Enable custom output</label>
+                </div>
+                <div class="form-row" id="custom-output-hold">
+                    <input type="text" id="node-input-payloadHold">
+                </div>
+                <div class="form-row">
+                    <input type="checkbox" id="node-input-repeatHold" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                    <label for="node-input-repeatHold" style="width: 70%;"> Repeat sending message until <code>released</code></label>
+                </div>
+                <div class="form-row" id="repeatHold-config">
+                    <label for="node-input-repeatHoldDelay" style="width: 70%;"> Delay between messages (ms)</label>
+                    <input type="text" id="node-input-repeatHoldDelay">
+                    <label for="node-input-repeatHoldMax" style="width: 70%;"> Maximum amount of messages</label>
+                    <input type="text" id="node-input-repeatHoldMax">
+                </div>
+            </div>
+        </div>
+        <div class="config-group">
+            <div class="form-row">
+                <input type="checkbox" id="node-input-enableReleased" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-enableReleased" style="width: 70%;"> Enable output for <code>released</code></label>
+            </div>
+            <div class="config-sub-group" id="output-enabled-released">
+                <div class="form-row">
+                    <input type="checkbox" id="node-input-customPayloadReleased" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                    <label for="node-input-customPayloadReleased" style="width: 70%;"> Enable custom output</label>
+                </div>
+                <div class="form-row" id="custom-output-released">
+                    <input type="text" id="node-input-payloadReleased">
+                </div>
+            </div>
+        </div>
+        <div class="config-group">
+            <div class="form-row">
+                <input type="checkbox" id="node-input-enableDouble" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                <label for="node-input-enableDouble" style="width: 70%;"> Enable output for <code>double</code></label>
+            </div>
+            <div class="config-sub-group" id="output-enabled-double">
+                <div class="form-row">
+                    <input type="checkbox" id="node-input-customPayloadDouble" style="display: inline-block; width: auto; vertical-align: top;" autocomplete="off" />
+                    <label for="node-input-customPayloadDouble" style="width: 70%;"> Enable custom output</code></label>
+                </div>
+                <div class="form-row" id="custom-output-double">
+                    <input type="text" id="node-input-payloadDouble">
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</script>
+
+<script type="text/html" data-help-name="button-switch">
+    <p>Node to switch button press types</p>
+</script>
+
+<!--- DEVICE STATUS NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('device-status', {
+        category: 'zigbee2mqtt',
+        color: '#bada66',
+        defaults: {
+            name: { value: "" },
+            deviceName: { value: "", required: true },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            genericMqttDevice: { value: false },
+            device: { value: "", type: "zigbee2mqtt-device-config", required: false }
+        },
+        inputs: 0,
+        outputs: 1,
+        icon: "serial.png",
+        label: function () {
+            return this.name || "device status";
+        },
+        oneditprepare: function () {
+            var node = this;
+            var deviceName = node.deviceName;
+
+            if (node.genericMqttDevice === true) {
+                $("#fullMqttTopic").show()
+            } else {
+                $("#fullMqttTopic").hide()
+            }
+
+            $("#node-input-genericMqttDevice").change(function () {
+                if (this.checked) {
+                    $("#fullMqttTopic").show()
+                    node.deviceName = "---";
+                } else {
+                    $("#fullMqttTopic").hide()
+                    node.deviceName = "";
+                }
+            })
+
+            $("#node-input-bridge").change(function () {
+                var bridgeId = $("#node-input-bridge").val().replace(".", "_");
+                $.getJSON(window.location.pathname + 'z2m/devices/' + bridgeId + '/all/all/all', function (data) {
+                    $("#node-input-deviceName").empty();
+                    data.devices.forEach(e => {
+                        $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
+                    });
+
+                    $("#node-input-deviceName").val(deviceName);
+                });
+            });
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="device-status">
+    <div class="zigbee2mqtt-devices-properties">
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
+            <select id="node-input-deviceName"></select>
+        </div>
+        <div class="form-row">
+            <label for="node-input-genericMqttDevice"><i class="fa fa-tag"></i> Generic MQTT Device</label>
+            <input type="checkbox" id="node-input-genericMqttDevice" />
+        </div>
+        <div class="form-row" id="fullMqttTopic">
+            <label for="node-input-device"><i class="fa fa-microchip"></i> Device</label>
+            <input type="text" id="node-input-device" placeholder="device" />
+        </div>
+
+    </div>
+</script>
+
+<script type="text/html" data-help-name="device-status">
+    <p>Injects a message with every MQTT payload a device publishes</p>
+</script>
+
+<!--- GET LAMP STATE NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('get-lamp-state', {
+        category: 'zigbee2mqtt',
+        color: '#bada66',
+        defaults: {
+            name: { value: "" },
+            device: {
+                value: "",
+                type: "zigbee2mqtt-device-config",
+                validate: function (value) {
+                    prepareView();
+                    return true;
+                }
+            },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "serial.png",
+        label: function () {
+            return this.name || "get lamp state";
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="get-lamp-state">
+    <div class="zigbee2mqtt-devices-properties">
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div class="form-row">
+            <label for="node-input-device"><i class="fa fa-microchip"></i> Device</label>
+            <input type="text" id="node-input-device" />
+        </div>
+
+    </div>
+</script>
+
+<script type="text/html" data-help-name="get-lamp-state">
+    <p>Requests the current lamp state and adds the payload to the message.</p>
+</script>

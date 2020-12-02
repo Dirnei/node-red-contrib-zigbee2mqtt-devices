@@ -1,0 +1,384 @@
+<!--- BRIDGE LOG NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType("bridge-log", {
+        category: "zigbee2mqtt", //todo: change category
+        color: "#C0D3C5",
+        defaults: {
+            name: { value: "" },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            consolidate_output: { value: false },
+            type_pairing: { value: false },
+            type_device_connected: { value: false },
+            type_device_ban: { value: false },
+            type_device_ban_failed: { value: false },
+            type_device_announced: { value: false },
+            type_device_removed: { value: false },
+            type_device_removed_failed: { value: false },
+            type_device_force_removed: { value: false },
+            type_device_force_removed_failed: { value: false },
+            type_device_banned: { value: false },
+            type_device_whitelisted: { value: false },
+            type_device_renamed: { value: false },
+            type_group_renamed: { value: false },
+            type_group_added: { value: false },
+            type_group_removed: { value: false },
+            type_device_bind: { value: false },
+            type_device_unbind: { value: false },
+            type_device_group_add: { value: false },
+            type_device_group_add_failed: { value: false },
+            type_device_group_remove: { value: false },
+            type_device_group_remove_failed: { value: false },
+            type_device_group_remove_all: { value: false },
+            type_device_group_remove_all_failed: { value: false },
+            type_devices: { value: false },
+            type_groups: { value: false },
+            type_zigbee_publish_error: { value: false },
+            type_ota_update: { value: false },
+            type_touchlink: { value: false },
+            enabledLogTypes: { value: [] },
+            outputs: { value: 1 }
+        },
+        outputs: 1,
+        inputs: 0,
+        outputLabels: function (outputIndex) {
+            // With consolidated enabled there is only one output
+            if(this.consolidate_output) {
+                let logTypes = this.enabledLogTypes;
+                if(this.enabledLogTypes.length > 6) {
+                    // Omit elements after index 6
+                    logTypes = this.enabledLogTypes.slice(0, 6);
+                    logTypes.push("...");
+                }
+
+                const logTypeString = logTypes.join(", ");
+                return "Consolidated: " + logTypeString;
+            }
+
+            // Get the log type as a label
+            return this.enabledLogTypes[outputIndex];
+        },
+        oneditsave: function() {
+
+            const node = this;
+            
+            // Find all the checked type checkboxes (id starts with node-input_type_)
+            const enabledLogTypesNew = $("[id^=node-input-type_]").map(function () {
+                if(this.checked){
+                    // Remove the prefix
+                    return this.id.replace("node-input-type_", "");
+                }
+                return null;
+            }).get();
+
+            // Consolidate outputs to one option checked?
+            let consolidateOutput = false;
+            $("#node-input-consolidate_output").map(function () {
+                consolidateOutput = this.checked;
+            });
+            
+            // Update the outputs to one - only if neccessary
+            if(consolidateOutput && node.outputs !== 1){
+                node.outputs = 1;
+            }
+
+            // Settings changed?
+            if(JSON.stringify(node.enabledLogTypes) !== JSON.stringify(enabledLogTypesNew) || this.consolidate_output !== consolidateOutput){
+                node.enabledLogTypes = enabledLogTypesNew;
+                
+                // Only touch the outputs if neccessary.
+                if(!consolidateOutput && node.outputs !== enabledLogTypesNew.length){
+                    node.outputs = enabledLogTypesNew.length;
+                }
+            }             
+        },
+        icon: "font-awesome/fa-heartbeat",
+        label: function () {
+            return this.name || "bridge log";
+        },
+        oneditprepare: function() {
+            // Select all type_ checkboxes
+            $("#select-all-types").click(function() {
+                $("[id^=node-input-type_]").prop("checked", true);
+            });
+
+            // Deselect all type_ checkboxes
+            $("#deselect-all-types").click(function() {
+                $("[id^=node-input-type_]").prop("checked", false);
+            });
+        }
+    });
+
+</script>
+
+<script type="text/html" data-template-name="bridge-log">
+    <style type="text/css" scoped>
+        .bridge-log-types label{
+            width: 70% !important;
+        }
+
+        .bridge-log-types input[type=checkbox]{
+            display: inline-block;
+            width: auto;
+            vertical-align: top;
+        }
+        
+        .bridge-log-types p{
+            width:400px !important;
+        }
+    </style>
+
+    <div class="zigbee2mqtt-devices-properties">
+        
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+
+
+        <div class="bridge-log-types">
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-consolidate_output">
+                <label for="node-input-consolidate_output"> Consolidate output</label>
+                <p><small>Consolidate all the selected log types down there into a single output.</small></p>
+            </div>
+
+            <h3>Log types
+                <button type="button" id="select-all-types" class="red-ui-button red-ui-button-small"> select all <i class="fa fa-check-square-o"></i></button>
+                <button type="button" id="deselect-all-types" class="red-ui-button red-ui-button-small"> select none <i class="fa fa-square-o"></i></button>
+            </h3>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_pairing">
+                <label for="node-input-type_pairing"> pairing</label>
+                <p><small>Logged when a device is connecting to the network.</small></p>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_connected">
+                <label for="node-input-type_device_connected"> device_connected</label>
+                <p><small>Sent when a new device connects to the network.</small></p>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_ban">
+                <label for="node-input-type_device_ban"> device_ban</label>
+                <p><small>Sent when a device is banned from the network.</small></p>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_ban_failed">
+                <label for="node-input-type_device_ban_failed"> device_ban_failed</label>
+                <p><small>Sent when a request to ban a device failed</small></p>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_announced">
+                <label for="node-input-type_device_announced"> device_announced</label>
+                <p><small>Sent when a device announces itself on the network.</small></p>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_removed">
+                <label for="node-input-type_device_removed"> device_removed</label>
+                <p><small>Sent when a device is removed from the network.</small></p>
+            </div>
+
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_removed_failed">
+                <label for="node-input-type_device_removed_failed"> device_removed_failed</label>
+                <p><small>Sent when a request to remove a device failed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_force_removed">
+                <label for="node-input-type_device_force_removed"> device_force_removed</label>
+                <p><small>Sent when a device is removed from the network using the forced mode.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_force_removed_failed">
+                <label for="node-input-type_device_force_removed_failed"> device_force_removed_failed</label>
+                <p><small>Sent when a request to remove a device failed using the forced mode.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_banned">
+                <label for="node-input-type_device_banned"> device_banned</label>
+                <p><small>Sent when a device is banned from the network.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_whitelisted">
+                <label for="node-input-type_device_whitelisted"> device_whitelisted</label>
+                <p><small>Sent when a device is whitelisted from the network.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_renamed">
+                <label for="node-input-type_device_renamed"> device_renamed</label>
+                <p><small>Sent when a device is renamed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_group_renamed">
+                <label for="node-input-type_group_renamed"> group_renamed</label>
+                <p><small>Sent when a group is renamed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_group_added">
+                <label for="node-input-type_group_added"> group_added</label>
+                <p><small>Sent when a group is added.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_group_removed">
+                <label for="node-input-type_group_removed"> group_removed</label>
+                <p><small>Sent when a group is removed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_bind">
+                <label for="node-input-type_device_bind"> device_bind</label>
+                <p><small>Sent when a device is bound.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_unbind">
+                <label for="node-input-type_device_unbind"> device_unbind</label>
+                <p><small>Sent when a device is unbound.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_group_add">
+                <label for="node-input-type_device_group_add"> device_group_add</label>
+                <p><small>Sent when a device is added to a group.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_group_add_failed">
+                <label for="node-input-type_device_group_add_failed"> device_group_add_failed</label>
+                <p><small>Sent when a request to add a device to a group failed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_group_remove">
+                <label for="node-input-type_device_group_remove"> device_group_remove</label>
+                <p><small>Sent when a device is removed from a group.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_group_remove_failed">
+                <label for="node-input-type_device_group_remove_failed"> device_group_remove_failed</label>
+                <p><small>Sent when a request to removed from a group failed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_group_remove_all">
+                <label for="node-input-type_device_group_remove_all"> device_group_remove_all</label>
+                <p><small>Sent when a device is removed from all groups.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_device_group_remove_all_failed">
+                <label for="node-input-type_device_group_remove_all_failed"> device_group_remove_all_failed</label>
+                <p><small>Sent when a request to remove a device from all groups failed.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_devices">
+                <label for="node-input-type_devices"> devices</label>
+                <p>
+                    <small>
+                        A list of all devices, this message can be triggered by sending
+                        a message to <code>zigbee2mqtt/bridge/config/devices</code>
+                        (payload doesn’t matter).
+                    </small>
+                </p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_groups">
+                <label for="node-input-type_groups"> groups</label>
+                <p>
+                    <small>
+                        A list of all groups, this message can be triggered by sending
+                        a message to <code>zigbee2mqtt/bridge/config/devices</code>
+                        (payload doesn’t matter).
+                    </small>
+                </p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_zigbee_publish_error">
+                <label for="node-input-type_zigbee_publish_error"> zigbee_publish_error</label>
+                <p>
+                    <small>
+                        Logged when a Zigbee publish errors occurs,<br>
+                        contains the error and metadata containing the device and command.
+                    </small>
+                </p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_ota_update">
+                <label for="node-input-type_ota_update"> ota_update</label>
+                <p><small>Logs related to OTA updates.</small></p>
+            </div>
+            
+            <div class="form-row">
+                <input type="checkbox" id="node-input-type_touchlink">
+                <label for="node-input-type_touchlink"> touchlink</label>
+                <p><small>Logs related to TouchLink.</small></p>
+            </div>
+
+        </div>
+
+    </div>
+</script>
+
+<script type="text/html" data-help-name="bridge-log">
+    <p>
+        The bridge log provides an easy way to filter logs that are published into the
+        <code>zigbee2mqtt/bridge/log</code> MQTT topic. You configure the types you are
+        interested in, and the node creates one output for each type.
+        This can be helpful if you only want to see specific logs (with the debug node)
+        or perform actions based on the logs.
+    </p>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt> payload <span class="property-type"> object </span> </dt>
+        <dd> The encapsulated message property from the bridge log MQTT message.</dd>
+
+        <dt> action.name <span class="property-type"> string </span> </dt>
+        <dd> The bridge log type e.g. <i>"device_announced"</i>. </dd>
+    </dl>
+
+    <h3>Configuration</h3>
+    <dl class="message-properties">
+        <h4>Bridge</h4>
+
+        <p>Configures the Zigbee2MQTT bridge where the logs shall be retrieved from.</p>
+
+        <h4>Log types</h4>
+        <p>
+            Only messages with the selected log types are sent by the node.
+            The node generates one output for each log type.
+        </p>
+        <h4>Consolidated output</h4>
+        <p>
+            The consolidate output option is attractive if you want all or certain
+            log types, but every log message results in the same action.
+            If the consolidate output option is selected,
+            all the selected log types will be sent over a single output.
+        </p>
+    </dl>
+</script>

@@ -1,0 +1,332 @@
+<!--- OVERRIDE STATE NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('override-state', {
+        category: 'zigbee2mqtt-override',
+        color: '#d1a932',
+        defaults: {
+            name: { value: "" },
+            state: { value: "ON" },
+
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "template.png",
+        label: function () {
+            return this.name || "override-state";
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="override-state">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-state"><i class="fa fa-sun-o"></i> State</label>
+        <select id="node-input-state">
+            <option value="ON">On</option>
+            <option value="OFF">Off</option>
+            <option value="TOGGLE">Toggle</option>
+        </select>
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="override-state">
+    <p>Node to override state</p>
+</script>
+
+<!--- OVERRIDE BRIGHTNESS NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('override-brightness', {
+        category: 'zigbee2mqtt-override',
+        color: '#d1a932',
+        defaults: {
+            name: { value: "" },
+            brightness: { value: 255 },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "template.png",
+        label: function () {
+            return this.name || "override-brightness";
+        },
+        oneditprepare: function () {
+            $("#node-input-brightness").on('input', function () {
+                var b = $(this).val();
+                $("#node-selected-brightness").val(b);
+            });
+
+            $("#node-selected-brightness").on('change', function () {
+                var b = parseInt($(this).val());
+                if (typeof b === "number" && !isNaN(b)) {
+                    b = Math.max(0, Math.min(b, 254));
+                    $("#node-input-brightness").val(b);
+                    $("#node-selected-brightness").val(b);
+                } else {
+                    b = $("#node-input-brightness").val();
+                    $("#node-selected-brightness").val(b);
+                }
+            });
+
+            $("#node-selected-brightness").val(this.brightness);
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="override-brightness">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row zigbee2mqtt-devices-slider">
+        <label for="node-input-brightness"><i class="fa fa-sun-o"></i> Brightness</label>
+        <input type="range" min="0" max="254" id="node-input-brightness">
+        <input type="text" id="node-selected-brightness">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="override-brightness">
+    <p>Node to override brightness</p>
+</script>
+
+<!--- OVERRIDE TEMPERATURE NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('override-temperature', {
+        category: 'zigbee2mqtt-override',
+        color: '#d1a932',
+        defaults: {
+            name: { value: "" },
+            temperature: { value: 333, validate: RED.bavaria.validators.range(0, 50000) },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "template.png",
+        label: function () {
+            return this.name || "override-temperature";
+        },
+        oneditprepare: function () {
+            RED.bavaria.ui.addNumRangeInput("#node-input-temperature", 0, 50000);
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="override-temperature">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-temperature"><i class="fa fa-thermometer-full"></i> Temperature</label>
+        <input type="text" id="node-input-temperature">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="override-temperature">
+    <p>Node to override color temperature</p>
+</script>
+
+<!--- OVERRIDE COLOR NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('override-color', {
+        category: 'zigbee2mqtt-override',
+        color: '#d1a932',
+        defaults: {
+            name: { value: "" },
+            red: { value: 255, validate: RED.bavaria.validators.range(0, 255) },
+            green: { value: 255, validate: RED.bavaria.validators.range(0, 255) },
+            blue: { value: 255, validate: RED.bavaria.validators.range(0, 255) },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "template.png",
+        label: function () {
+            return this.name || "override-color";
+        },
+        oneditprepare: function () {
+            this.color = {
+                red : this.red,
+                green : this.green,
+                blue : this.blue 
+            };
+
+            const node = this;
+            var numInputs = ["#node-input-red", "#node-input-green", "#node-input-blue"];
+            var colors = ["red", "green", "blue"];
+
+            function updateColorPicker() {
+                var hex = RED.bavaria.converters.rgbToHex(node.color.red || 0, node.color.green || 0, node.color.blue || 0)
+                $("#node-input-color").val(hex);
+            }
+
+            RED.bavaria.ui.addNumRangeInputs(numInputs, 0, 255);
+
+            colors.forEach(function (input) {
+                $("#node-input-" + input).next().children(".red-ui-typedInput-input-wrap").children().first().change(function () {
+                    node.color[input] = $(this).val();
+
+                    updateColorPicker();
+
+                    var change = {};
+                    change[input] = node[input];
+
+                    node.dirty = true;
+                    node.changed = true;
+
+                    RED.nodes.dirty(true);
+                    RED.history.push({
+                        t: 'edit',
+                        node: node,
+                        changes: change,
+                        dirty: node.dirty,
+                        changed: node.changed
+                    });
+                });
+            });
+
+            $("#node-input-color").change(function () {
+                var hex = $(this).val();
+                var color = RED.bavaria.converters.hexToRgb(hex);
+
+                node.color.red = color.r;
+                node.color.green = color.g;
+                node.color.blue = color.b;
+
+                colors.forEach(c => {
+                    $("#node-input-" + c).next().children(".red-ui-typedInput-input-wrap").children().first().val(node.color[c]);
+                })
+            });
+
+            updateColorPicker();
+        },
+        oneditsave: function () {
+            // some weird stuff to get node-red to safe it and to show changed...
+            this.color = {};
+            this.color.red = $("#node-input-red").next().children(".red-ui-typedInput-input-wrap").children().first().val();
+            this.color.green = $("#node-input-green").next().children(".red-ui-typedInput-input-wrap").children().first().val();
+            this.color.blue = $("#node-input-blue").next().children(".red-ui-typedInput-input-wrap").children().first().val();
+
+            $("#node-input-red").val(this.color.red);
+            $("#node-input-green").val(this.color.green);
+            $("#node-input-blue").val(this.color.blue);
+
+            this.red = this.color.red;
+            this.green = this.color.green;
+            this.blue = this.color.blue
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="override-color">
+    <div class="zigbee2mqtt-devices-properties">
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-red" style="color:red;">
+                <i class="fa fa-paint-brush"></i> Red
+            </label>
+            <input type="text" id="node-input-red">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-blue" style="color:green;">
+                <i class="fa fa-paint-brush"></i> Green
+            </label>
+            <input type="text" id="node-input-green">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-green" style="color:blue;">
+                <i class="fa fa-paint-brush"></i> Blue
+            </label>
+            <input type="text" id="node-input-blue">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-color">
+                <i class="fa fa-paint-brush"></i> Color
+            </label>
+            <input type="color" id="node-input-color">
+        </div>
+
+    </div>
+</script>
+
+<script type="text/html" data-help-name="override-color">
+    <p>Node to override color</p>
+</script>
+
+<!--- OVERRIDE ACTION NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('override-action', {
+        category: 'zigbee2mqtt-override',
+        color: '#d1a932',
+        defaults: {
+            name: { value: "" },
+            value: { value: 50, validate: RED.bavaria.validators.range(-255, 255) },
+            mode: { value: "brightness_move" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "template.png",
+        label: function () {
+            return this.name || "override-action";
+        },
+        oneditprepare: function () {
+            RED.bavaria.ui.addNumRangeInput("#node-input-value", -255, 255);
+        },
+    });
+</script>
+
+<script type="text/html" data-template-name="override-action">
+    <div class="zigbee2mqtt-devices-properties">
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-mode"><i class="fa fa-caret-square-o-down"></i> Mode</label>
+            <select id="node-input-mode">
+                <option value="brightness_move">Brightness Move</option>
+                <option value="brightness_step">Brightness Step</option>
+                <option value="color_temp_move">Color Temperature Move</option>
+                <option value="color_temp_step">Color Temperature Step</option>
+                <option value="hue_move">Hue Move</option>
+                <option value="hue_step">Hue Step</option>
+                <option value="saturation_move">Saturation Move</option>
+                <option value="saturation_step">Saturation Step</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-value"><i class="fa fa-edit"></i> Value</label>
+            <input type="text" id="node-input-value">
+        </div>
+
+    </div>
+</script>
+
+<script type="text/html" data-help-name="override-action">
+    <p>Instead of setting a brightness, color_temp, hue or saturation it is also possible to:<p>
+    <ul>
+        <li><code>move</code> - this will automatically move the value over time, to stop send value <code>0</code>.</li>
+        <li><code>step</code> - this will increment/decrement the current value by the given one.</li>
+    </ul>
+    <p>The direction of move and step can be either up or down, provide a negative value to move/step down, a positive value to move/step up.</p>
+    <p><b>NOTE</b>: brightness move/step will stop at the minimum brightness and won't turn on the light when it's off.</p>
+    <p>When a action is set in the current flow, other changes will be ignored. It is only possible to do one action at a time.</p>
+</script>

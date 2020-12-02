@@ -1,0 +1,50 @@
+<!--- TASMOTA NODE --->
+<script type="text/javascript">
+    RED.nodes.registerType('tasmota', {
+        category: 'tasmota',
+        color: '#59a27a',
+        defaults: {
+            name: { value: "" },
+            outputs: { value: 1 },
+            topic: {value: "sonoff" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "feed.png",
+        label: function () {
+            return this.name || "Tasmota";
+        },
+        oneditprepare: function () {
+        },
+        oneditsave: function () {
+        },
+        oneditcancel: function () {
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="tasmota">
+    <div class="zigbee2mqtt-devices-properties">
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-topic"><i class="fa fa-tag"></i> Topic</label>
+            <input type="text" id="node-input-topic">
+        </div>
+        <div class="form-row">
+            <label for="node-input-outputs"><i class="fa fa-tag"></i> Relays</label>
+            <select id="node-input-outputs">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+            </select>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="tasmota">
+
+</script>
