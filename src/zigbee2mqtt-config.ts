@@ -1,9 +1,14 @@
-module.exports = function (RED) {
-    const utils = require("../lib/utils.js");
+import { NodeInitializer }                                                                                                                                              from "node-red";
+import {BridgeConfigCredentials, BridgeConfigNode, BridgeConfigNodeDef, DeviceConfigNode, DeviceConfigNodeDef, DeviceStatusCallback, MqttConfigNode, OtaStatusCallback} from "./types";
+
+const nodeInit: NodeInitializer = (RED): void => {
+
+    const utils = require("./lib/utils.js");
     const bavaria = utils.bavaria();
 
-    function deviceConfig(config) {
+    function DeviceConfigNodeConstructor(this: DeviceConfigNode, config: DeviceConfigNodeDef) {
         RED.nodes.createNode(this, config);
+
         this.name = config.name;
         this.deviceName = config.deviceName;
         this.brightnessSupport = config.brightnessSupport;
@@ -15,26 +20,30 @@ module.exports = function (RED) {
         this.commandTopic = config.commandTopic;
         this.refreshTopic = config.refreshTopic;
     }
-    RED.nodes.registerType("zigbee2mqtt-device-config", deviceConfig);
 
-    function bridgeConfig(config) {
+    RED.nodes.registerType("zigbee2mqtt-device-config", DeviceConfigNodeConstructor);
+
+
+    function BridgeConfigConstructor(this: BridgeConfigNode, config: BridgeConfigNodeDef) {
         RED.nodes.createNode(this, config);
+
 
         const EventEmitter = require("events");
         const emitter = new EventEmitter();
 
-        var node = this;
-        var mqttNode = RED.nodes.getNode(config.mqtt);
-        var globalContext = node.context().global;
+        const node = this;
+        const mqttNode = RED.nodes.getNode(config.mqtt) as MqttConfigNode;
+        const globalContext = node.context().global;
 
         this.name = config.name;
         this.baseTopic = config.baseTopic;
 
         this.isConnected = mqttNode.isConnected;
-        this.isReconnecting = mqttNode.reconnecting;
+        this.isReconnecting = mqttNode.isReconnecting;
         this.publish = mqttNode.publish;
-        this.knownDevices = globalContext.get("knownDevices" + node.id.replace(".", "_")) || [];
+        this.knownDevices = globalContext.get("knownDevices" + node.id.replace(".", "_")) as BridgeConfigNode["knownDevices"] || [];
 
+        // @ts-ignore FIXME: hmmmm
         this.on = function (event, listener) {
             emitter.on(event, listener);
         };
@@ -44,26 +53,29 @@ module.exports = function (RED) {
         };
 
         this.subscribeDevice = function (nodeId, device, callback) {
-            var topic = node.baseTopic + "/" + device;
-            mqttNode.subscribeDevice(nodeId, topic, callback, true);
+            mqttNode.subscribeDevice(nodeId, `${node.baseTopic}/${device}`, callback);
         };
 
         this.publishDevice = function (device, msg) {
-            var topic = node.baseTopic + "/" + device + "/set";
             if(typeof msg !== "string"){
                 msg = JSON.stringify(msg);
             }
 
-            mqttNode.publish(topic, msg);
+            mqttNode.publish(`${node.baseTopic}/${device}/set`, msg);
         };
-        
+
         this.subscribe = mqttNode.subscribe;
         this.unsubscribe = mqttNode.unsubscribe;
-
         this.setDeviceState = (device, payload) => {
+
             if (device !== undefined && device !== "") {
-                var topic = node.baseTopic + "/" + device + "/set";
-                this.publish(topic, JSON.stringify(payload));
+
+                try {
+                    payload = JSON.stringify(payload);
+                    this.publish(`${node.baseTopic}/${device}/set`, payload);
+                } catch (e) {
+                    console.error(e);
+                }
             }
         };
 
@@ -74,9 +86,9 @@ module.exports = function (RED) {
             }
         };
 
-        var registeredOtaNodeId = "";
-        var otaCallback = (msg) => { };
-        var otaDeviceCallback = (deviceName, msg) => { };
+        let registeredOtaNodeId = "";
+        let otaCallback: OtaStatusCallback = (msg) => { };
+        let otaDeviceCallback: DeviceStatusCallback = (deviceName, msg) => { };
         this.registerOtaNode = (nodeId, otaStatusCallback, deviceStatusCallback) => {
             if (registeredOtaNodeId !== "" && registeredOtaNodeId !== nodeId) {
                 return false;
@@ -89,22 +101,24 @@ module.exports = function (RED) {
             return true;
         };
 
-        var subId = bavaria.observer.register(mqttNode.id + "_connected", function (_msg) {
+        const subId = bavaria.observer.register(mqttNode.id + "_connected", function (_msg: string) {
             mqttNode.subscribe(node.id, node.baseTopic + "/+", (msg, topic) => {
-                var deviceName = topic.substr(node.baseTopic.length + 1);
+                const deviceName = topic.substr(node.baseTopic.length + 1);
                 bavaria.observer.notify(deviceName, msg);
                 otaDeviceCallback(deviceName, msg);
             });
+
             mqttNode.subscribe(node.id + 1, node.baseTopic + "/bridge/log", (msg) => {
                 switch (msg.type) {
                     case "devices":
                         msg.message.forEach(device => {
-                            var d = node.knownDevices.find(e => {
+                            const d = node.knownDevices.find(e => {
                                 return e.ieeeAddr === device.ieeeAddr;
                             });
+
                             if (d) {
-                                // replace allready known device
-                                var index = node.knownDevices.indexOf(d);
+                                // replace already known device
+                                const index = node.knownDevices.indexOf(d);
                                 node.knownDevices.splice(index, 1, device);
                             } else {
                                 // new device
@@ -122,8 +136,7 @@ module.exports = function (RED) {
                             message: msg.message,
                         });
                         break;
-                    case "groups":
-                        break;
+                    case "groups": break;
                 }
 
                 emitter.emit("bridge-log", msg);
@@ -139,10 +152,10 @@ module.exports = function (RED) {
             bavaria.observer.unregister(subId);
         });
     }
-    RED.nodes.registerType("zigbee2mqtt-bridge-config", bridgeConfig, {
-        credentials: {
-            username: { type: "text" },
-            password: { type: "password" }
-        }
+
+    RED.nodes.registerType("zigbee2mqtt-bridge-config", BridgeConfigConstructor,  {
+        credentials: BridgeConfigCredentials,
     });
 };
+
+export = nodeInit;
