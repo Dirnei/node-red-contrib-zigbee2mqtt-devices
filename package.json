@@ -41,7 +41,8 @@
     },
     "scripts": {
         "build": "tsc && rsync -rv --exclude='*.js' --exclude='*.ts' ./src/ ./dist/",
-        "buildwin": "tsc ; robocopy.exe ./src/ ./dist/ /MIR /xf *.js /xf *.ts"
+        "buildwin": "tsc && robocopy.exe ./src/ ./dist/ /MIR /xf *.js /xf *.ts /NFL /NDL /NJH /NJS /nc /ns /np",
+        "builddocker": "npm run buildwin || @powershell -NoProfile -Command ./install.ps1"
     },
     "devDependencies": {
         "@types/jquery": "^3.5.4",
