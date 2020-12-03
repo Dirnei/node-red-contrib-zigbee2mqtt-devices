@@ -5,7 +5,13 @@ module.exports = {
         "node": true,
         "amd": true
     },
-    "extends": "eslint:recommended",
+    parser: '@typescript-eslint/parser',
+    plugins: [
+        '@typescript-eslint',
+    ],
+    extends: [
+        'eslint:recommended',
+    ],
     "parserOptions": {
         "ecmaVersion": 12,
         "sourceType": "module"
@@ -34,5 +40,14 @@ module.exports = {
         "no-unused-vars" : [
             "off"
         ]
-    }
+    },
+    "overrides": [
+        {
+          "files": ["**/*.ts", "**/*.tsx"],
+          "extends": [
+            "eslint:recommended",
+            "plugin:@typescript-eslint/recommended"
+          ],
+        }
+      ]
 };
