@@ -41,7 +41,7 @@ const nodeInit: NodeInitializer = (RED): void => {
         this.isConnected = mqttNode.isConnected;
         this.isReconnecting = mqttNode.isReconnecting;
         this.publish = mqttNode.publish;
-        this.knownDevices = globalContext.get(`knownDevices${node.id.replace(".", "_")}`) as BridgeConfigNode["knownDevices"] || [];
+        this.knownDevices = globalContext.get(`knownDevices_${node.id.replace(".", "_")}`) as BridgeConfigNode["knownDevices"] || [];
 
         // @ts-ignore FIXME: hmmmm
         this.on = function (event, listener) {
