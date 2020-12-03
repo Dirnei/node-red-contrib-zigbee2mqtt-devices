@@ -41,7 +41,7 @@ const nodeInit: NodeInitializer = (RED): void => {
         this.isConnected = mqttNode.isConnected;
         this.isReconnecting = mqttNode.isReconnecting;
         this.publish = mqttNode.publish;
-        this.knownDevices = globalContext.get("knownDevices" + node.id.replace(".", "_")) as BridgeConfigNode["knownDevices"] || [];
+        this.knownDevices = globalContext.get(`knownDevices${node.id.replace(".", "_")}`) as BridgeConfigNode["knownDevices"] || [];
 
         // @ts-ignore FIXME: hmmmm
         this.on = function (event, listener) {
@@ -81,8 +81,7 @@ const nodeInit: NodeInitializer = (RED): void => {
 
         this.refreshDevice = function (deviceName) {
             if (deviceName !== "" && deviceName !== "---") {
-                // eslint-disable-next-line quotes
-                mqttNode.publish(node.baseTopic + "/" + deviceName + "/get", '{"state": ""}');
+                mqttNode.publish(`${node.baseTopic}/${deviceName}/get`, `{"state": ""}`);
             }
         };
 
@@ -101,14 +100,14 @@ const nodeInit: NodeInitializer = (RED): void => {
             return true;
         };
 
-        const subId = bavaria.observer.register(mqttNode.id + "_connected", function (_msg: string) {
-            mqttNode.subscribe(node.id, node.baseTopic + "/+", (msg, topic) => {
+        const subId = bavaria.observer.register(`${mqttNode.id}_connected`, function (_msg: string) {
+            mqttNode.subscribe(node.id, `${node.baseTopic}/+`, (msg, topic) => {
                 const deviceName = topic.substr(node.baseTopic.length + 1);
                 bavaria.observer.notify(deviceName, msg);
                 otaDeviceCallback(deviceName, msg);
             });
 
-            mqttNode.subscribe(node.id + 1, node.baseTopic + "/bridge/log", (msg) => {
+            mqttNode.subscribe(node.id + 1, `${node.baseTopic}/bridge/log`, (msg) => {
                 switch (msg.type) {
                     case "devices":
                         msg.message.forEach(device => {
@@ -126,7 +125,7 @@ const nodeInit: NodeInitializer = (RED): void => {
                             }
                         });
 
-                        globalContext.set("knownDevices_" + node.id.replace(".", "_"), node.knownDevices);
+                        globalContext.set(`knownDevices_${node.id.replace(".", "_")}`, node.knownDevices);
                         break;
                     case "ota_update":
                         otaCallback({
@@ -142,7 +141,7 @@ const nodeInit: NodeInitializer = (RED): void => {
                 emitter.emit("bridge-log", msg);
             });
 
-            mqttNode.publish(config.baseTopic + "/bridge/config/devices", "{}");
+            mqttNode.publish(`${config.baseTopic}/bridge/config/devices`, "{}");
             bavaria.observer.notify(node.id + "_connected");
         });
 
