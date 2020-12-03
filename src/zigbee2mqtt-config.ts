@@ -87,8 +87,8 @@ const nodeInit: NodeInitializer = (RED): void => {
         };
 
         let registeredOtaNodeId = "";
-        let otaCallback: OtaStatusCallback = (msg) => { };
-        let otaDeviceCallback: DeviceStatusCallback = (deviceName, msg) => { };
+        let otaCallback: OtaStatusCallback = () => { };
+        let otaDeviceCallback: DeviceStatusCallback = () => { };
         this.registerOtaNode = (nodeId, otaStatusCallback, deviceStatusCallback) => {
             if (registeredOtaNodeId !== "" && registeredOtaNodeId !== nodeId) {
                 return false;
