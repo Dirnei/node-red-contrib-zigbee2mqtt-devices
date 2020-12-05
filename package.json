@@ -19,7 +19,7 @@
             "brdige-log": "dist/bridge-log.js",
             "config": "dist/zigbee2mqtt-config.js",
             "devices-eurotronics": "dist/nodes/devices-eurotronic.js",
-            "devices-hue": "dist/nodes/devices-hue.js",
+            "devices-hue": "dist/nodes/hue-dimmer/devices-hue.js",
             "devices-ikea": "dist/nodes/devices-ikea.js",
             "devices-scenic": "dist/nodes/devices-scenic.js",
             "devices-sonoff": "dist/nodes/devices-sonoff.js",
