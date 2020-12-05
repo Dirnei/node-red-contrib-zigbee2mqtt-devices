@@ -29,7 +29,7 @@
             "non-z2m-devices-shelly-25": "dist/non-z2m-nodes/devices-shelly-25.js",
             "mqtt-config": "dist/non-z2m-nodes/mqtt-config.js",
             "ota": "dist/ota.js",
-            "override": "dist/override-nodes.js",
+            "override": "dist/nodes/override/override-nodes.js",
             "scenes": "dist/nodes/scenes.js",
             "sensors": "dist/nodes/sensors.js"
         }
