@@ -8,7 +8,7 @@ module.exports = function (RED) {
 
             if(broker === undefined || broker === null)
             {
-                res.end("{}");
+                res.end("{devices: []}");
                 return;
             }
 
@@ -18,7 +18,7 @@ module.exports = function (RED) {
             var model = decodeURI(req.params.model).toLowerCase();
             if (model !== "all" && model.includes(",")) {
                 model = model.split(",");
-            } 
+            }
             else if (model !== "all") {
                 model = [model];
             }
