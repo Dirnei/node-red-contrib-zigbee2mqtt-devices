@@ -70,9 +70,9 @@ module.exports = function (RED) {
 
         function publishState(index) {
             if (channel === 2) {
-                node.send({ paload: status.relay });
+                node.send({ payload: status.relay });
             } else {
-                node.send({ paload: status.relay[index] });
+                node.send({ payload: status.relay[index] });
             }
         }
 
@@ -98,7 +98,7 @@ module.exports = function (RED) {
                 msg = getOutputPayload(msg, 0, getNewState(0));
                 msg = getOutputPayload(msg, 1, getNewState(1));
             } else {
-                msg = getOutputPayload(msg, channel, getNewState(1));
+                msg = getOutputPayload(msg, channel, getNewState(channel));
             }
 
             node.send(utils.outputs.preapreOutputFor(this.wires.length - 1, msg));

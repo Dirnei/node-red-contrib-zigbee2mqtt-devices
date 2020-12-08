@@ -1,3 +1,7 @@
+# Install script to setup the project in a Test Node-RED docker container for development.
+# Tested under Windows and Linux (Ubuntu 20.04 with powershell)
+# Required software: powsershell, docker, docker-compose, nodejs, npm
+
 function copy-files {
     PARAM (
         $src,
@@ -14,9 +18,10 @@ function copy-files {
     $files = Get-ChildItem -Recurse $src | Where-Object { ! $_.PSIsContainer }
     foreach ($file in $files) {
         $relativeFile = $file.FullName.Substring($src.Path.Length)
-        $dest = Join-Path -Path $destRoot -ChildPath "$destFolder\$relativeFile"
+        $dest = Join-Path -Path $destRoot -ChildPath $destFolder
+        $dest = Join-Path -Path $dest -ChildPath $relativeFile
 
-        $folder = $dest.Substring(0, $dest.LastIndexOf("\"))
+        $folder = $dest.Substring(0, $dest.LastIndexOf([IO.Path]::DirectorySeparatorChar))
         if (-not (Test-Path $folder)) {
             New-Item -ItemType Directory $folder
         }
@@ -25,6 +30,11 @@ function copy-files {
         [System.IO.File]::Copy($file.FullName, $dest, $true);
     }
 }
+
+if (-not (Test-Path ".\debug\")) {
+    New-Item -ItemType Directory ".\debug"
+}
+
 
 if (-not (Test-Path ".\debug\package.json")) {
     $check = docker container inspect -f '{{.State.Running}}' "nodered_testing"
@@ -46,7 +56,7 @@ if (-not (Test-Path ".\debug\package.json")) {
 docker-compose down
 
 $origin = [Environment]::CurrentDirectory;
-$repoName = $origin.Split('\') | Select-Object -Last 1
+$repoName = $origin.Split([IO.Path]::DirectorySeparatorChar) | Select-Object -Last 1
 Write-Host "Name: $repoName"
 if (-not (Test-Path ".\debug\myModules\$repoName")) {
     Write-Output "Creating Path..."
