@@ -1,17 +1,25 @@
-module.exports = function (RED) {
-    const utils = require("../../lib/utils.js");
+import {MqttClient}                                                                                       from "mqtt";
+import {NodeAPI}                                                                                                                     from "node-red";
+import {MqttConfigCallback, MqttConfigCallbackMessage, MqttConfigCredentials, MqttConfigNode, MqttConfigNodeDef, MqttConfigSubsType} from "../types";
+
+module.exports = function (RED: NodeAPI) {
+    const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
 
-    function mqttConfig(config) {
+    // TODO: destructor für default value?
+    // function MqttConfigConstructor(this: MqttConfigNode, {name, protocol = "mqtt", broker, requireLogin = false}: MqttConfigNodeDef) {
+    function MqttConfigConstructor(this: MqttConfigNode, config: MqttConfigNodeDef) {
         RED.nodes.createNode(this, config);
-        var mqtt = require("mqtt");
+
+        // TODO: Type ?
+        const mqtt = require("mqtt");
         this.name = config.name;
         this.broker = config.protocol + "://" + config.broker;
         this.requireLogin = config.requireLogin;
-        var _subs = [];
-        var node = this;
+        const _subs: Array<MqttConfigSubsType> = [];
+        const node = this;
 
-        var options = {};
+        let options = {};
         if (node.requireLogin) {
             options = {
                 username: this.credentials.username,
@@ -19,12 +27,18 @@ module.exports = function (RED) {
             };
         }
 
-        var client = mqtt.connect(this.broker, options);
+        const client: MqttClient = mqtt.connect(this.broker, options);
         this.mqttClient = client;
 
-        this.isConnected = function () { return client.connected; };
-        this.isReconnecting = function () { return client.reconnecting; };
-        this.publish = function (topic, message) { client.publish(topic, message); };
+        this.isConnected = function () {
+            return client.connected;
+        };
+        this.isReconnecting = function () {
+            return client.reconnecting;
+        };
+        this.publish = function (topic, message) {
+            client.publish(topic, message);
+        };
         this.subscribeDevice = function (nodeId, topic, callback) {
             subscribeInternal(nodeId, topic, callback, true);
         };
@@ -34,10 +48,10 @@ module.exports = function (RED) {
             return true;
         };
         this.unsubscribe = function (nodeId) {
-            var sub = _subs.find(e => e.nodeId == nodeId);
+            const sub = _subs.find(e => e.nodeId == nodeId);
             if (sub) {
-                var topic = sub.topic;
-                var index = _subs.indexOf(sub);
+                const topic = sub.topic;
+                const index = _subs.indexOf(sub);
                 _subs.splice(index, 1);
                 if (!sub.isDevice && !_subs.some(s => s.topic == topic)) {
                     client.unsubscribe(sub.topic);
@@ -45,8 +59,8 @@ module.exports = function (RED) {
             }
         };
 
-        function subscribeInternal(nodeId, topic, callback, isDevice) {
-            var sub = _subs.find(e => e.nodeId == nodeId);
+        function subscribeInternal(nodeId: string, topic: string, callback: MqttConfigCallback, isDevice: boolean) {
+            let sub = _subs.find(e => e.nodeId == nodeId);
             if (sub) {
                 if (sub.topic !== topic) {
                     client.unsubscribe(sub.topic);
@@ -68,38 +82,48 @@ module.exports = function (RED) {
 
         client.on("message", function (topic, message) {
             try {
-                message = message.toString("utf8");
-                if (message.startsWith("{")) {
-                    message = JSON.parse(message);
+                // Zuerst prüfen ob uns der Topic überhaupt interessiert bevor wir den Buffer laden.
+                const subs = _subs.filter(e => compareTopic(e.topic, topic));
+
+                if (subs.length <= 0) {
+                    return;
                 }
 
-                var subs = _subs.filter(e => comapreTopic(e.topic, topic));
+                // TODO: Prüfe ob das JSON Object die nötigen Informationen besitzt um vom Typ "MqttConfigCallbackMessage" zu sein.
+                let payload: MqttConfigCallbackMessage = JSON.parse(message.toString("utf8"));
+
                 subs.forEach(e => {
                     try {
-                        e.callback(message, topic);
+                        e.callback(payload, topic);
                     } catch (err) {
                         console.log(err);
                     }
                 });
+
+                // let message = message.toString("utf8");
+                // if (message.startsWith("{")) {
+                //     message = JSON.parse(message);
+                // }
+
             } catch (err) {
                 node.error(topic + " - " + err);
             }
         });
 
-        function comapreTopic(subscriptionTopic, messageTopic) {
+        function compareTopic(subscriptionTopic: string, messageTopic: string) {
             if (subscriptionTopic === messageTopic) {
                 return true;
             }
 
             if (subscriptionTopic.endsWith("+")) {
-                var subSegments = subscriptionTopic.split("/");
-                var topicSegments = messageTopic.split("/");
+                const subSegments = subscriptionTopic.split("/");
+                const topicSegments = messageTopic.split("/");
 
                 if (subSegments.length === topicSegments.length) {
                     subSegments.pop();
                     topicSegments.pop();
 
-                    for (var i = 0; i < subSegments.length; i++) {
+                    for (let i = 0; i < subSegments.length; i++) {
                         if (subSegments[i] !== topicSegments[i]) {
                             return false;
                         }
@@ -122,10 +146,7 @@ module.exports = function (RED) {
         });
     }
 
-    RED.nodes.registerType("mqtt-config", mqttConfig, {
-        credentials: {
-            username: { type: "text" },
-            password: { type: "password" }
-        }
+    RED.nodes.registerType("mqtt-config", MqttConfigConstructor, {
+        credentials: MqttConfigCredentials
     });
 };

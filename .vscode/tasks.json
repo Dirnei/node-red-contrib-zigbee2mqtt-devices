@@ -3,7 +3,7 @@
     "tasks": [
 		{
 			"label": "node-red deploy",
-			"command": "./install.ps1",
+			"command": "npm run builddocker",
 			"type": "shell",
 			"problemMatcher": [],
 			"group": {

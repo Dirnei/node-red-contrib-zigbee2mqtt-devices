@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable indent */
 module.exports = function (RED) {
-    const utils = require("../lib/utils.js");
+    const utils = require("./lib/utils.js");
     const bavaria = utils.bavaria();
 
     function genericLamp(config) {

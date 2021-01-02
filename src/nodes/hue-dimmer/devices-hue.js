@@ -1,5 +1,5 @@
 module.exports = function (RED) {
-    const utils = require("../lib/utils.js");
+    const utils = require("../../lib/utils.js");
     const bavaria = utils.bavaria();
 
     function hueDimmerSwitch(config) {
