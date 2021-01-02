@@ -31,6 +31,15 @@
         width: 9%;
         display: inline;
     }
+
+    .zigbee2mqtt-error-box {
+        border: 1px solid rgb(255, 0, 0);
+        margin: 10px auto;
+        width: 380px;
+        padding: 7px;
+        color: white;
+        background: rgb(244, 67, 54);
+    }
 </style>
 
 <script type="text/javascript">
@@ -97,7 +106,7 @@
                         g = "0" + g;
                     if (b.length == 1)
                         b = "0" + b;
- 
+
                     return "#" + r + g + b;
                 }
             },
@@ -173,11 +182,11 @@
                 }
             },
             devices: {
-                loadDevices: function(selectedDevice, deviceType, vendor, model, emptyOption = false, inputId = "#node-input-deviceName"){
+                loadDevices: function (selectedDevice, deviceType, vendor, model, emptyOption = false, inputId = "#node-input-deviceName") {
                     var bridgeId = $("#node-input-bridge").val().replace(".", "_");
                     $.getJSON(`/z2m/devices/${bridgeId}/${deviceType}/${vendor}/${model}`, function (data) {
                         $(inputId).empty();
-                        if(emptyOption === true){
+                        if (emptyOption === true) {
                             $(inputId).append("<option disabled selected value> -- select an option -- </option>");
                         }
 

@@ -85,8 +85,8 @@
                 }
             })
 
-            $("#node-config-input-deviceName").change(function(){
-                if($(this).val() !== "---"){
+            $("#node-config-input-deviceName").change(function () {
+                if ($(this).val() !== "---") {
                     $("#select-empty-option").remove();
                 }
             });
@@ -95,11 +95,20 @@
                 var bridgeId = $("#node-config-input-bridge").val().replace(".", "_");
                 $.getJSON(window.location.pathname + 'z2m/devices/' + bridgeId + '/router/all/all', function (data) {
                     $("#node-config-input-deviceName").empty();
+                    console.log(data);
+
+                    if (!data.success) {
+                        $("#device-error").html(data.message);
+                        $("#device-error").show();
+                    } else {
+                        $("#device-error").hide();
+                    }
+
                     data.devices.forEach(e => {
                         $("#node-config-input-deviceName").append("<option>" + e.friendly_name + "</option>");
                     });
-                    
-                    if(deviceName === "---"){
+
+                    if (deviceName === "---") {
                         $("#node-config-input-deviceName").append("<option value=\"---\" id=\"select-empty-option\"> Select device </option>");
                     }
 
@@ -122,6 +131,8 @@
     <div class="form-row">
         <label for="node-config-input-deviceName"><i class="fa fa-tag"></i> Device</label>
         <select id="node-config-input-deviceName"></select>
+        <button type="button" class="red-ui-button"><i class="fa fa-search"></i> refresh</button>
+        <div id="device-error" class="zigbee2mqtt-error-box"></div>
     </div>
     <div class="form-row">
         <label for="node-config-input-brightnessSupport"><i class="fa fa-tag"></i> Dimmable</label>
