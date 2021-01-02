@@ -49,28 +49,22 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ## Changelog 
 
-### v0.16.1
+### Release: `0.17.0`
 
-- Fixed Color Temperature change when sending an action command
-- Fixed a bug when brightness was a empty string
 
-### v0.16.0
+#### Features:
 
-- Added new Ikea Dimmer node, which supports the models ICTC-G-1 and E1743
-- Added node for Eurotronic Spirit Thermostat
-- Fixed Devices not listed when Node-RED is using httpAdminRoot setting
+- Added the **bridge log node** to provide an easy way to receive and filter logs that are published into the `zigbee2mqtt/bridge/log` topic.
+- Added `Error-Notification` to the `device-list` in the `device-config-node` for better debugging the problem of the empty device list. (Will be added to all device lists if proven helpfull)
 
-### v0.15.2
+#### Bug fixes:
 
-- Fixed [ota-update](docs/nodes/ota-node.md) node. It was not working since v0.14.0
+- Fixed typo in Shelly 2.5 node.
+- Fixed toggle relay in Shelly 2.5 node.
 
-### v0.15.0 / 0.15.1
+#### Behind the scenes
 
-- Added option "Repeatedly send hold message until button released" to [button-siwtch](docs/nodes/button-switch.md)
-- Added fallback for legacy payload of Ikea dimmer
-
-> When installed right after release the depenceny mqtt (v4.2.2) got also released which was not able to connect. I fixed the version to 4.2.1 for now and published again.
-
+- Changed code to TypeScript
 
 ## You want to contribute?
 
