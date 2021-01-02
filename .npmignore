@@ -1,6 +1,5 @@
 .*/
 debug
-examples
 install.ps1
 docker-compose.yml
 src/
