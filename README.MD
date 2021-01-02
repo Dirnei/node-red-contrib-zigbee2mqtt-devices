@@ -49,8 +49,13 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ## Changelog 
 
-### Release: `0.17.0`
+### Release: `0.17.1`
 
+#### Bugfixes
+
+- Fixed npm package. Due to the change to TypeScript all nodes were broken because it was not build before publish.
+
+### Release: `0.17.0`
 
 #### Features:
 
