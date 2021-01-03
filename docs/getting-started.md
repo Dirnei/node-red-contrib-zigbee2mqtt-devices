@@ -470,9 +470,14 @@ Concept is as follows: Modify the payload. Send message node does the work
     ```
 
     Message object after the second generic lamp.
+
+    ``` json
+    todo
+    ```
+
     //ToDo: Add explanation and dump of messages
 
-    => As you can see - the two devices are now in the payload.
+    As you can see, the two devices are now in the payload. The send messages will take both devices and .... send an individual messages to Z2M via MQTT.
 
 7. **Override nodes**
 
