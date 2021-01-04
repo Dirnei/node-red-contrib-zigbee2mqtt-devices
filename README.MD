@@ -4,10 +4,6 @@
 [![img](https://img.shields.io/badge/Node--RED-node--red--contrib--zigbee2mqtt--devices-%23aa4444?style=for-the-badge)](https://flows.nodered.org/node/node-red-contrib-zigbee2mqtt-devices)
 [![GitHub license](https://img.shields.io/github/license/Dirnei/node-red-contrib-zigbee2mqtt-devices?style=for-the-badge)](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices/blob/master/LICENSE)
 
-## !!! IMPORTANT MESSAGE !!!
-
-Current release is not working with z2m 1.17.0 due to changes in topics and payload. I'm currently working on a hotfix to fix this issue. 
-
 ## Available Nodes
 
 Many nodes are available right now, and there are still new node ideas that will be added in the near future. Here is a list of the currently available ones:
@@ -52,6 +48,10 @@ Many nodes are available right now, and there are still new node ideas that will
 Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the documentation is not finished :)
 
 ## Changelog 
+
+### Release: `0.17.2`
+
+- Added support for z2m Version `1.17.0`
 
 ### Release: `0.17.1`
 

@@ -1,6 +1,6 @@
 import {MqttClient}                                                                                       from "mqtt";
 import {NodeAPI}                                                                                                                     from "node-red";
-import {MqttConfigCallback, MqttConfigCallbackMessage, MqttConfigCredentials, MqttConfigNode, MqttConfigNodeDef, MqttConfigSubsType} from "../types";
+import {MqttConfigCallback, MqttConfigCredentials, MqttConfigNode, MqttConfigNodeDef, MqttConfigSubsType} from "../types";
 
 module.exports = function (RED: NodeAPI) {
     const utils = require("../lib/utils.js");
@@ -13,6 +13,7 @@ module.exports = function (RED: NodeAPI) {
 
         // TODO: Type ?
         const mqtt = require("mqtt");
+        
         this.name = config.name;
         this.broker = config.protocol + "://" + config.broker;
         this.requireLogin = config.requireLogin;
@@ -89,8 +90,7 @@ module.exports = function (RED: NodeAPI) {
                     return;
                 }
 
-                // TODO: Prüfe ob das JSON Object die nötigen Informationen besitzt um vom Typ "MqttConfigCallbackMessage" zu sein.
-                let payload: MqttConfigCallbackMessage = JSON.parse(message.toString("utf8"));
+                let payload = JSON.parse(message.toString("utf8"));
 
                 subs.forEach(e => {
                     try {

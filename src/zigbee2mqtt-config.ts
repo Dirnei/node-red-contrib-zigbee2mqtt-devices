@@ -1,5 +1,18 @@
-import { NodeInitializer }                                                                                                                                              from "node-red";
-import {BridgeConfigCredentials, BridgeConfigNode, BridgeConfigNodeDef, DeviceConfigNode, DeviceConfigNodeDef, DeviceStatusCallback, MqttConfigNode, OtaStatusCallback} from "./types";
+import { throws } from "assert";
+import { type } from "jquery";
+import { NodeInitializer } from "node-red";
+import {
+    BridgeConfigCredentials,
+    BridgeConfigNode,
+    BridgeConfigNodeDef,
+    DeviceConfigNode,
+    DeviceConfigNodeDef,
+    DeviceStatusCallback,
+    MqttConfigNode,
+    OtaStatusCallback,
+    Z2mDevice,
+    Z2mDeviceContextObsolete
+} from "./types";
 
 const nodeInit: NodeInitializer = (RED): void => {
 
@@ -48,7 +61,11 @@ const nodeInit: NodeInitializer = (RED): void => {
             emitter.on(event, listener);
         };
 
-        this.getDeviceList = function () {
+        this.getDeviceList = function (callback) {
+            if (this.knownDevices.length === 0 && callback !== undefined) {
+                callback();
+            }
+
             return this.knownDevices;
         };
 
@@ -57,7 +74,7 @@ const nodeInit: NodeInitializer = (RED): void => {
         };
 
         this.publishDevice = function (device, msg) {
-            if(typeof msg !== "string"){
+            if (typeof msg !== "string") {
                 msg = JSON.stringify(msg);
             }
 
@@ -110,7 +127,7 @@ const nodeInit: NodeInitializer = (RED): void => {
             mqttNode.subscribe(node.id + 1, `${node.baseTopic}/bridge/log`, (msg) => {
                 switch (msg.type) {
                     case "devices":
-                        msg.message.forEach(device => {
+                        msg.message.forEach((device: Z2mDeviceContextObsolete) => {
                             const d = node.knownDevices.find(e => {
                                 return e.ieeeAddr === device.ieeeAddr;
                             });
@@ -141,7 +158,59 @@ const nodeInit: NodeInitializer = (RED): void => {
                 emitter.emit("bridge-log", msg);
             });
 
-            mqttNode.publish(`${config.baseTopic}/bridge/config/devices`, "{}");
+            mqttNode.subscribe(node.id + 2, `${node.baseTopic}/bridge/devices`, (msg) => {
+                node.warn(msg);
+
+                msg.forEach((device: Z2mDevice) => {
+                    if (device.definition === null) {
+                        if (device.type === "Coordinator") {
+                            device.definition = {
+                                model: "Coordinator",
+                                vendor: "---",
+                            }
+                        } else {
+                            device.definition = {
+                                model: "---",
+                                vendor: "---",
+                            }
+                        }
+                    }
+
+                    const d = node.knownDevices.find(e => {
+                        return e.ieeeAddr === device.ieee_address;
+                    });
+
+                    if (d) {
+                        // replace already known device
+                        let dev: Z2mDeviceContextObsolete = {
+                            friendly_name: device.friendly_name,
+                            ieeeAddr: device.ieee_address,
+                            model: device.definition.model,
+                            vendor: device.definition.vendor,
+                            type: device.type
+                        };
+
+                        const index = node.knownDevices.indexOf(d);
+                        node.knownDevices.splice(index, 1, dev);
+                    } else {
+                        let dev: Z2mDeviceContextObsolete = {
+                            friendly_name: device.friendly_name,
+                            ieeeAddr: device.ieee_address,
+                            model: device.definition.model,
+                            vendor: device.definition.vendor,
+                            type: device.type
+                        };
+
+                        // new device
+                        node.knownDevices.push(dev);
+
+                    }
+                });
+
+                globalContext.set(`knownDevices_${node.id.replace(".", "_")}`, node.knownDevices)
+            });
+
+            //mqttNode.publish(`${config.baseTopic}/bridge/config/devices`, "{}");
             bavaria.observer.notify(node.id + "_connected");
         });
 
@@ -152,7 +221,7 @@ const nodeInit: NodeInitializer = (RED): void => {
         });
     }
 
-    RED.nodes.registerType("zigbee2mqtt-bridge-config", BridgeConfigConstructor,  {
+    RED.nodes.registerType("zigbee2mqtt-bridge-config", BridgeConfigConstructor, {
         credentials: BridgeConfigCredentials,
     });
 };

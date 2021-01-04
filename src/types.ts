@@ -1,5 +1,5 @@
-import {MqttClient}                     from "mqtt";
-import {Node, NodeCredentials, NodeDef} from "node-red";
+import { MqttClient } from "mqtt";
+import { Node, NodeCredentials, NodeDef } from "node-red";
 
 export interface DeviceConfigOptions {
     name: string,
@@ -15,7 +15,7 @@ export interface DeviceConfigOptions {
     refreshTopic: string
 }
 
-export interface DeviceConfigNodeDef extends NodeDef, DeviceConfigOptions {}
+export interface DeviceConfigNodeDef extends NodeDef, DeviceConfigOptions { }
 
 export interface DeviceConfigNode extends Node {
     bridge: string
@@ -57,8 +57,8 @@ export interface BridgeConfigNode extends Node<BridgeConfigCredentials> {
     isReconnecting: MqttConfigNode["isReconnecting"]
     baseTopic: string
     publish: MqttConfigNode["publish"]
-    knownDevices: Array<Zigbee2mqttDevice>
-    getDeviceList: () => Array<Zigbee2mqttDevice>
+    knownDevices: Array<Z2mDeviceContextObsolete>
+    getDeviceList: (callback: () => void) => Array<Z2mDeviceContextObsolete>
     subscribeDevice: MqttConfigNode["subscribeDevice"]
     publishDevice: (device: string, msg: string | any) => void
     subscribe: MqttConfigNode["subscribe"]
@@ -68,18 +68,11 @@ export interface BridgeConfigNode extends Node<BridgeConfigCredentials> {
     registerOtaNode: (nodeId: string, otaStatusCallback: OtaStatusCallback, deviceStatusCallback: DeviceStatusCallback) => void
 }
 
-export interface BridgeConfigNodeDef extends NodeDef, BridgeConfigOptions {}
+export interface BridgeConfigNodeDef extends NodeDef, BridgeConfigOptions { }
 
 
-export type OtaStatusMessage = {
-    device: MqttConfigCallbackMessageMeta['device']
-    status: MqttConfigCallbackMessageMeta['status']
-    progress: MqttConfigCallbackMessageMeta['progress']
-    message: Array<Zigbee2mqttDevice>
-}
-
-export type OtaStatusCallback = (msg: OtaStatusMessage) => void
-export type DeviceStatusCallback = (deviceName: string, msg: MqttConfigCallbackMessage) => void
+export type OtaStatusCallback = (msg: any) => void
+export type DeviceStatusCallback = (deviceName: string, msg: any) => void
 
 
 
@@ -118,29 +111,33 @@ export interface MqttConfigNode extends Node<MqttConfigCredentials> {
     unsubscribe: (nodeId: string) => void
 }
 
-export type Zigbee2mqttDevice = {
-    ieeeAddr: string
-}
+export interface MqttConfigNodeDef extends NodeDef, MqttConfigOptions { }
 
-export interface MqttConfigNodeDef extends NodeDef, MqttConfigOptions {}
-
-export type MqttConfigCallbackMessageMeta = {
-    device: unknown
-    status: unknown
-    progress: unknown
-}
-
-export type MqttConfigCallbackMessage = {
-    type: "devices" | "groups" | "ota_update"
-    message: Array<Zigbee2mqttDevice>
-    meta: MqttConfigCallbackMessageMeta
-    action?: any
-}
-export type MqttConfigCallback = (message: MqttConfigCallbackMessage, topic: string) => void
+export type MqttConfigCallback = (message: any, topic: string) => void
 
 export type MqttConfigSubsType = {
     nodeId: string,
     topic: string,
     callback: MqttConfigCallback
     isDevice: boolean
+}
+
+export type Z2mDeviceContextObsolete = {
+    ieeeAddr: string,
+    friendly_name: string,
+    model: string,
+    vendor: string
+    type: string
+}
+
+export type Z2mDevice = {
+    type : string,
+    ieee_address: string,
+    friendly_name: string,
+    definition: Z2mDeviceDefinition,
+}
+
+export type Z2mDeviceDefinition = {
+    model: string,
+    vendor: string
 }
