@@ -29,8 +29,6 @@ export interface DeviceConfigNode extends Node {
     refreshTopic: string
 }
 
-
-
 export interface BridgeConfigOptions {
 
 }
@@ -40,18 +38,17 @@ export interface BridgeConfigCredentials {
     password: string;
 }
 
-
 export const BridgeConfigCredentials: NodeCredentials<BridgeConfigCredentials> = {
     username: { type: "text" },
     password: { type: "password" },
 };
-
 
 export interface BridgeConfigOptions {
     name: string
     mqtt: string
     baseTopic: string // default "zigbee2mqtt"
 }
+
 export interface BridgeConfigNode extends Node<BridgeConfigCredentials> {
     isConnected: MqttConfigNode["isConnected"]
     isReconnecting: MqttConfigNode["isReconnecting"]
@@ -70,20 +67,13 @@ export interface BridgeConfigNode extends Node<BridgeConfigCredentials> {
 
 export interface BridgeConfigNodeDef extends NodeDef, BridgeConfigOptions { }
 
-
 export type OtaStatusCallback = (msg: any) => void
 export type DeviceStatusCallback = (deviceName: string, msg: any) => void
-
-
-
-
-
 
 export interface MqttConfigCredentials {
     username: string;
     password: string;
 }
-
 
 export const MqttConfigCredentials: NodeCredentials<MqttConfigCredentials> = {
     username: { type: "text" },
