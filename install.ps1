@@ -66,6 +66,7 @@ if (-not (Test-Path ".\debug\myModules\$repoName")) {
 Write-Output "Copy files..."
 
 copy-files -src '.\dist' -destRoot ".\debug\myModules\$repoName" -destFolder "dist"
+copy-files -src '.\examples' -destRoot ".\debug\myModules\$repoName" -destFolder "examples"
 
 $packageModified = $false 
 $destRoot = Resolve-Path ".\debug\myModules\$repoName"
