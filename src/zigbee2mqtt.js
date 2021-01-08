@@ -63,7 +63,7 @@ module.exports = function (RED) {
             });
         }
 
-        bavaria.observer.register(bridgeNode.id + "_connected", function (_msg) {
+        let regId1 = bavaria.observer.register(bridgeNode.id + "_connected", function (_msg) {
             if (deviceConfig.genericMqttDevice !== true) {
                 bridgeNode.refreshDevice(deviceConfig.deviceName);
             }
@@ -75,7 +75,7 @@ module.exports = function (RED) {
             }
         }
 
-        bavaria.observer.register(topic + "_routeError", function (_msg) {
+        let regId2 = bavaria.observer.register(topic + "_routeError", function (_msg) {
             var status = { fill: "red", shape: "dot", text: "route error" };
             nodeContext.set(getContextName(), {
                 status: status
@@ -92,6 +92,8 @@ module.exports = function (RED) {
         }
 
         node.on("close", function () {
+            bavaria.observer.unregister(regId1);
+            bavaria.observer.unregister(regId2);
             nodeContext.set(getContextName(), undefined);
             bridgeNode.unsubscribe(node.id);
         });
@@ -147,7 +149,7 @@ module.exports = function (RED) {
         }
         node.status({ fill: "blue", text: "not connected" });
 
-        bavaria.observer.register(bridgeNode.id + "_connected", function (_msg) {
+        let regId = bavaria.observer.register(bridgeNode.id + "_connected", function (_msg) {
             node.status({ fill: "green", text: "connected" });
         });
 
@@ -241,6 +243,10 @@ module.exports = function (RED) {
                     sendNextMessage();
                 }
             }
+        });
+
+        node.on("close", ()=>{
+            bavaria.observer.unregister(regId);
         });
     }
     RED.nodes.registerType("send-messages", sendMessages);
@@ -374,7 +380,7 @@ module.exports = function (RED) {
             if (deviceNode.genericMqttDevice === true) {
                 bridgeNode.publish(deviceNode.refreshTopic, "{}");
             } else {
-                bridgeNode.refreshDevice(deviceNode.deviceName);
+                bridgeNode.refreshDevice(deviceNode.deviceName, true);
             }
         });
     }

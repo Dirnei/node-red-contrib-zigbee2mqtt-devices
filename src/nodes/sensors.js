@@ -9,7 +9,7 @@ module.exports = function (RED) {
         var node = this;
 
         utils.setConnectionState(bridgeNode, node);
-        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+        let regId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
 
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
@@ -20,6 +20,10 @@ module.exports = function (RED) {
                 }
             });
         });
+
+        node.on("close", ()=>{
+            bavaria.observer.unregister(regId);
+        });
     }
     RED.nodes.registerType("contact-sensor", contactSensor);
 
@@ -29,7 +33,7 @@ module.exports = function (RED) {
         var node = this;
 
         utils.setConnectionState(bridgeNode, node);
-        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+        let regId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
 
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
@@ -39,6 +43,10 @@ module.exports = function (RED) {
                     node.send([null, { payload: message }]);
                 }
             });
+        });
+
+        node.on("close", ()=>{
+            bavaria.observer.unregister(regId);
         });
     }
     RED.nodes.registerType("occupancy-sensor", occupancySensor);
