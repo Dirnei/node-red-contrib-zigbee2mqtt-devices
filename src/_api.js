@@ -68,7 +68,7 @@ module.exports = function (RED) {
                 }
 
                 console.log(e);
-                console.log("_______________________________________________________________"):
+                console.log("_______________________________________________________________");
                 var dt = e.type.toLowerCase();
                 var dv = "all";
                 var dm = "all";
