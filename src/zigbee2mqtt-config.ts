@@ -207,74 +207,7 @@ const nodeInit: NodeInitializer = (RED): void => {
             })
         }
 
-        // const subId = bavaria.observer.register(`${mqttNode.id}_connected`, function (_msg: string) {
-        //     // mqttNode.subscribe(node.id, `${node.baseTopic}/+`, (msg, topic) => {
-        //     //     const deviceName = topic.substr(node.baseTopic.length + 1);
-        //     //     bavaria.observer.notify(deviceName, msg);
-        //     //     otaDeviceCallback(deviceName, msg);
-        //     // });
-
-        //     function handleDeviceMessage(msg: Array<Z2mDeviceEntry>) {
-        //         msg.forEach(deviceEntry => {
-        //             node.warn(deviceEntry);
-        //         })
-        //     }
-
-        //     // mqttNode.subscribe(node.id + 2, `${node.baseTopic}/bridge/devices`, (msg) => {
-        //     //     handleDeviceMessage(msg);
-
-        //     //     msg.forEach((device: Z2mDevice) => {
-        //     //         if (device.definition === null) {
-        //     //             if (device.type === "Coordinator") {
-        //     //                 device.definition = {
-        //     //                     model: "Coordinator",
-        //     //                     vendor: "---",
-        //     //                 }
-        //     //             } else {
-        //     //                 device.definition = {
-        //     //                     model: "---",
-        //     //                     vendor: "---",
-        //     //                 }
-        //     //             }
-        //     //         }
-
-        //     //         const d = node.knownDevices.find(e => {
-        //     //             return e.ieeeAddr === device.ieee_address;
-        //     //         });
-
-        //     //         if (d) {
-        //     //             // replace already known device
-        //     //             let dev: Z2mDeviceContextObsolete = {
-        //     //                 friendly_name: device.friendly_name,
-        //     //                 ieeeAddr: device.ieee_address,
-        //     //                 model: device.definition.model,
-        //     //                 vendor: device.definition.vendor,
-        //     //                 type: device.type
-        //     //             };
-
-        //     //             const index = node.knownDevices.indexOf(d);
-        //     //             node.knownDevices.splice(index, 1, dev);
-        //     //         } else {
-        //     //             let dev: Z2mDeviceContextObsolete = {
-        //     //                 friendly_name: device.friendly_name,
-        //     //                 ieeeAddr: device.ieee_address,
-        //     //                 model: device.definition.model,
-        //     //                 vendor: device.definition.vendor,
-        //     //                 type: device.type
-        //     //             };
-
-        //     //             // new device
-        //     //             node.knownDevices.push(dev);
-
-        //     //         }
-        //     //     });
-
-        //     //     globalContext.set(`knownDevices_${node.id.replace(".", "_")}`, node.knownDevices)
-        //     // });
-
-        //     //mqttNode.publish(`${config.baseTopic}/bridge/config/devices`, "{}");
-        //     bavaria.observer.notify(node.id + "_connected");
-        // });
+       
 
         node.on("close", function (done: () => void) {
             broker.deregister(node, done);
