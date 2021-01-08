@@ -1,6 +1,6 @@
 import { throws } from "assert";
 import { type } from "jquery";
-import { NodeInitializer } from "node-red";
+import { NodeInitializer, NodeMessage } from "node-red";
 import {
     BridgeConfigCredentials,
     BridgeConfigNode,
@@ -9,10 +9,28 @@ import {
     DeviceConfigNodeDef,
     DeviceStatusCallback,
     MqttConfigNode,
+    NodeMqttBroker,
+    NodeMqttMessage,
     OtaStatusCallback,
     Z2mDevice,
     Z2mDeviceContextObsolete
 } from "./types";
+
+import {
+    Z2mDeviceDefinition,
+    Z2mDeviceEntry,
+    Z2mDeviceExposesBase,
+    Z2mDeviceExposesFeatures,
+    Z2mDeviceListProperty,
+    Z2mDeviceProperty,
+    Z2mDeviceRangeProperty,
+    Z2mDeviceStepableProperty,
+    Z2mDeviceSwitchableProperty
+} from "./device-types"
+
+import {
+    MqttSubscription
+} from "./lib/mqtt";
 
 const nodeInit: NodeInitializer = (RED): void => {
 
@@ -40,26 +58,40 @@ const nodeInit: NodeInitializer = (RED): void => {
     function BridgeConfigConstructor(this: BridgeConfigNode, config: BridgeConfigNodeDef) {
         RED.nodes.createNode(this, config);
 
-
         const EventEmitter = require("events");
         const emitter = new EventEmitter();
+        const subscriptions: { [id: string]: Array<MqttSubscription> } = {};
 
         const node = this;
-        const mqttNode = RED.nodes.getNode(config.mqtt) as MqttConfigNode;
+        const broker = RED.nodes.getNode(config.broker) as NodeMqttBroker;
         const globalContext = node.context().global;
+
+        broker.register(this);
+        broker.subscribe(`${config.baseTopic}/#`, 0, (topic, payload, packet) => {
+            for (let key in subscriptions) {
+                subscriptions[key].forEach(sub => {
+                    sub.invokeIfMatch(topic, payload.toString("utf8"));
+                });
+            }
+        }, this.id);
 
         this.name = config.name;
         this.baseTopic = config.baseTopic;
 
-        this.isConnected = mqttNode.isConnected;
-        this.isReconnecting = mqttNode.isReconnecting;
-        this.publish = mqttNode.publish;
-        this.knownDevices = globalContext.get(`knownDevices_${node.id.replace(".", "_")}`) as BridgeConfigNode["knownDevices"] || [];
+        this.isConnected = () => broker.connected;
+        this.publish = (topic, payload) => {
+            let msg: NodeMqttMessage = {
+                qos: 0,
+                retain: false,
+                topic: topic,
+                payload: payload
+            }
 
-        // @ts-ignore FIXME: hmmmm
-        this.on = function (event, listener) {
-            emitter.on(event, listener);
+            broker.publish(msg);
+            node.warn(payload);
         };
+
+        this.knownDevices = globalContext.get(`knownDevices_${node.id.replace(".", "_")}`) as BridgeConfigNode["knownDevices"] || [];
 
         this.getDeviceList = function (callback) {
             if (this.knownDevices.length === 0 && callback !== undefined) {
@@ -70,7 +102,7 @@ const nodeInit: NodeInitializer = (RED): void => {
         };
 
         this.subscribeDevice = function (nodeId, device, callback) {
-            mqttNode.subscribeDevice(nodeId, `${node.baseTopic}/${device}`, callback);
+            this.subscribe(nodeId, `${node.baseTopic}/${device}`, callback, true);
         };
 
         this.publishDevice = function (device, msg) {
@@ -78,11 +110,25 @@ const nodeInit: NodeInitializer = (RED): void => {
                 msg = JSON.stringify(msg);
             }
 
-            mqttNode.publish(`${node.baseTopic}/${device}/set`, msg);
+            this.publish(`${node.baseTopic}/${device}/set`, msg);
         };
 
-        this.subscribe = mqttNode.subscribe;
-        this.unsubscribe = mqttNode.unsubscribe;
+        this.subscribe = (nodeId, topic, callback, jsonPayload = true) => {
+            if (!topic.startsWith(node.baseTopic)) {
+                node.error("Can't subscribe to " + topic);
+                return;
+            }
+
+            if (!(nodeId in subscriptions)) {
+                subscriptions[nodeId] = [];
+            }
+
+            subscriptions[nodeId].push(new MqttSubscription(topic, jsonPayload, callback));
+        };
+        this.unsubscribe = (nodeId) => {
+
+        };
+
         this.setDeviceState = (device, payload) => {
 
             if (device !== undefined && device !== "") {
@@ -96,9 +142,9 @@ const nodeInit: NodeInitializer = (RED): void => {
             }
         };
 
-        this.refreshDevice = function (deviceName) {
-            if (deviceName !== "" && deviceName !== "---") {
-                mqttNode.publish(`${node.baseTopic}/${deviceName}/get`, `{"state": ""}`);
+        this.refreshDevice = function (deviceName, force) {
+            if (deviceName !== "" && deviceName !== "---" && (config.allowDeviceStatusRefresh || force)) {
+                this.publish(`${node.baseTopic}/${deviceName}/get`, `{"state": ""}`)
             }
         };
 
@@ -117,107 +163,94 @@ const nodeInit: NodeInitializer = (RED): void => {
             return true;
         };
 
-        const subId = bavaria.observer.register(`${mqttNode.id}_connected`, function (_msg: string) {
-            mqttNode.subscribe(node.id, `${node.baseTopic}/+`, (msg, topic) => {
-                const deviceName = topic.substr(node.baseTopic.length + 1);
-                bavaria.observer.notify(deviceName, msg);
-                otaDeviceCallback(deviceName, msg);
-            });
-
-            mqttNode.subscribe(node.id + 1, `${node.baseTopic}/bridge/log`, (msg) => {
-                switch (msg.type) {
-                    case "devices":
-                        msg.message.forEach((device: Z2mDeviceContextObsolete) => {
-                            const d = node.knownDevices.find(e => {
-                                return e.ieeeAddr === device.ieeeAddr;
-                            });
-
-                            if (d) {
-                                // replace already known device
-                                const index = node.knownDevices.indexOf(d);
-                                node.knownDevices.splice(index, 1, device);
-                            } else {
-                                // new device
-                                node.knownDevices.push(device);
-                            }
-                        });
-
-                        globalContext.set(`knownDevices_${node.id.replace(".", "_")}`, node.knownDevices);
-                        break;
-                    case "ota_update":
-                        otaCallback({
-                            device: msg.meta.device,
-                            status: msg.meta.status,
-                            progress: msg.meta.progress,
-                            message: msg.message,
-                        });
-                        break;
-                    case "groups": break;
+        if (config.enabledLogging === true) {
+            this.subscribe(node.id, `${config.baseTopic}/bridge/logging`, (message) => {
+                node.error(message);
+                if (message.level.startsWith("warn")) {
+                    node.warn(message.message);
+                } else if (message.level.startsWith("err")) {
+                    node.error(message.message);
                 }
-
-                emitter.emit("bridge-log", msg);
             });
+        }
 
-            mqttNode.subscribe(node.id + 2, `${node.baseTopic}/bridge/devices`, (msg) => {
-                node.warn(msg);
+        this.subscribe(node.id, `${config.baseTopic}/bridge/state`, (message) => {
+            if (message === "online") {
+                bavaria.observer.notify(node.id + "_connected");
+            }
+        }, false);
 
-                msg.forEach((device: Z2mDevice) => {
-                    if (device.definition === null) {
-                        if (device.type === "Coordinator") {
-                            device.definition = {
-                                model: "Coordinator",
-                                vendor: "---",
-                            }
-                        } else {
-                            device.definition = {
-                                model: "---",
-                                vendor: "---",
-                            }
-                        }
-                    }
+        // const subId = bavaria.observer.register(`${mqttNode.id}_connected`, function (_msg: string) {
+        //     // mqttNode.subscribe(node.id, `${node.baseTopic}/+`, (msg, topic) => {
+        //     //     const deviceName = topic.substr(node.baseTopic.length + 1);
+        //     //     bavaria.observer.notify(deviceName, msg);
+        //     //     otaDeviceCallback(deviceName, msg);
+        //     // });
 
-                    const d = node.knownDevices.find(e => {
-                        return e.ieeeAddr === device.ieee_address;
-                    });
+        //     function handleDeviceMessage(msg: Array<Z2mDeviceEntry>) {
+        //         msg.forEach(deviceEntry => {
+        //             node.warn(deviceEntry);
+        //         })
+        //     }
 
-                    if (d) {
-                        // replace already known device
-                        let dev: Z2mDeviceContextObsolete = {
-                            friendly_name: device.friendly_name,
-                            ieeeAddr: device.ieee_address,
-                            model: device.definition.model,
-                            vendor: device.definition.vendor,
-                            type: device.type
-                        };
+        //     // mqttNode.subscribe(node.id + 2, `${node.baseTopic}/bridge/devices`, (msg) => {
+        //     //     handleDeviceMessage(msg);
 
-                        const index = node.knownDevices.indexOf(d);
-                        node.knownDevices.splice(index, 1, dev);
-                    } else {
-                        let dev: Z2mDeviceContextObsolete = {
-                            friendly_name: device.friendly_name,
-                            ieeeAddr: device.ieee_address,
-                            model: device.definition.model,
-                            vendor: device.definition.vendor,
-                            type: device.type
-                        };
+        //     //     msg.forEach((device: Z2mDevice) => {
+        //     //         if (device.definition === null) {
+        //     //             if (device.type === "Coordinator") {
+        //     //                 device.definition = {
+        //     //                     model: "Coordinator",
+        //     //                     vendor: "---",
+        //     //                 }
+        //     //             } else {
+        //     //                 device.definition = {
+        //     //                     model: "---",
+        //     //                     vendor: "---",
+        //     //                 }
+        //     //             }
+        //     //         }
 
-                        // new device
-                        node.knownDevices.push(dev);
+        //     //         const d = node.knownDevices.find(e => {
+        //     //             return e.ieeeAddr === device.ieee_address;
+        //     //         });
 
-                    }
-                });
+        //     //         if (d) {
+        //     //             // replace already known device
+        //     //             let dev: Z2mDeviceContextObsolete = {
+        //     //                 friendly_name: device.friendly_name,
+        //     //                 ieeeAddr: device.ieee_address,
+        //     //                 model: device.definition.model,
+        //     //                 vendor: device.definition.vendor,
+        //     //                 type: device.type
+        //     //             };
 
-                globalContext.set(`knownDevices_${node.id.replace(".", "_")}`, node.knownDevices)
-            });
+        //     //             const index = node.knownDevices.indexOf(d);
+        //     //             node.knownDevices.splice(index, 1, dev);
+        //     //         } else {
+        //     //             let dev: Z2mDeviceContextObsolete = {
+        //     //                 friendly_name: device.friendly_name,
+        //     //                 ieeeAddr: device.ieee_address,
+        //     //                 model: device.definition.model,
+        //     //                 vendor: device.definition.vendor,
+        //     //                 type: device.type
+        //     //             };
 
-            //mqttNode.publish(`${config.baseTopic}/bridge/config/devices`, "{}");
-            bavaria.observer.notify(node.id + "_connected");
-        });
+        //     //             // new device
+        //     //             node.knownDevices.push(dev);
 
-        node.on("close", function () {
-            mqttNode.unsubscribe(node.id);
-            mqttNode.unsubscribe(node.id + 1);
-            bavaria.observer.unregister(subId);
+        //     //         }
+        //     //     });
+
+        //     //     globalContext.set(`knownDevices_${node.id.replace(".", "_")}`, node.knownDevices)
+        //     // });
+
+        //     //mqttNode.publish(`${config.baseTopic}/bridge/config/devices`, "{}");
+        //     bavaria.observer.notify(node.id + "_connected");
+        // });
+
+        node.on("close", function (done: () => void) {
+            broker.deregister(node, done);
         });
     }
 
