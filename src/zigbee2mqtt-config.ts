@@ -88,7 +88,6 @@ const nodeInit: NodeInitializer = (RED): void => {
             }
 
             broker.publish(msg);
-            node.warn(payload);
         };
 
         this.knownDevices = globalContext.get(`knownDevices_${node.id.replace(".", "_")}`) as BridgeConfigNode["knownDevices"] || [];
@@ -201,10 +200,6 @@ const nodeInit: NodeInitializer = (RED): void => {
             });
 
             globalContext.set(`knownDevices_${node.id.replace(".", "_")}`, node.knownDevices)
-
-            msg.forEach(deviceEntry => {
-                node.warn(deviceEntry);
-            })
         }
 
        
