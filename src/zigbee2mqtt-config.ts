@@ -180,6 +180,33 @@ const nodeInit: NodeInitializer = (RED): void => {
             }
         }, false);
 
+        this.subscribe(node.id, `${config.baseTopic}/bridge/devices`, (message) => {
+            handleDeviceMessage(message);
+        });
+
+        function handleDeviceMessage(msg: Array<Z2mDeviceEntry>) {
+            msg.forEach((device: Z2mDeviceEntry) => {
+                const d = node.knownDevices.find(e => {
+                    return e.ieee_address === device.ieee_address;
+                });
+
+                if (d) {
+                    // replace already known device
+                    const index = node.knownDevices.indexOf(d);
+                    node.knownDevices.splice(index, 1, device);
+                } else {
+                    // new device
+                    node.knownDevices.push(device);
+                }
+            });
+
+            globalContext.set(`knownDevices_${node.id.replace(".", "_")}`, node.knownDevices)
+
+            msg.forEach(deviceEntry => {
+                node.warn(deviceEntry);
+            })
+        }
+
         // const subId = bavaria.observer.register(`${mqttNode.id}_connected`, function (_msg: string) {
         //     // mqttNode.subscribe(node.id, `${node.baseTopic}/+`, (msg, topic) => {
         //     //     const deviceName = topic.substr(node.baseTopic.length + 1);

@@ -1,5 +1,6 @@
 import { MqttClient } from "mqtt";
 import { Node, NodeCredentials, NodeDef, NodeMessage } from "node-red";
+import { Z2mDeviceEntry } from "./device-types"
 
 export interface DeviceConfigOptions {
     name: string,
@@ -57,8 +58,8 @@ export interface BridgeConfigNode extends Node<BridgeConfigCredentials> {
     isReconnecting: MqttConfigNode["isReconnecting"]
     baseTopic: string
     publish: MqttConfigNode["publish"]
-    knownDevices: Array<Z2mDeviceContextObsolete>
-    getDeviceList: (callback: () => void) => Array<Z2mDeviceContextObsolete>
+    knownDevices: Array<Z2mDeviceEntry>
+    getDeviceList: (callback: () => void) => Array<Z2mDeviceEntry>
     subscribeDevice: MqttConfigNode["subscribeDevice"]
     publishDevice: (device: string, msg: string | any) => void
     subscribe: MqttConfigNode["subscribe"]
