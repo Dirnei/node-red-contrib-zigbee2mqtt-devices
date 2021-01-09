@@ -7,7 +7,7 @@ module.exports = function (RED) {
     function genericLamp(config) {
         RED.nodes.createNode(this, config);
         var deviceConfig = RED.nodes.getNode(config.device);
-        var bridgeNode = RED.nodes.getNode(config.bridge);
+        var bridgeNode = RED.nodes.getNode(deviceConfig.bridge);
         var node = this;
         var topic = deviceConfig.deviceName;
 
@@ -353,8 +353,8 @@ module.exports = function (RED) {
     function getLampState(config) {
         RED.nodes.createNode(this, config);
         var node = this;
-        var bridgeNode = RED.nodes.getNode(config.bridge);
         var deviceNode = RED.nodes.getNode(config.device);
+        var bridgeNode = RED.nodes.getNode(deviceNode.bridge);
 
         var enableOutput = false;
         if (deviceNode.genericMqttDevice === true) {
