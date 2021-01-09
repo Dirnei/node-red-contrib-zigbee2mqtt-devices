@@ -196,6 +196,78 @@
 
                         $(inputId).val(selectedDevice);
                     });
+                },
+                createDeviceSelector: function (
+                    rowId,
+                    deviceName,
+                    deviceType = "all",
+                    vendor = "all",
+                    model = "all",
+                    isConfig = false,
+                    devicePropertyName = "deviceName",
+                    bridgePropertyName = "bridge"
+                ) {
+                    let inputId = `input-${devicePropertyName}`;
+                    let bridgeId = `input-bridge`;
+
+                    if (isConfig === true) {
+                        inputId = "node-config" + inputId;
+                        bridgeId = "node-config" + bridgeId;
+                    } else {
+                        inputId = "node-" + inputId;
+                        bridgeId = "node-" + bridgeId;
+                    }
+
+                    let label = $("<label></label>")
+                        .attr("for", inputId)
+                        .append(
+                            $("<i></i>")
+                                .addClass("fa")
+                                .addClass("fa-microchip"))
+                        .append(" Device");
+
+                    let select = $("<select></select>").attr("id", inputId).attr("style", "margin:0px 4px;");
+                    let button = $("<button></button>")
+                        .attr("type", "button")
+                        .addClass("red-ui-button")
+                        .append($("<i></i>")
+                            .addClass("fa")
+                            .addClass("fa-search"))
+                        .append(" refresh");
+
+                    let errorBox = $("<div></div>")
+                        .attr("id", "device-error")
+                        .addClass("zigbee2mqtt-error-box")
+                        .hide();
+
+                    $("#" + rowId)
+                        .prepend(errorBox)
+                        .prepend(button)
+                        .prepend(select)
+                        .prepend(label);
+
+                    let loadDevices = function (inputId, selectedDevice, deviceType = "all", vendor = "all", model = "all") {
+                        var bridgeId = $("#node-input-bridge").val().replace(".", "_");
+                        $.getJSON(`/z2m/devices/${bridgeId}/${deviceType}/${vendor}/${model}`, function (data) {
+                            let select = $("#" + inputId);
+                            select.empty();
+                            select.append("<option disabled selected value> -- select an option -- </option>");
+                            data.devices.forEach(e => {
+                                select.append("<option>" + e.friendly_name + "</option>");
+                            });
+
+                            select.val(selectedDevice);
+                        });
+                    }
+
+                    button.click(() => {
+                        loadDevices(inputId, deviceName, deviceType, vendor, model);
+                    });
+
+                    let bridgeIdSelector = "#" + bridgeId;
+                    $(bridgeIdSelector).change(function () {
+                        loadDevices(inputId, deviceName, deviceType, vendor, model);
+                    });
                 }
             }
         }
