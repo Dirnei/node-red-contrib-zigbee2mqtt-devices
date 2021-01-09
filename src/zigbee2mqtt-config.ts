@@ -1,5 +1,3 @@
-import { throws } from "assert";
-import { type } from "jquery";
 import { NodeInitializer, NodeMessage } from "node-red";
 import {
     BridgeConfigCredentials,
