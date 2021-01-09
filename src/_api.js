@@ -55,7 +55,7 @@ module.exports = function (RED) {
                 model: value.definition.model,
                 vendor: value.definition.vendor,
                 version: value.software_build_id
-            }
+            };
         });
     }
 
