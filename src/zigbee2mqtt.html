@@ -295,8 +295,6 @@
     });
 </script>
 
-
-
 <script type="text/html" data-template-name="button-switch">
     <div class="zigbee2mqtt-devices-properties">
 
@@ -403,11 +401,13 @@
         oneditprepare: function () {
             var node = this;
             var deviceName = node.deviceName;
+            
+            RED.bavaria.devices.createDeviceSelector("device-selection", deviceName);
 
             if (node.genericMqttDevice === true) {
-                $("#fullMqttTopic").show()
+                $("#fullMqttTopic").show();
             } else {
-                $("#fullMqttTopic").hide()
+                $("#fullMqttTopic").hide();
             }
 
             $("#node-input-genericMqttDevice").change(function () {
@@ -419,18 +419,6 @@
                     node.deviceName = "";
                 }
             })
-
-            $("#node-input-bridge").change(function () {
-                var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                $.getJSON(window.location.pathname + 'z2m/devices/' + bridgeId + '/all/all/all', function (data) {
-                    $("#node-input-deviceName").empty();
-                    data.devices.forEach(e => {
-                        $("#node-input-deviceName").append("<option>" + e.friendly_name + "</option>");
-                    });
-
-                    $("#node-input-deviceName").val(deviceName);
-                });
-            });
         }
     });
 </script>
@@ -446,9 +434,13 @@
             <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
             <input type="text" id="node-input-bridge" placeholder="bridge" />
         </div>
+        <!--
         <div class="form-row">
             <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
             <select id="node-input-deviceName"></select>
+        </div>-->
+        <div id="device-selection" class="form-row">
+
         </div>
         <div class="form-row">
             <label for="node-input-genericMqttDevice"><i class="fa fa-tag"></i> Generic MQTT Device</label>
