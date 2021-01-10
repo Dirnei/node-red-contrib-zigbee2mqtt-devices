@@ -30,9 +30,14 @@ module.exports = function (RED) {
 
             response.devices = minimizeDeviceList(filterDevices(devices, type, vendor, model));
             response.success = devices.length > 0;
-            if(!response.success)
-            {
+
+            if (!response.success) {
                 response.message = "No devices found!";
+            }
+
+            if (response.success && response.devices.length == 0) {
+                response.success = false;
+                response.message = `No devices found after filtering! Used Filter: (Vendor: ${vendor}, Model: ${model}, Type: ${type})`;
             }
 
             console.log("---------------- RESPONSE -----------------");
@@ -46,8 +51,8 @@ module.exports = function (RED) {
         }
     });
 
-    function minimizeDeviceList(devices){
-        return devices.map((value)=>{
+    function minimizeDeviceList(devices) {
+        return devices.map((value) => {
             return {
                 friendly_name: value.friendly_name,
                 address: value.ieee_address,
@@ -59,11 +64,11 @@ module.exports = function (RED) {
         });
     }
 
-    function filterDevices(devices, type, vendor, model){
+    function filterDevices(devices, type, vendor, model) {
         return devices.filter(e => {
             try {
 
-                if(e.definition === undefined || e.definition === null){
+                if (e.definition === undefined || e.definition === null) {
                     return false;
                 }
 
