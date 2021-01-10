@@ -17,6 +17,7 @@
 
 - Deployment increased the refresh messages that will be sent on deployment. Fixes #45
 - Redone the device-list as payload has changed and this topic is now also retained on the mqtt broker. It should solve #32
+
 #### Behind the scenes
 
-
+- Unified device-selection. Resolved #69
