@@ -228,6 +228,7 @@
 
                     let select = $("<select></select>").attr("id", inputId).attr("style", "margin:0px 4px;");
                     let button = $("<button></button>")
+                        .attr("id", "refresh-button-" + inputId)
                         .attr("type", "button")
                         .addClass("red-ui-button")
                         .append($("<i></i>")
@@ -236,7 +237,7 @@
                         .append(" refresh");
 
                     let errorBox = $("<div></div>")
-                        .attr("id", "device-error"+ inputId)
+                        .attr("id", "device-error" + inputId)
                         .addClass("zigbee2mqtt-error-box")
                         .hide();
 
@@ -253,10 +254,25 @@
                             select.empty();
 
                             if (!data.success) {
-                                $("#device-error"+ inputId).html(data.message);
-                                $("#device-error"+ inputId).show();
+                                $("#device-error" + inputId)
+                                    .html(data.message)
+                                    .append(
+                                        $("<button></button>")
+                                            .text("Switch to manual entry")
+                                            .click(() => {
+                                                let textbox = $("<input />", { "type": "text", "value": selectedDevice });
+                                                textbox.attr("id", inputId)
+                                                    .attr("style", "margin-left: 4px;")
+                                                    .attr("placeholder", "Enter friendly_name");
+                                                $("#" + inputId).replaceWith(textbox);
+                                                $("#refresh-button-" + inputId).remove();
+                                                $("#device-error" + inputId).hide();
+                                            })
+                                    );
+
+                                $("#device-error" + inputId).show();
                             } else {
-                                $("#device-error"+ inputId).hide();
+                                $("#device-error" + inputId).hide();
                             }
 
                             select.append("<option disabled selected value> -- select an option -- </option>");
