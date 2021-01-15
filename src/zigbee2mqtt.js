@@ -63,7 +63,7 @@ module.exports = function (RED) {
             });
         }
 
-        let regId1 = bavaria.observer.register(bridgeNode.id + "_connected", function (_msg) {
+        const regId1 = bavaria.observer.register(bridgeNode.id + "_connected", function (_msg) {
             if (deviceConfig.genericMqttDevice !== true) {
                 bridgeNode.refreshDevice(deviceConfig.deviceName);
             }
@@ -75,7 +75,7 @@ module.exports = function (RED) {
             }
         }
 
-        let regId2 = bavaria.observer.register(topic + "_routeError", function (_msg) {
+        const regId2 = bavaria.observer.register(topic + "_routeError", function (_msg) {
             var status = { fill: "red", shape: "dot", text: "route error" };
             nodeContext.set(getContextName(), {
                 status: status
@@ -149,7 +149,7 @@ module.exports = function (RED) {
         }
         node.status({ fill: "blue", text: "not connected" });
 
-        let regId = bavaria.observer.register(bridgeNode.id + "_connected", function (_msg) {
+        const regId = bavaria.observer.register(bridgeNode.id + "_connected", function (_msg) {
             node.status({ fill: "green", text: "connected" });
         });
 
