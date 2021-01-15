@@ -8,7 +8,7 @@ export class MqttSubscription {
     jsonPayload: boolean;
     callback: MqttSubscriptionCallback;
 
-    constructor(topic: string, jsonPayload: boolean, callback: MqttSubscriptionCallback) {
+    constructor(topic: string, jsonPayload: boolean, callback: MqttSubscriptionCallback){
         this.topic = topic;
         let tmp: string = topic.split("+").join("[^\/]*");
         tmp = tmp.split("#").join(".+");
@@ -17,7 +17,7 @@ export class MqttSubscription {
         this.jsonPayload = jsonPayload;
     }
 
-    invokeIfMatch(topic: string, payload: any) {
+    invokeIfMatch(topic: string, payload: any) : void {
         if (this.comapreTopic(topic)) {
             if (this.jsonPayload) {
                 try{
@@ -34,7 +34,7 @@ export class MqttSubscription {
         }
     }
 
-    comapreTopic(topic: string) {
+    comapreTopic(topic: string) : boolean {
         return this.regex.test(topic);
     }
 }
