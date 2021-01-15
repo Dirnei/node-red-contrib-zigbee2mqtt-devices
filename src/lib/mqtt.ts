@@ -1,3 +1,4 @@
+import { log } from "node-red";
 
 export type MqttSubscriptionCallback = (payload: any, topic: string) => void
 
@@ -22,10 +23,10 @@ export class MqttSubscription {
                 try{
                     payload = JSON.parse(payload);
                 } catch(err){
-                    console.log("################################################################");
-                    console.log(" node-red-contrib-zigbee2mqtt-devices error:");
-                    console.log(err);
-                    console.log("################################################################");
+                    log.error("################################################################");
+                    log.error(" node-red-contrib-zigbee2mqtt-devices error:");
+                    log.error(err);
+                    log.error("################################################################");
                 }
             }
 
