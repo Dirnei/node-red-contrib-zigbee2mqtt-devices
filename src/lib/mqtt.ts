@@ -10,6 +10,8 @@ export class MqttSubscription {
 
     constructor(topic: string, jsonPayload: boolean, callback: MqttSubscriptionCallback){
         this.topic = topic;
+
+        // create regex for matching mqtt subscriptions containing whitespace chars # and +
         let tmp: string = topic.split("+").join("[^\/]*");
         tmp = tmp.split("#").join(".+");
         this.regex = new RegExp(tmp + "$");
