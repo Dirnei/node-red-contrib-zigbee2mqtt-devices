@@ -1,3 +1,4 @@
+import { log } from "node-red";
 
 export type MqttSubscriptionCallback = (payload: any, topic: string) => void
 
@@ -7,8 +8,10 @@ export class MqttSubscription {
     jsonPayload: boolean;
     callback: MqttSubscriptionCallback;
 
-    constructor(topic: string, jsonPayload: boolean, callback: MqttSubscriptionCallback) {
+    constructor(topic: string, jsonPayload: boolean, callback: MqttSubscriptionCallback){
         this.topic = topic;
+
+        // create regex for matching mqtt subscriptions containing whitespace chars # and +
         let tmp: string = topic.split("+").join("[^\/]*");
         tmp = tmp.split("#").join(".+");
         this.regex = new RegExp(tmp + "$");
@@ -16,16 +19,16 @@ export class MqttSubscription {
         this.jsonPayload = jsonPayload;
     }
 
-    invokeIfMatch(topic: string, payload: any) {
+    invokeIfMatch(topic: string, payload: any) : void {
         if (this.comapreTopic(topic)) {
             if (this.jsonPayload) {
                 try{
                     payload = JSON.parse(payload);
                 } catch(err){
-                    console.log("################################################################");
-                    console.log(" node-red-contrib-zigbee2mqtt-devices error:");
-                    console.log(err);
-                    console.log("################################################################");
+                    log.error("################################################################");
+                    log.error(" node-red-contrib-zigbee2mqtt-devices error:");
+                    log.error(err);
+                    log.error("################################################################");
                 }
             }
 
@@ -33,7 +36,7 @@ export class MqttSubscription {
         }
     }
 
-    comapreTopic(topic: string) {
+    comapreTopic(topic: string) : boolean {
         return this.regex.test(topic);
     }
 }

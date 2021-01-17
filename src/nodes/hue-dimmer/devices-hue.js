@@ -8,7 +8,7 @@ module.exports = function (RED) {
         var node = this;
 
         utils.setConnectionState(bridgeNode, node);
-        let regId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+        const regId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
 
