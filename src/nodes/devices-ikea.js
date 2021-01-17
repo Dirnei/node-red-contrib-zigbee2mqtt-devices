@@ -10,7 +10,7 @@ module.exports = function (RED) {
         var node = this;
 
         utils.setConnectionState(bridgeNode, node);
-        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+        const regId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
                 const ioMap = {
@@ -37,6 +37,10 @@ module.exports = function (RED) {
                 });
             });
         });
+
+        node.on("close", ()=>{
+            bavaria.observer.unregister(regId);
+        });
     }
     RED.nodes.registerType("ikea-dimmer", ikeaDimmer);
 
@@ -46,7 +50,7 @@ module.exports = function (RED) {
         var node = this;
 
         utils.setConnectionState(bridgeNode, node);
-        bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+        const regId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
                 message.action = message.action.replace("-", "_");
@@ -76,6 +80,10 @@ module.exports = function (RED) {
                     }
                 });
             });
+        });
+
+        node.on("close", ()=>{
+            bavaria.observer.unregister(regId);
         });
     }
     RED.nodes.registerType("ikea-remote", ikeaRemote);
@@ -109,7 +117,7 @@ module.exports = function (RED) {
 
 
         utils.setConnectionState(bridgeNode, node);
-        var id = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+        const regId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
                 message.action = message.action.replace("-", "_");
@@ -119,7 +127,7 @@ module.exports = function (RED) {
         });
 
         node.on("close", function () {
-            bavaria.observer.unregister(id);
+            bavaria.observer.unregister(regId);
             bridgeNode.unsubscribe(node.id);
         });
     }

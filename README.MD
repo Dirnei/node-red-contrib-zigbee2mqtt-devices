@@ -1,14 +1,22 @@
+<p align="center">
+  <img width="128" height="128" src="resources/logo.svg">
+</p>
+
 # Zigbee2MQTT Nodes for Node-RED
 
 [![npm](https://img.shields.io/npm/v/node-red-contrib-zigbee2mqtt-devices?style=for-the-badge)](https://www.npmjs.com/package/node-red-contrib-zigbee2mqtt-devices)
 [![img](https://img.shields.io/badge/Node--RED-node--red--contrib--zigbee2mqtt--devices-%23aa4444?style=for-the-badge)](https://flows.nodered.org/node/node-red-contrib-zigbee2mqtt-devices)
 [![GitHub license](https://img.shields.io/github/license/Dirnei/node-red-contrib-zigbee2mqtt-devices?style=for-the-badge)](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices/blob/master/LICENSE)
 
+This project contains Node-RED nodes that allow you to build Smart Home scenarios with your Zigbee devices connected to [ZigBee2MQTT](https://www.zigbee2mqtt.io/).
+
+![img](docs/img/overview.png)
+
+
 ## Available Nodes
 
 Many nodes are available right now, and there are still new node ideas that will be added in the near future. Here is a list of the currently available ones:
 
-### Allready documented
 - [generic-lamp](docs/nodes/generic-lamp.md)
 - [send-messages](docs/nodes/send-messages.md)
 - [override-nodes](docs/nodes/override-nodes.md)
@@ -17,35 +25,13 @@ Many nodes are available right now, and there are still new node ideas that will
 - [scene-selector](docs/nodes/scene-selector.md)
 - [ota-node](docs/nodes/ota-node.md)
 - [bridge-log](docs/nodes/bridge-log.md)
+- And many more for sensors and remotes...
 
-### Undocumented
-- device status
-    - Outputs the plain MQTT message a device sends.
-- contact sensor
-    - Receives messages from a contact sensor and outputs the payload to the open or closed output dependent on the payload.
-- occupancy sensor
-    - Receives messages from an occupancy sensor and outputs the payload to the occupied or no motion output dependent on the payload.
-- climate sensor
-    - Receives messages from temperature, humidity, or pressure sensors, displays the value as status, and sends the payload to the output.
+## You need some addition help?
 
-## Manufacturer specific devices
+Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth support or problems that aren't metioned anywhere :)
 
-- sonoff button
-    - Receives messages of a sonoff touch button and will prepare the payload for a button switch node.
-- ikea dimmer
-    - Receives messages of an Ikea dimmer and will prepare the payload for a button switch node.
-- Ikea remote
-    - Receives messages of an Ikea remote and will prepare the payload for a button switch node.
-- scenic foh switch
-    - Receives messages of a scenic friends of hue and will prepare the payload for a button switch node. 
-
-## Configuration
-
-[Bridge config](docs/config/bridge-config.md)
-
-## Searching for help?
-
-Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the documentation is not finished :)
+[![node-red-contrib-zigbee2mqtt-devices](https://discordapp.com/api/guilds/760063909465686067/widget.png?style=banner2)](https://discord.gg/4qCMEhJ)
 
 ## Changelog 
 

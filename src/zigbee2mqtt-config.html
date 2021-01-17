@@ -4,8 +4,10 @@
         category: "config",
         defaults: {
             name: { value: "", required: true },
-            mqtt: { value: "", type: "mqtt-config" },
+            broker: { value: "", type: "mqtt-broker" },
             baseTopic: { value: "zigbee2mqtt", required: true },
+            enabledLogging: { value: false },
+            allowDeviceStatusRefresh: { value: true },
         },
         label: function () { return this.name; },
         paletteLabel: "bridge config"
@@ -25,11 +27,19 @@
         </div>	
         <div class="form-row">
             <label for="node-config-input-broker"><i class="fa fa-server"></i> Broker</label>
-            <input type="text" id="node-config-input-mqtt" />
+            <input type="text" id="node-config-input-broker" />
         </div>
         <div class="form-row">
             <label for="node-config-input-baseTopic"><i class="fa fa-hashtag"></i> Base MQTT Topic</label>
             <input type="text" id="node-config-input-baseTopic" placeholder="topic" />
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-enabledLogging"><i class="fa fa-envelope"></i> Output Bridge logs</label>
+            <input type="checkbox" id="node-config-input-enabledLogging" placeholder="topic" />
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-allowDeviceStatusRefresh"><i class="fa fa-refresh"></i> Allows Device Status Refresh</label>
+            <input type="checkbox" id="node-config-input-allowDeviceStatusRefresh" placeholder="topic" />
         </div>
     </div>
 </script>

@@ -1,8 +1,5 @@
-const devicesIkea = require("./nodes/devices-ikea.js");
-
 module.exports = function (RED) {
     const utils = require("./lib/utils.js");
-    const bavaria = utils.bavaria();
 
     RED.httpAdmin.get("/z2m/devices/:broker/:deviceType/:vendor/:model", function (req, res) {
         try {
@@ -31,14 +28,14 @@ module.exports = function (RED) {
                 model = [model];
             }
 
-            response.devices = filterDevices(devices, type, vendor, model);
+            response.devices = minimizeDeviceList(filterDevices(devices, type, vendor, model));
             response.success = devices.length > 0;
             if(!response.success)
             {
                 response.message = "No devices found!";
             }
 
-            console.log("-------------------------------------------");
+            console.log("---------------- RESPONSE -----------------");
             console.log(response);
             console.log("-------------------------------------------");
 
@@ -49,19 +46,37 @@ module.exports = function (RED) {
         }
     });
 
+    function minimizeDeviceList(devices){
+        return devices.map((value)=>{
+            return {
+                friendly_name: value.friendly_name,
+                address: value.ieee_address,
+                type: value.type,
+                model: value.definition.model,
+                vendor: value.definition.vendor,
+                version: value.software_build_id
+            };
+        });
+    }
+
     function filterDevices(devices, type, vendor, model){
         return devices.filter(e => {
             try {
+
+                if(e.definition === undefined || e.definition === null){
+                    return false;
+                }
+
                 var dt = e.type.toLowerCase();
                 var dv = "all";
                 var dm = "all";
 
-                if (e.vendor) {
-                    dv = e.vendor.toLowerCase();
+                if (e.definition.vendor) {
+                    dv = e.definition.vendor.toLowerCase();
                 }
 
-                if (e.model) {
-                    dm = e.model.toLowerCase();
+                if (e.definition.model) {
+                    dm = e.definition.model.toLowerCase();
                 }
 
                 return (dt == type || (type == "enddevice" && dt == "greenpower") || (type == "all" && dt !== "coordinator")) &&

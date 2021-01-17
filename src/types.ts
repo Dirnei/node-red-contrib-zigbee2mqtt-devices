@@ -1,5 +1,6 @@
 import { MqttClient } from "mqtt";
-import { Node, NodeCredentials, NodeDef } from "node-red";
+import { Node, NodeCredentials, NodeDef, NodeMessage } from "node-red";
+import { Z2mDeviceEntry } from "./device-types"
 
 export interface DeviceConfigOptions {
     name: string,
@@ -29,8 +30,6 @@ export interface DeviceConfigNode extends Node {
     refreshTopic: string
 }
 
-
-
 export interface BridgeConfigOptions {
 
 }
@@ -40,50 +39,45 @@ export interface BridgeConfigCredentials {
     password: string;
 }
 
-
 export const BridgeConfigCredentials: NodeCredentials<BridgeConfigCredentials> = {
     username: { type: "text" },
     password: { type: "password" },
 };
 
-
 export interface BridgeConfigOptions {
     name: string
     mqtt: string
+    broker: string
     baseTopic: string // default "zigbee2mqtt"
+    enabledLogging: boolean
+    allowDeviceStatusRefresh: boolean
 }
+
 export interface BridgeConfigNode extends Node<BridgeConfigCredentials> {
     isConnected: MqttConfigNode["isConnected"]
     isReconnecting: MqttConfigNode["isReconnecting"]
     baseTopic: string
     publish: MqttConfigNode["publish"]
-    knownDevices: Array<Z2mDeviceContextObsolete>
-    getDeviceList: (callback: () => void) => Array<Z2mDeviceContextObsolete>
+    knownDevices: Array<Z2mDeviceEntry>
+    getDeviceList: (callback: () => void) => Array<Z2mDeviceEntry>
     subscribeDevice: MqttConfigNode["subscribeDevice"]
     publishDevice: (device: string, msg: string | any) => void
     subscribe: MqttConfigNode["subscribe"]
     unsubscribe: MqttConfigNode["unsubscribe"]
     setDeviceState: (device: string | undefined, payload: string) => void
-    refreshDevice: (deviceName: string) => void
+    refreshDevice: (deviceName: string, force:boolean) => void
     registerOtaNode: (nodeId: string, otaStatusCallback: OtaStatusCallback, deviceStatusCallback: DeviceStatusCallback) => void
 }
 
 export interface BridgeConfigNodeDef extends NodeDef, BridgeConfigOptions { }
 
-
 export type OtaStatusCallback = (msg: any) => void
 export type DeviceStatusCallback = (deviceName: string, msg: any) => void
-
-
-
-
-
 
 export interface MqttConfigCredentials {
     username: string;
     password: string;
 }
-
 
 export const MqttConfigCredentials: NodeCredentials<MqttConfigCredentials> = {
     username: { type: "text" },
@@ -98,6 +92,21 @@ export type MqttConfigOptions = {
     requireLogin: boolean
 }
 
+export interface NodeMqttBroker extends Node {
+    register: (mqttNode: Node) => void;
+    deregister: (mqttNode: Node, done: () => void) => void;
+    subscribe: (topic: string, qos: number, callback: NodeMqttBrokerMessageCallback, ref : any) => void;
+    publish: (topic: NodeMessage, done?: () => void) => void;
+    connected: boolean
+}
+
+export type NodeMqttMessage = NodeMessage & {
+    topic: string,
+    retain: boolean
+    qos:number
+}
+
+export type NodeMqttBrokerMessageCallback = (topic: string, payload: any, packet: any) => void;
 
 export interface MqttConfigNode extends Node<MqttConfigCredentials> {
     broker: string
@@ -107,7 +116,7 @@ export interface MqttConfigNode extends Node<MqttConfigCredentials> {
     publish: (topic: string, message: string | Buffer) => void //  MqttClient['publish'] (return type void instant of client)
     mqttClient: MqttClient
     subscribeDevice: (nodeId: string, topic: string, callback: MqttConfigCallback) => void
-    subscribe: (nodeId: string, topic: string, callback: MqttConfigCallback) => void
+    subscribe: (nodeId: string, topic: string, callback: MqttConfigCallback, jsonPayload?: boolean) => void
     unsubscribe: (nodeId: string) => void
 }
 
@@ -131,7 +140,7 @@ export type Z2mDeviceContextObsolete = {
 }
 
 export type Z2mDevice = {
-    type : string,
+    type: string,
     ieee_address: string,
     friendly_name: string,
     definition: Z2mDeviceDefinition,
