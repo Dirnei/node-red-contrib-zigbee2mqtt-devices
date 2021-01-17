@@ -49,31 +49,25 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for support while the docu
 
 ## Changelog 
 
-### Release: `0.17.2`
+### Release: `0.18.0`
 
-- Added support for z2m Version `1.17.0`
-
-### Release: `0.17.1`
-
-#### Bugfixes
-
-- Fixed npm package. Due to the change to TypeScript all nodes were broken because it was not build before publish.
-
-### Release: `0.17.0`
+> This release removes the old `mqtt-config`. After you updated this pacakge, you will get many errors but you only need to fix **one** `bridge-config` and all the errors will get away. Sorry for this inconvenience!
 
 #### Features:
 
-- Added the **bridge log node** to provide an easy way to receive and filter logs that are published into the `zigbee2mqtt/bridge/log` topic.
-- Added `Error-Notification` to the `device-list` in the `device-config-node` for better debugging the problem of the empty device list. (Will be added to all device lists if proven helpfull)
+- Removed custom MQTT Configuration and replaced it with the MQTT Configuration from the core nodes
+- Added option to `bridge-config` to disable device refresh on deployment
+- Added option to `bridge-config` to log log-messages from zigbee2mqtt to the `debug tab`
 
 #### Bug fixes:
 
-- Fixed typo in Shelly 2.5 node.
-- Fixed toggle relay in Shelly 2.5 node.
+- Deployment increased the refresh messages that will be sent on deployment. Fixes #45
+- Redone the device-list as payload has changed and this topic is now also retained on the mqtt broker. It should solve #32
 
-#### Behind the scenes
+### Older changelogs
 
-- Changed code to TypeScript
+You can find all the release notes at the [Release-Page](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices/releases)
+
 
 ## You want to contribute?
 
