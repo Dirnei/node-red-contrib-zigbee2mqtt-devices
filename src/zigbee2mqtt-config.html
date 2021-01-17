@@ -4,8 +4,10 @@
         category: "config",
         defaults: {
             name: { value: "", required: true },
-            mqtt: { value: "", type: "mqtt-config" },
+            broker: { value: "", type: "mqtt-broker" },
             baseTopic: { value: "zigbee2mqtt", required: true },
+            enabledLogging: { value: false },
+            allowDeviceStatusRefresh: { value: true },
         },
         label: function () { return this.name; },
         paletteLabel: "bridge config"
@@ -25,11 +27,19 @@
         </div>	
         <div class="form-row">
             <label for="node-config-input-broker"><i class="fa fa-server"></i> Broker</label>
-            <input type="text" id="node-config-input-mqtt" />
+            <input type="text" id="node-config-input-broker" />
         </div>
         <div class="form-row">
             <label for="node-config-input-baseTopic"><i class="fa fa-hashtag"></i> Base MQTT Topic</label>
             <input type="text" id="node-config-input-baseTopic" placeholder="topic" />
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-enabledLogging"><i class="fa fa-envelope"></i> Output Bridge logs</label>
+            <input type="checkbox" id="node-config-input-enabledLogging" placeholder="topic" />
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-allowDeviceStatusRefresh"><i class="fa fa-refresh"></i> Allows Device Status Refresh</label>
+            <input type="checkbox" id="node-config-input-allowDeviceStatusRefresh" placeholder="topic" />
         </div>
     </div>
 </script>
@@ -68,6 +78,7 @@
         oneditprepare: function () {
             var node = this;
             var deviceName = node.deviceName;
+            RED.bavaria.devices.createDeviceSelector("device-selection", deviceName, "router", "all", "all", true);
 
             if (node.genericMqttDevice === true) {
                 $("#fullMqttTopic").show()
@@ -90,31 +101,6 @@
                     $("#select-empty-option").remove();
                 }
             });
-
-            $("#node-config-input-bridge").change(function () {
-                var bridgeId = $("#node-config-input-bridge").val().replace(".", "_");
-                $.getJSON(window.location.pathname + 'z2m/devices/' + bridgeId + '/router/all/all', function (data) {
-                    $("#node-config-input-deviceName").empty();
-                    console.log(data);
-
-                    if (!data.success) {
-                        $("#device-error").html(data.message);
-                        $("#device-error").show();
-                    } else {
-                        $("#device-error").hide();
-                    }
-
-                    data.devices.forEach(e => {
-                        $("#node-config-input-deviceName").append("<option>" + e.friendly_name + "</option>");
-                    });
-
-                    if (deviceName === "---") {
-                        $("#node-config-input-deviceName").append("<option value=\"---\" id=\"select-empty-option\"> Select device </option>");
-                    }
-
-                    $("#node-config-input-deviceName").val(deviceName);
-                });
-            });
         }
     });
 </script>
@@ -126,13 +112,9 @@
     </div>	
     <div class="form-row">
         <label for="node-config-input-bridge"><i class="fa fa-tag"></i> Bridge</label>
-        <input type="text" id="node-config-input-bridge"  />
+        <input type="text" id="node-config-input-bridge" />
     </div>
-    <div class="form-row">
-        <label for="node-config-input-deviceName"><i class="fa fa-tag"></i> Device</label>
-        <select id="node-config-input-deviceName"></select>
-        <button type="button" class="red-ui-button"><i class="fa fa-search"></i> refresh</button>
-        <div id="device-error" class="zigbee2mqtt-error-box"></div>
+    <div id="device-selection" class="form-row">
     </div>
     <div class="form-row">
         <label for="node-config-input-brightnessSupport"><i class="fa fa-tag"></i> Dimmable</label>
