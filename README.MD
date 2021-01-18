@@ -39,17 +39,17 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 
 > **IMPORTANT** This release removes the old `mqtt-config`. After you updated this pacakge, you will get many errors but you only need to fix **one** `bridge-config` and all the errors will get away. Sorry for this inconvenience!
 >
->Open the `bridge-config` and edit the broker - e.g. in the settings of a `send-messages-node`.
->
->![img](docs/img/0-18-update-reconfigue-bridge.png)
->
->Reconfigure the MQTT connection. Now everything that uses that bridge uses the new MQTT broker.
->
->![img](docs/img/0.18-update-new-mqttt-config.png)
->
->In case you still can't deploy delete the old now unknown `mqtt-config` nodes in the "Global Configuration Nodes" section.
->
->![img](docs/img/0-18-update-delete-old-nodes.png)
+> Open the `bridge-config` and edit the broker - e.g. in the settings of a `send-messages-node`.
+> 
+> ![img](docs/img/0-18-update-reconfigue-bridge.png)
+> 
+> Reconfigure the MQTT connection. Now everything that uses that bridge uses the new MQTT broker.
+> 
+> ![img](docs/img/0.18-update-new-mqttt-config.png)
+> 
+> In case you still can't deploy delete the old now unknown `mqtt-config` nodes in the "Global Configuration Nodes" section.
+> 
+> ![img](docs/img/0-18-update-delete-old-nodes.png)
 
 
 
