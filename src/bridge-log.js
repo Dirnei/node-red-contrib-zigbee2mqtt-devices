@@ -1,6 +1,7 @@
 module.exports = function (RED) {
-    const OutputHandler = require("../lib/outputHandler.js");
-    const utils = require("../lib/utils.js");
+    // @ts-ignore
+    const OutputHandler = require("./lib/outputHandler.js");
+    const utils = require("./lib/utils.js");
     const bavaria = utils.bavaria();
 
     /**

@@ -1,18 +1,16 @@
 # Changelog for the upcomming version
-This document is an internal note for the changelog of the upcomming release.
+> This document is an internal note for the changelog of the upcomming release.
 
-If new features are added, increase the minor version || if bug fixes are added, increase the patch version.
+> If new features are added, increase the minor version || if bug fixes are added, increase the patch version.
 
-### Current Release: `0.16.1`
 
-### Release: `0.17.0`
-
+### Release: `0.18.1`
 
 #### Features:
 
-- Added the **bridge log node** to provide an easy way to receive and filter logs that are published into the `zigbee2mqtt/bridge/log` topic.
-
 #### Bug fixes:
 
-- Fixed typo in Shelly 2.5 node.
-- Fixed toggle relay in Shelly 2.5 node.
+#### Behind the scenes
+
+- Switched generic sensor nodes to new device-selection (contact, occupancy, climate)
+- Removed mqtt-config.ts (file was deleted) reference in package.json that caused a warning in the update-panel

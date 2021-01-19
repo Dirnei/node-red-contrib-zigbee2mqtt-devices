@@ -35,7 +35,6 @@ if (-not (Test-Path ".\debug\")) {
     New-Item -ItemType Directory ".\debug"
 }
 
-
 if (-not (Test-Path ".\debug\package.json")) {
     $check = docker container inspect -f '{{.State.Running}}' "nodered_testing"
 
@@ -66,8 +65,8 @@ if (-not (Test-Path ".\debug\myModules\$repoName")) {
 
 Write-Output "Copy files..."
 
-copy-files -src '.\src' -destRoot ".\debug\myModules\$repoName" -destFolder "src"
-copy-files -src '.\lib' -destRoot ".\debug\myModules\$repoName" -destFolder "lib"
+copy-files -src '.\dist' -destRoot ".\debug\myModules\$repoName" -destFolder "dist"
+copy-files -src '.\examples' -destRoot ".\debug\myModules\$repoName" -destFolder "examples"
 
 $packageModified = $false 
 $destRoot = Resolve-Path ".\debug\myModules\$repoName"

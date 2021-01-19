@@ -8,9 +8,9 @@
 [![img](https://img.shields.io/badge/Node--RED-node--red--contrib--zigbee2mqtt--devices-%23aa4444?style=for-the-badge)](https://flows.nodered.org/node/node-red-contrib-zigbee2mqtt-devices)
 [![GitHub license](https://img.shields.io/github/license/Dirnei/node-red-contrib-zigbee2mqtt-devices?style=for-the-badge)](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices/blob/master/LICENSE)
 
-This project contains Node-RED nodes that allows you to build Smart Home szenarios with your Zigbee devices connected to [ZigBee2MQTT](https://www.zigbee2mqtt.io/). 
+This project contains Node-RED nodes that allow you to build Smart Home scenarios with your Zigbee devices connected to [ZigBee2MQTT](https://www.zigbee2mqtt.io/).
 
-![img](docs/img/overview.png)
+![overview](docs/img/overview.png)
 
 
 ## Available Nodes
@@ -27,9 +27,10 @@ Many nodes are available right now, and there are still new node ideas that will
 - [bridge-log](docs/nodes/bridge-log.md)
 - And many more for sensors and remotes...
 
-## Getting started:
 
+## Getting started:
 Have a look at [this](docs/getting-started.md). All you need are some allready paired Zigbee lamps and a installed Node-RED. What are you waiting for? Find out now, how easy it is to get started.  
+
 
 ## You need some addition help?
 
@@ -37,31 +38,42 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 
 [![node-red-contrib-zigbee2mqtt-devices](https://discordapp.com/api/guilds/760063909465686067/widget.png?style=banner2)](https://discord.gg/4qCMEhJ)
 
+
 ## Changelog 
 
-### v0.16.1
+### Release: `0.18.0`
 
-- Fixed Color Temperature change when sending an action command
-- Fixed a bug when brightness was a empty string
+> **IMPORTANT** This release removes the old `mqtt-config`. After you updated this pacakge, you will get many errors but you only need to fix **one** `bridge-config` and all the errors will get away. Sorry for this inconvenience!
+>
+> Open the `bridge-config` and edit the broker - e.g. in the settings of a `send-messages-node`.
+> 
+> ![img](docs/img/0-18-update-reconfigue-bridge.png)
+> 
+> Reconfigure the MQTT connection. Now everything that uses that bridge uses the new MQTT broker.
+> 
+> ![img](docs/img/0.18-update-new-mqttt-config.png)
+> 
+> In case you still can't deploy delete the old now unknown `mqtt-config` nodes in the "Global Configuration Nodes" section.
+> 
+> ![img](docs/img/0-18-update-delete-old-nodes.png)
 
-### v0.16.0
 
-- Added new Ikea Dimmer node, which supports the models ICTC-G-1 and E1743
-- Added node for Eurotronic Spirit Thermostat
-- Fixed Devices not listed when Node-RED is using httpAdminRoot setting
 
-### v0.15.2
+#### Features:
 
-- Fixed [ota-update](docs/nodes/ota-node.md) node. It was not working since v0.14.0
+- Removed custom MQTT Configuration and replaced it with the MQTT Configuration from the core nodes
+- Added option to `bridge-config` to disable device refresh on deployment
+- Added option to `bridge-config` to log log-messages from zigbee2mqtt to the `debug tab`
 
-### v0.15.0 / 0.15.1
+#### Bug fixes:
 
-- Added option "Repeatedly send hold message until button released" to [button-siwtch](docs/nodes/button-switch.md)
-- Added fallback for legacy payload of Ikea dimmer
+- Deployment increased the refresh messages that will be sent on deployment. Fixes #45
+- Redone the device-list as payload has changed and this topic is now also retained on the mqtt broker. It should solve #32
 
-> When installed right after release the depenceny mqtt (v4.2.2) got also released which was not able to connect. I fixed the version to 4.2.1 for now and published again.
+### Older changelogs
 
-More changelogs are available [here](docs/changelog.md)
+You can find all the release notes at the [Release-Page](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices/releases)
+
 
 ## You want to contribute?
 

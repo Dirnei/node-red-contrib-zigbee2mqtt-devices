@@ -605,7 +605,42 @@ Concept is as follows: Modify the payload. Send message node does the work
     
     ![inject override](img/getting-started-flow18-inject-override.png)
 
+    If we now connect the *work mode* node to the `gneric lamp` nodes, we can see the override working similar as in the relax mode.
+
     ![inject override flow](img/getting-started-flow19-inject-override-flow.png)
 
+    ``` json
+    {
+        "_msgid": "897c244.c1d08d8",
+        "payload": {
+            "override": {
+                "brightness": "255",
+                "temperature": 100,
+                "state": "ON"
+            },
+            "devices": [
+                {
+                    "topic": "Phillips Hue white ambience",
+                    "state": "ON",
+                    "delay": 0,
+                    "target": "z2m",
+                    "brightness": "30",
+                    "transition": "2",
+                    "temperature": "153"
+                },
+                {
+                    "topic": "Ikea Trådfri 806lm",
+                    "state": "ON",
+                    "delay": 0,
+                    "target": "z2m",
+                    "brightness": "254",
+                    "transition": "2"
+                }
+            ]
+        },
+        "topic": ""
+    }
+    ```
+
 9. **Where to go from here**
-    Replace the inject nodes with a switch.
+    Replace the inject nodes with a switch, add some colored lamps. Be creative 😊.
