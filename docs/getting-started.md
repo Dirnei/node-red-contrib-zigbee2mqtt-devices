@@ -310,7 +310,7 @@ Concept is as follows: Modify the payload. Send message node does the work
 
     We then can configure the Mosquitto server as our broker. I had to use the device IP and not localhost to get it working. Since authentication is not configured, I left it blank.
 
-    ![bridge config](img/getting-started-flow02-bridge-config.png)
+    ![bridge config](img/getting-started-flow03-mqtt-config.png)
     
     **Important**: Before we continue, we have to **deploy** the flow once so the configured Zigbee2MQTT bridge is available to all the nodes. If everything worked out, we should see a little green connected indicator.
 
@@ -472,30 +472,140 @@ Concept is as follows: Modify the payload. Send message node does the work
     Message object after the second generic lamp.
 
     ``` json
-    todo
+    {
+        "_msgid": "b0db48e0.9cf638",
+        "payload": {
+            "devices": [
+                {
+                    "topic": "Phillips Hue white ambience",
+                    "state": "ON",
+                    "delay": 0,
+                    "target": "z2m",
+                    "brightness": "30",
+                    "transition": "2",
+                    "temperature": "153"
+                },
+                {
+                    "topic": "Ikea Trådfri 806lm",
+                    "state": "ON",
+                    "delay": 0,
+                    "target": "z2m",
+                    "brightness": "254",
+                    "transition": "2"
+                }
+            ]
+        },
+        "topic": ""
+    }
     ```
 
-    //ToDo: Add explanation and dump of messages
-
-    As you can see, the two devices are now in the payload. The send messages will take both devices and .... send an individual messages to Z2M via MQTT.
+    As you can see, the two devices are now in the same payload. The send messages will take both devices and send individual messages to Z2M via MQTT.
 
 7. **Override nodes**
-
-
 
     Configuring the settings in the single lamp node is simple and easy
     if you have one lamp or want to set specific settings per lamp.
     If you want to controll values for a group of lamps instead, we created override nodes.
     Override nodes set (override) the values for all the lamps in the message.
     So if you want to sitch a group of devices, you can apply to all the lamps in the message.
-    Multiple overrides in a row work.
+    
+    Lets remove the duplicate `generic-lamp` nodes that where connected to the off switch. And add two `override-state` nodes to after the *On* and *Off* switches. Configure the `override-state` nodes by setting one to on and the other to off.
 
+    ![Override nodes](img/getting-started-flow16-override-nodes.gif)
+
+    
+    What happens behind the scenes is, that the message payload, now contains an override section and the two lamps. The `send messages` node gets this message object and interprets it. From the message, it knows it has tow devices to trigger, and it uses the values from the override section and applys them to all the devices. Meaning it overwrites the state of both devices and sets it to `OFF` before sending it.
+
+    ``` json
+    {
+        "_msgid": "bcc6e6d9.13e8a8",
+        "payload": {
+            "override": {
+                "state": "OFF"
+            },
+            "devices": [
+                {
+                    "topic": "Phillips Hue white ambience",
+                    "state": "ON",
+                    "delay": 0,
+                    "target": "z2m",
+                    "brightness": "30",
+                    "transition": "2",
+                    "temperature": "153"
+                },
+                {
+                    "topic": "Ikea Trådfri 806lm",
+                    "state": "ON",
+                    "delay": 0,
+                    "target": "z2m",
+                    "brightness": "254",
+                    "transition": "2"
+                }
+            ]
+        },
+        "topic": ""
+    }
+    ```
+
+    This also gives us the posibility to add multiple overrides at once. E.g. for color or brightness.
+    Lets create a relaxed mode where we dimm the brightness with an `override-brightness` node (set to 127) and set the color to warm white with the `override-temperature` node (set to 333).
+    
+    ![override color and temperature](img/getting-started-flow17-override-multiple.gif)
+
+    The three override values are applied to both devices, but only in case the *relax mode* inject node was pressed. Normal *On* and *Off* uses the default color and temperature set in the `generic-lamp` nodes.
+
+    ``` json
+    {
+        "_msgid": "c287cb65.64eed8",
+        "payload": {
+            "override": {
+                "brightness": "127",
+                "temperature": 333,
+                "state": "ON"
+            },
+            "devices": [
+                {
+                    "topic": "Phillips Hue white ambience",
+                    "state": "ON",
+                    "delay": 0,
+                    "target": "z2m",
+                    "brightness": "30",
+                    "transition": "2",
+                    "temperature": "153"
+                },
+                {
+                    "topic": "Ikea Trådfri 806lm",
+                    "state": "ON",
+                    "delay": 0,
+                    "target": "z2m",
+                    "brightness": "254",
+                    "transition": "2"
+                }
+            ]
+        },
+        "topic": ""
+    }
+    ```
+
+    Overrides are a powerful tool, and probably the most useful when they are connected to remotes and switches.
+    In general we advise you to more work with override nodes than setting the values itself. In combination with a switch it could look a bit like in this configuration.
+
+    ![overview](img/overview.png)
+    
 
     
 
-    switch -> set brightness 50% -> lamp1 -> lamp2 -> lamp3 ->
-    // ToDo: Add the same json outputs here.
+8. **Set override JSON manually**
 
+    Since the override nodes simply add json to the payload, we can make use of that to create some debug buttons.
+    Let's add a new `inject` node called work mode and set the payload to this json.
+    ``` json
+    {"override":{"brightness":"255","temperature":100,"state":"ON"}}
+    ```
+    
+    ![inject override](img/getting-started-flow18-inject-override.png)
 
-8. **Add Switch**
-    Replace the Inject nodes by a switch.
+    ![inject override flow](img/getting-started-flow19-inject-override-flow.png)
+
+9. **Where to go from here**
+    Replace the inject nodes with a switch.
