@@ -24,7 +24,7 @@
 
             this.leberkas= "semmebresl";
             RED.bavaria.devices.createDeviceSelector("thermnostat-selection", deviceName, "EndDevice", "Eurotronic", "SPZB0001");
-            RED.bavaria.devices.createDeviceSelector("window-selection", windowSensor, "EndDevice", "all", "all", false, "windowSensor");
+            RED.bavaria.devices.createDeviceSelector("window-selection", windowSensor, "contact", "all", "all", false, "windowSensor");
 
             $("#removeSensor").click(function () {
                 document.getElementById("node-input-windowSensor").selectedIndex = -1;
