@@ -8,7 +8,7 @@
 
 #### Features:
 
-- Added a better device-type filter in device-selection for `occupancy`, `climate` and `concact` sensors. Resolves #77
+- Added a better device-type filter in device-selection for `occupancy`, `climate` and `contact` sensors. Resolves #77
 
 #### Bug fixes:
 
