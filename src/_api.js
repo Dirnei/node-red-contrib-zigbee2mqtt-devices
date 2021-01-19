@@ -141,8 +141,6 @@ module.exports = function (RED) {
         });
     }
 
-
-
     RED.httpAdmin.get("/z2m/scenes", function (req, res) {
         try {
             var scenes = [];
