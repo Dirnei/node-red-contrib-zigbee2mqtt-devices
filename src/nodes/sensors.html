@@ -20,7 +20,7 @@
             var node = this;
             var deviceName = node.deviceName;
 
-            RED.bavaria.devices.createDeviceSelector("device-selection", deviceName, "EndDevice");
+            RED.bavaria.devices.createDeviceSelector("device-selection", deviceName, "contact");
         }
     });
 
@@ -74,7 +74,7 @@
             var node = this;
             var deviceName = node.deviceName;
 
-            RED.bavaria.devices.createDeviceSelector("device-selection", deviceName, "EndDevice");
+            RED.bavaria.devices.createDeviceSelector("device-selection", deviceName, "occupancy");
         }
     });
 
@@ -129,7 +129,7 @@
             var node = this;
             var deviceName = node.deviceName;
 
-            RED.bavaria.devices.createDeviceSelector("device-selection", deviceName, "EndDevice");
+            RED.bavaria.devices.createDeviceSelector("device-selection", deviceName, "climate");
         }
     });
 </script>

@@ -19,8 +19,10 @@ module.exports = function (RED) {
 
             var devices = broker.getDeviceList();
             var type = req.params.deviceType.toLowerCase();
+
             var vendor = decodeURI(req.params.vendor).toLowerCase();
             var model = decodeURI(req.params.model).toLowerCase();
+
             if (model !== "all" && model.includes(",")) {
                 model = model.split(",");
             }
@@ -64,7 +66,29 @@ module.exports = function (RED) {
         });
     }
 
+    function isClimateSensorProperty(expose) {
+        switch (expose.property) {
+            case "temperature":
+            case "humidity":
+            case "pressure":
+                return true;
+        }
+
+        return false;
+    }
+
+    function isContactSensorProperty(expose) {
+        return expose.property === "contact";
+    }
+
+    function isOccupancySensorProperty(expose) {
+        return expose.property === "occupancy";
+    }
+
     function filterDevices(devices, type, vendor, model) {
+        var specialTypes = ["climate", "contact", "occupancy"];
+        var isSpecialType = specialTypes.includes(type);
+
         return devices.filter(e => {
             try {
 
@@ -75,6 +99,29 @@ module.exports = function (RED) {
                 var dt = e.type.toLowerCase();
                 var dv = "all";
                 var dm = "all";
+
+                if (isSpecialType === true && dt == "enddevice" && e.definition.exposes !== undefined) {
+                    var match = 0;
+                    e.definition.exposes.forEach(expose => {
+                        if (match === 0 && expose.property !== undefined) {
+                            switch (type) {
+                                case "climate":
+                                    match |= isClimateSensorProperty(expose);
+                                    break;
+                                case "contact":
+                                    match |= isContactSensorProperty(expose);
+                                    break;
+                                case "occupancy":
+                                    match |= isOccupancySensorProperty(expose);
+                                    break;
+                            }
+                        }
+                    });
+
+                    if (match === 1) {
+                        return true;
+                    }
+                }
 
                 if (e.definition.vendor) {
                     dv = e.definition.vendor.toLowerCase();
