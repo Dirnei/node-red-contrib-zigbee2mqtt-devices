@@ -100,7 +100,7 @@ module.exports = function (RED) {
                 var dv = "all";
                 var dm = "all";
 
-                if (isSpecialType === true && dt == "enddevice") {
+                if (isSpecialType === true && dt == "enddevice" && e.definition.exposes !== undefined) {
                     var match = 0;
                     e.definition.exposes.forEach(expose => {
                         if (match === 0 && expose.property !== undefined) {
