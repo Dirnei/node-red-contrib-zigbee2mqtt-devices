@@ -27,7 +27,6 @@
             "devices-tint": "dist/nodes/devices-tint.js",
             "generic-lamp": "dist/zigbee2mqtt.js",
             "non-z2m-devices-shelly-25": "dist/non-z2m-nodes/devices-shelly-25.js",
-            "mqtt-config": "dist/non-z2m-nodes/mqtt-config.js",
             "ota": "dist/ota.js",
             "override": "dist/nodes/override/override-nodes.js",
             "scenes": "dist/nodes/scenes.js",
