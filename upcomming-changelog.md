@@ -7,13 +7,7 @@
 ### Release: `0.18.1`
 
 #### Features:
-- Added the getting started guide to the documentation
-
-- Added a better device-type filter in device-selection for `occupancy`, `climate` and `contact` sensors. Resolves #77
 
 #### Bug fixes:
 
 #### Behind the scenes
-
-- Switched generic sensor nodes to new device-selection (contact, occupancy, climate). Resolves #74
-- Removed mqtt-config.ts (file was deleted) reference in package.json that caused a warning in the update-panel
