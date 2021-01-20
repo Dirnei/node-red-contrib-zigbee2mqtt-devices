@@ -278,7 +278,7 @@ For better distinction between the devices is advisable to rename your devices.
 Now that we get everything set up, we can start to define our first flow. Let's begin to switch the lamp from software first.
 
 
-1. **Pull the send messages node into the flow.**
+1. **Pull the *send messages* node into the flow.**
     
     Since this is our first node, we have to configure how to connect to the Zigbee2MQTT bridge. Click on the little edit icon to define a new bridge.
 
@@ -296,7 +296,7 @@ Now that we get everything set up, we can start to define our first flow. Let's 
 
     ![connected](img/getting-started-flow04-connected.png)
 
-2. **Add the generic lamp node**
+2. **Add the *generic lamp* node**
 
     Add the *generic lamp* node, connect it's output to the *send messages* node.
     Next, define a new *device config* for your lamp via the little edit icon.
@@ -308,8 +308,8 @@ Now that we get everything set up, we can start to define our first flow. Let's 
 
     ![generic lamp](img/getting-started-flow06-hue-device-config.png)
 
-    Back in the *generic-lamp* config, we can define to set the brightness to 30 (range from 0 to 255).
-    And the color to 153 (around 6500° Kelvin). The color uses the Mirek scale, with values usually between 50 and 400.
+    Back in the *generic-lamp* config, we can define to set the brightness to `30` (range from 0 to 255).
+    And the color to `153` (around 6500° Kelvin). The color uses the Mirek scale, with values usually between 50 and 400.
     
     `Mirek = 1.000.000 / Temp. in Kelvin`
 
@@ -319,9 +319,9 @@ Now that we get everything set up, we can start to define our first flow. Let's 
 
 3. **Inject a message to trigger the lamp change**
 
-    Drag a *inject* node into your flow and connect it to the lamp node (no particular setting needed). Now you can deploy the changes.
+    Drag a *inject* node into your flow and connect it to the *generic lamp* node (no particular setting needed). Now you can deploy the changes.
 
-    If you now click on the button next to the inject node, you should see your light turn darker and cold white!
+    If you now click on the button next to the *inject* node, you should see your light turn darker and cold white!
 
     ![Flow with added inject node](img/getting-started-flow08-inject-node.png)
 
@@ -329,10 +329,10 @@ Now that we get everything set up, we can start to define our first flow. Let's 
     **So, how does this work?**
 
     The Z2M nodes always append the information that shall be sent to the current message of the flow.
-    The *send messages node* then interprets the changes to be made and publishes them via MQTT.
-    In this case, we only have one lamp, and we defined the values directly within the *generic lamp node*.
+    The *send messages* node then interprets the changes to be made and publishes them via MQTT.
+    In this case, we only have one lamp, and we defined the values directly within the *generic lamp* node.
 
-    After the *inject node*, you start with just a random message object. For our use-case this does not really matter.
+    After the *inject* node, you start with just a random message object. For our use-case this does not really matter.
     ``` json
     {
       "_msgid":"b0db48e0.9cf638",
@@ -341,7 +341,7 @@ Now that we get everything set up, we can start to define our first flow. Let's 
     }
     ```
 
-    After the *generic lamp node*, the message object now contains one device in the payload, with the settings specified.
+    After the *generic lamp* node, the message object now contains one device in the payload, with the settings specified.
     ``` json
     {
         "_msgid":"b0db48e0.9cf638",
@@ -364,13 +364,13 @@ Now that we get everything set up, we can start to define our first flow. Let's 
 
     As mentioned, the send message interprets that payload and generates and sends the MQTT messages.
 
-    At this point, you are probably asking yourself: Why this has to be so complicated. Why can the generic lamp node not directly send the message to Zigbee2MQTT?
+    At this point, you are probably asking yourself: Why this has to be so complicated. Why can the *generic lamp* node not directly send the message to Zigbee2MQTT?
 
     The thing is, usually, we don't only want to switch one lamp - we want to switch multiple lamps.
     With the current implementation, we would add one *generic lamp* to turn our lamp on and one *generic lamp* to turn it off. This can quickly escalate.
     Because of this reason, we will later introduce *override nodes*. Override nodes allow you to set values for multiple devices. We will come back to that later after we added a few more devices.
 
-    > **For now, you shall note that the *generic lamp node* does two things:**
+    > **For now, you shall note that the *generic lamp* node does two things:**
     > 1. Adds the lamp as a device to the payload so it will be triggered by send messages.
     > 2. Adjusts values for individual devices.
  
@@ -378,9 +378,9 @@ Now that we get everything set up, we can start to define our first flow. Let's 
 4. **Toggle the Lamp**
 
     We got a lamp that we can turn on. Let's continue by also let us turn the lamp off.
-    The simplest form to do that is to tell the lamp to *Toggle*. If we send a Toggle command to the lamp, the lamp itself decides to turn on or off based on its current state. The toggle is not implemented in Software in Zigbee2MQTT, but rather by the Lamp itself. So it can vary from lamp to lamp. The Phillips HUE Bulb, for example, always switches between 0% and the brightness that was last configured. It does not consider the set brightness in that case.
+    The simplest form to do that is to tell the lamp to toggle*. If we send a Toggle command to the lamp, the lamp itself decides to turn on or off based on its current state. The toggle is not implemented in Software in Zigbee2MQTT, but rather by the Lamp itself. So it can vary from lamp to lamp. The Phillips HUE Bulb, for example, always switches between 0% and the brightness that was last configured. It does not consider the set brightness in that case.
 
-    To get the lamp to toggle, we open `generic lamp` node config and change the state form *On* to *Toggle* and **deploy** the changes.
+    To get the lamp to toggle, we open *generic lamp* node config and change the state form `On` to `Toggle` and **deploy** the changes.
     
     ![State: Toggle generic lamp config](img/getting-started-flow09-toggle-device-config.png)
     
@@ -393,20 +393,20 @@ Now that we get everything set up, we can start to define our first flow. Let's 
 
     Toggling can be fine if you use a button. But if you use a switch, then you usually want to turn them off with dedicated buttons.
 
-    So let's add another `inject node` and rename the two inject nodes *On* and *Off*. They will represent our switch.
+    So let's add another *inject* node and rename the two *inject* nodes to `On` and `Off`. They will represent our switch.
 
     ![On button](img/getting-started-flow12-on-off-flow-1.png) 
 
-    Then change the state of the *generic lamp node* to **ON**.
+    Then change the state of the *generic lamp* to `ON`.
 
     ![Set the State to ON](img/getting-started-flow07-brightness-color-hue.png)
 
     We are now back where we started, and the lamp only turns on.
-    Let's now duplicate the *generic lamp node* wire it to the *off inject node* and the *send messages node*
+    Let's now duplicate the *generic lamp* node wire it to the *off inject* node and the *send messages* node.
 
     ![On off buttons](img/getting-started-flow12-on-off-flow-2.png) 
 
-    Then we configure the second *generic lamp node* state to **OFF**
+    Then we configure the second *generic lamp* node state to `OFF`
 
     ![Set the State to OFF](img/getting-started-flow11-off-device-config.png)
 
@@ -416,10 +416,10 @@ Now that we get everything set up, we can start to define our first flow. Let's 
 
 
 6. **More lamps**
-    Let's add another lamp and first illustrate how we would implement the lamp with the knowledge from the previous step. Add a new *generic lamp node* and define a new device config in the lamp. In my case, I configured an Ikea Trådfri blub that is warm white but dimmable. Set the State to On and the brightness to 255.
-    Connect it to the *on inject node* and the *send message node*. Then duplicate the *generic lamp node* and just change the state to Off and connect it to the *off inject node* and to the *send messages node*.
+    Let's add another lamp and first illustrate how we would implement the lamp with the knowledge from the previous step. Add a new *generic lamp* node and define a new device config in the lamp. In my case, I configured an Ikea Trådfri blub that is warm white but dimmable. Set the State to On and the brightness to 255.
+    Connect it to the *on inject* on and the *send message* node. Then duplicate the *generic lamp* node and just change the state to `OFF` and connect it to the *off inject* node and to the *send messages* node.
 
-    Now the two lamps are wired up in parallel and can be switched on/off with the same inject node.
+    Now the two lamps are wired up in parallel and can be switched on/off with the same *inject* node.
 
     ![Lamps in parallel](img/getting-started-flow14-second-lamp-paralell.png)
 
@@ -428,7 +428,7 @@ Now that we get everything set up, we can start to define our first flow. Let's 
     ![Lamps in parallel](img/getting-started-flow15-second-lamp-series.png)
 
 
-    Message object after the first generic lamp.
+    Message object after the first *generic lamp*.
     ``` json
     {
         "_msgid":"b0db48e0.9cf638",
@@ -449,7 +449,7 @@ Now that we get everything set up, we can start to define our first flow. Let's 
     }
     ```
 
-    Message object after the second generic lamp.
+    Message object after the second *generic lamp*.
 
     ``` json
     {
@@ -485,16 +485,16 @@ Now that we get everything set up, we can start to define our first flow. Let's 
 
     Configuring the settings in the single lamp node is simple and easy
     if you have one lamp or want to set specific settings per lamp.
-    If you want to control values for a group of lamps instead, we created override nodes.
-    Override nodes set (override) the values for all the lamps in the message.
+    If you want to control values for a group of lamps instead, we created *override* nodes.
+    *Override* nodes set (override) the values for all the lamps in the message.
     So if you want to sitch a group of devices, you can apply to all the lamps in the message.
     
-    Let's remove the duplicate `generic-lamp` nodes that were connected to the off switch. And add two `override-state` nodes after the *On* and *Off* switches. Configure the `override-state` nodes by setting one to *On* and the other to *Off*.
+    Let's remove the duplicate *generic-lamp* nodes that were connected to the off switch. And add two *override-state* nodes after the *On* and *Off* switches. Configure the *override-state* nodes by setting one to `ON` and the other to `OFF`.
 
     ![Override nodes](img/getting-started-flow16-override-nodes.gif)
 
     
-    What happens behind the scenes is that the message payload, now contains an override section and the two lamps. The `send messages` node gets this message object and interprets it. From the message, it knows it has tow devices to trigger, and it uses the values from the override section and applys them to all the devices. Meaning it overwrites the state of both devices and sets it to `OFF` before sending it.
+    What happens behind the scenes is that the message payload, now contains an override section and the two lamps. The *send messages* node gets this message object and interprets it. From the message, it knows it has tow devices to trigger, and it uses the values from the override section and applys them to all the devices. Meaning it overwrites the state of both devices and sets it to `OFF` before sending it.
 
     ``` json
     {
@@ -528,11 +528,11 @@ Now that we get everything set up, we can start to define our first flow. Let's 
     ```
 
     This also gives us the possibility to add multiple overrides at once. E.g., for color or brightness.
-    Let's create a relaxed mode where we dim the brightness with an `override-brightness` node (set to 127) and set the color to warm white with the `override-temperature` node (set to 333).
+    Let's create a relaxed mode where we dim the brightness with an *override-brightness* node (set to `127`) and set the color to warm white with the *override-temperature* node (set to `333`).
     
     ![override color and temperature](img/getting-started-flow17-override-multiple.gif)
 
-    The three override values are applied to both devices, but only in case the *relax mode* inject node was pressed. Normal *On* and *Off* uses the default color and temperature set in the `generic-lamp` nodes.
+    The three override values are applied to both devices, but only in case the *relax mode* inject node was pressed. Normal *On* and *Off* uses the default color and temperature set in the *generic-lamp* nodes.
 
     ``` json
     {
@@ -568,7 +568,7 @@ Now that we get everything set up, we can start to define our first flow. Let's 
     ```
 
     Overrides are a powerful tool and probably the most useful when they are connected to remotes and switches.
-    In general, we advise you to work more with override nodes instead of setting the values in the `generic-lamp` itself. A layout with more lamps could look like the following example.
+    In general, we advise you to work more with *override* nodes instead of setting the values in the *generic-lamp* itself. A layout with more lamps could look like the following example.
 
     ![overview](img/overview.png)
     
@@ -577,15 +577,15 @@ Now that we get everything set up, we can start to define our first flow. Let's 
 
 8. **Set override JSON manually**
 
-    Since the override nodes simply add JSON to the payload, we can use that to create some debug buttons.
-    Let's add a new `inject` node called work mode and set the payload to this JSON.
+    Since the *override* nodes simply add JSON to the payload, we can use that to create some debug buttons.
+    Let's add a new *inject* node called work mode and set the payload to this JSON.
     ``` json
     {"override":{"brightness":"255","temperature":100,"state":"ON"}}
     ```
     
     ![inject override](img/getting-started-flow18-inject-override.png)
 
-    If we now connect the *work mode* node to the `generic lamp` nodes, we can see the override working similarly as in the relax mode.
+    If we now connect the *work mode* node to the *generic lamp* nodes, we can see the override working similarly as in the relax mode.
 
     ![inject override flow](img/getting-started-flow19-inject-override-flow.png)
 
@@ -624,6 +624,6 @@ Now that we get everything set up, we can start to define our first flow. Let's 
 
 9. **Final thoughts**
     
-    The general idea with all these nodes is that they modify the message in the payload and then send the changes via the `send messages` node to the MQTT broker. All the decisions on which exact MQTT messages to send are made by the `send messages` node.
+    The general idea with all these nodes is that they modify the message in the payload and then send the changes via the *send messages* node to the MQTT broker. All the decisions on which exact MQTT messages to send are made by the *send messages* node.
 
     What to do next? Maybe replace the inject nodes with a switch, add some colored lamps. Be creative 😊.
