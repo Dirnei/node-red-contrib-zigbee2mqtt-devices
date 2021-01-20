@@ -7,6 +7,7 @@
 ### Release: `0.18.1`
 
 #### Features:
+- Added the getting started guide to the documentation
 
 #### Bug fixes:
 
