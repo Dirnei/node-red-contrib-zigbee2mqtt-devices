@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  zigbee2mqtt:
+    image: koenkk/zigbee2mqtt:latest
+    container_name: z2m_composed
+    volumes:
+      - /run/udev:/run/udev:ro
+      - ${PWD}/z2m:/app/data
+    ports:
+        - "8080:8080"
+    environment:
+      - TZ=Europe/Berlin
+    devices:
+      - device=/dev/ttyACM0
+    network_mode: "host"
+    restart: always
+    privileged: true
+    depends_on:
+      - mosquitto
+
+  mosquitto:
+      image: eclipse-mosquitto
+      container_name: mosquitto_composed
+      volumes:
+        - ${PWD}/mosquitto:/mosquitto
+      ports:
+        - "1883:1883"
+        - "9001:9001"
+      restart: always
+
+  nodered:
+      image: nodered/node-red
+      container_name: nodered_composed
+      volumes:
+        - ${PWD}/nodered:/data
+      ports:
+        - "1880:1880"
+      restart: always
+      depends_on:
+        - zigbee2mqtt
+        - mosquitto
