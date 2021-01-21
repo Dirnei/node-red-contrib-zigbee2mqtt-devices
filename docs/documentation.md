@@ -9,7 +9,7 @@ devices connected to [ZigBee2MQTT](https://www.zigbee2mqtt.io/).
 
 
 ## 1. Getting started:
-The [Getting started guide**](getting-started.md) contains an
+The [**Getting started guide**](getting-started.md) contains an
 exemplary tutorial on setting up Node-RED, Zigbee2MQTT, etc., and how to define your first flow
 with the Zigbee2MQTT nodes for Node-RED. The guide will give you some examples of how to use the
 nodes and insight into the inner workings of the messages the library uses.
@@ -44,7 +44,7 @@ section.
 ### 2.2  Configs
 - [bridge-config](config/bridge-config.md) Select your MQTT-Broker and the base MQTT topic used for Zigbee2MQTT.
 - [mqtt-config](config/mqtt-config.md) Configuret the connection and credentials a your MQTT-Broker.
-- [device-config](config/device-config.mqtt) Configure devices and capabilities to use them with the nodes.
+- [device-config](config/device-config.md) Configure devices and capabilities to use them with the nodes.
 
 
 ## 3. Examples
