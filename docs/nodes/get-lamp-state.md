@@ -14,4 +14,4 @@ For more information see [bridge-config](../config/bridge-config.md).
 
 Select the lamp you want to retrieve the state from. For more information see [device-config](../config/device-config.md).
 
-[Back to main](../../README.MD)
+[*← back to the index*](../documentation.md)

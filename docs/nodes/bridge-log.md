@@ -64,3 +64,5 @@ Is converted into this Node-RED message object as it leaves the bridge log node.
     "_msgid": "770eadcb.231f54"
 }
 ```
+
+[*← back to the index*](../documentation.md)

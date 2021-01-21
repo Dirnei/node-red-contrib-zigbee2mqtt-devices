@@ -5,4 +5,4 @@ Define the connection to your MQTT-Broker here. This is the same configuration u
 ![img](img/mqtt-config-config.png)
 
 
-[Back to main](../../README.MD)
+[*← back to the index*](../documentation.md)

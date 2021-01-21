@@ -78,7 +78,7 @@ If you have a bit of money to spend, we suggest the [Texas Instruments LAUNCHXL-
     andreas@nuc:~/smarthome$ nano docker-compose.yml
     ```
 
-    The compose file contains our three containers (Node-RED, Zigbee2MQTT, and Mosquitto).
+    The [compose file](docker-compose.yml) contains our three containers (Node-RED, Zigbee2MQTT, and Mosquitto).
     You can copy and paste this configuration. Remember to adjust the Zigbee adapter if you are using a different adapter than `/dev/ttyACM0`.
 
     ``` yml

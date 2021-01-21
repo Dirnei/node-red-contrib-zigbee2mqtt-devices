@@ -75,4 +75,4 @@ You may want to update some lamps only manually for various reasons. For example
 ## Nice 2 know
 > Only one OTA-update node per bridge is allowed. If more than one is deployed, only the first one will work. All others will show an error status.
 
-[Back to main](../../README.MD)
+[*← back to the index*](../documentation.md)

@@ -21,15 +21,15 @@ Using the dropdown and the "add scene" button, you can generate a sequence of sc
 
 This property decides, which behaviour the selector has, whenever the selected scene index reaches the beginning (when stepping down) or the end (when stepping up) of the scene sequence.
 - If ```true```:
-  | Command | Current scene | New scene |
-  |---|---|---|
-  | previous | first | last |
-  | next | last | first |
+  | Command  | Current scene | New scene |
+  |----------|---------------|-----------|
+  | previous | first         | last      |
+  | next     | last          | first     |
 - If ```false```:
-  | Command | Current scene | New scene |
-  |---|---|---|
-  | previous | first | first |
-  | next | last | last |
+  | Command  | Current scene | New scene |
+  |----------|---------------|-----------|
+  | previous | first         | first     |
+  | next     | last          | last      |
 
 ### Changed output only
 
@@ -41,4 +41,4 @@ See [example flow](../../examples/scene_example.flow).
 
 ![img](img/scene-selector-example.png)
 
-[Back to main](../../README.MD)
+[*← back to the index*](../documentation.md)

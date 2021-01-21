@@ -20,4 +20,4 @@ Select the zigbee2mqtt device you want to listen to.
 
 When checking the checkbox, experimental mode is activated. For further information, see [device-config](../config/device-config.md).
 
-[Back to main](../../README.MD)
+[*← back to the index*](../documentation.md)
