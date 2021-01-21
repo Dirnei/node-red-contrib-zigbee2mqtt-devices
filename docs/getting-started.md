@@ -420,8 +420,11 @@ Now that we get everything set up, we can start to define our first flow. Let's 
 
     If we deploy the changes, we can turn the lamp on and off.
 
-    ![Toggeling the lamp](img/getting-started-flow13-on-off-flow-3.png.gif)
-
+    ![Toggeling the lamp](img/getting-started-flow13-on-off-flow-3.gif)
+    
+    > **Example flow** [One lamp On/Off](../examples/getting-started/one-lamp-on-off.json) is included in the package.
+    > 
+    > Import it via: `Node-RED Menu > Import > Examples > node-red-contrib-zigbee2mqtt-devices > getting-started > one-lamp-on-off`
 
 6. **More lamps**
     Let's add another lamp and first illustrate how we would implement the lamp with the knowledge from the previous step. Add a new *generic lamp* node and define a new device config in the lamp. In my case, I configured an Ikea Trådfri blub that is warm white but dimmable. Set the State to On and the brightness to 255.
@@ -629,6 +632,10 @@ Now that we get everything set up, we can start to define our first flow. Let's 
         "topic": ""
     }
     ```
+
+    > **Example flow** [Two lamps override](../examples/getting-started/two-lamps-override.json) is included in the package.
+    > 
+    > Import it via: `Node-RED Menu > Import > Examples > node-red-contrib-zigbee2mqtt-devices > getting-started > two-lamps-override`
 
 9. **Final thoughts**
     

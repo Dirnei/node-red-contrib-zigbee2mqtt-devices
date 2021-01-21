@@ -41,8 +41,34 @@ section.
 
 > Note: There are a few nodes for sensors and remotes that have not been documented in the wiki yet, but you can read about them in the internal help documentation.
 
-
 ### 2.2  Configs
 - [bridge-config](config/bridge-config.md) Select your MQTT-Broker and the base MQTT topic used for Zigbee2MQTT.
 - [mqtt-config](config/mqtt-config.md) Configuret the connection and credentials a your MQTT-Broker.
 - [device-config](config/device-config.mqtt) Configure devices and capabilities to use them with the nodes.
+
+
+## 3. Examples
+
+The examples are already included, if you installed the package.
+
+Open `Node-RED Menu > Import > Examples > node-red-contrib-zigbee2mqtt-devices` to import the example flows.
+
+### Getting started
+[**One lamp On/Off**](../examples/getting-started/one-lamp-on-off.json) is a simple example to turn one lamp on and off with two inject nodes.
+
+![One lamp On/Off example flow](img/getting-started-flow13-on-off-flow-3.gif)
+
+ 
+[**Two lamps override**](../examples/getting-started/two-lamps-override.json) demonstrates how to use override nodes to control multiple lamps.
+
+![inject override example flow](img/getting-started-flow19-inject-override-flow.png)
+
+### One Time Update
+[**OTA over night**](../examples/ota/ota_over_night.json) enables the auto update between 00:00 and 04:00.
+
+![OTA over night example flow](nodes/img/ota-node-example-flow-over-night.png)
+
+### Scenes
+[**Basic scenes**](../examples/scenes/basic_scene.json) switches scenes with the scene selector.
+
+![scene selector example flow](nodes/img/scene-selector-example.png)

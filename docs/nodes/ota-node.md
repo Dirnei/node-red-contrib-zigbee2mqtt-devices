@@ -72,7 +72,15 @@ You may want to update some lamps only manually for various reasons. For example
 ![img](img/ota-node-update-progress-output.png)
 ![img](img/ota-node-update-finished.png)
 
-## Nice 2 know
+## Nice to know
 > Only one OTA-update node per bridge is allowed. If more than one is deployed, only the first one will work. All others will show an error status.
+
+## Example
+
+The [**OTA over night example flow**](../../examples/ota/ota_over_night.json) enables the auto update between 00:00 and 04:00 and is included in this package.
+
+Import it via: `Node-RED Menu > Import > Examples > node-red-contrib-zigbee2mqtt-devices > ota > ota_over_night`
+
+![OTA over night example flow](img/ota-node-example-flow-over-night.png)
 
 [*← back to the index*](../documentation.md)

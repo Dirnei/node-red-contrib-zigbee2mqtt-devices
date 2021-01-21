@@ -37,8 +37,11 @@ If set to true, the node only outputs a scene selection if the selected scene ha
 
 ## Example
 
-See [example flow](../../examples/scene_example.flow).
+The [**basic scene example flow**](../../examples/scenes/basic_scene.json) is included in the package.
 
-![img](img/scene-selector-example.png)
+Import it via: `Node-RED Menu > Import > Examples > node-red-contrib-zigbee2mqtt-devices > scenes > basic_scene`
+
+
+![scene selector example flow](img/scene-selector-example.png)
 
 [*← back to the index*](../documentation.md)
