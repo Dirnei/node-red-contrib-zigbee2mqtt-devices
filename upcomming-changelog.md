@@ -7,7 +7,9 @@
 ### Release: `0.19.0`
 
 #### Features:
+- Two new example flows, from the getting started guide
 - Documentation overview page
+- Documented examples
 
 #### Bug fixes:
 
