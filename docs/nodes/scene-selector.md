@@ -21,15 +21,15 @@ Using the dropdown and the "add scene" button, you can generate a sequence of sc
 
 This property decides, which behaviour the selector has, whenever the selected scene index reaches the beginning (when stepping down) or the end (when stepping up) of the scene sequence.
 - If ```true```:
-  | Command | Current scene | New scene |
-  |---|---|---|
-  | previous | first | last |
-  | next | last | first |
+  | Command  | Current scene | New scene |
+  |----------|---------------|-----------|
+  | previous | first         | last      |
+  | next     | last          | first     |
 - If ```false```:
-  | Command | Current scene | New scene |
-  |---|---|---|
-  | previous | first | first |
-  | next | last | last |
+  | Command  | Current scene | New scene |
+  |----------|---------------|-----------|
+  | previous | first         | first     |
+  | next     | last          | last      |
 
 ### Changed output only
 
@@ -37,8 +37,11 @@ If set to true, the node only outputs a scene selection if the selected scene ha
 
 ## Example
 
-See [example flow](../../examples/scene_example.flow).
+The [**basic scene example flow**](../../examples/scenes/basic_scene.json) is included in the package.
 
-![img](img/scene-selector-example.png)
+Import it via: `Node-RED Menu > Import > Examples > node-red-contrib-zigbee2mqtt-devices > scenes > basic_scene`
 
-[Back to main](../../README.MD)
+
+![scene selector example flow](img/scene-selector-example.png)
+
+[*← back to the index*](../documentation.md)

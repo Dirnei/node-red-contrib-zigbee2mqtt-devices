@@ -1,5 +1,10 @@
 .*/
-debug
-install.ps1
-docker-compose.yml
 src/
+debug
+*.ps1
+docker-compose.yml
+tsconfig.json
+_template.html
+_template.js
+upcomming-changelog.md
+docs/

@@ -3,6 +3,14 @@
 This getting started guide shows you how to exemplary create a simple Zigbee2MQTT and Node-RED setup.
 And then how to use the "Zigbee2MQTT Nodes for Node-RED" to create a basic home automation system with a few devices.
 
+# Table of Contents
+- [Exemplary Zigbee2MQTT and Node-RED setup](#exemplary-zigbee2mqtt-and-node-red-setup)
+  * [Prerequisites](#prerequisites)
+  * [Setup Process](#setup-process)
+  * [After setup considerations](#after-setup-considerations)
+- [Pairing our devices with Zigbee2MQTT](#pairing-our-devices-with-zigbee2mqtt)
+- [Define your first flow](#define-your-first-flow)
+
 
 # Exemplary Zigbee2MQTT and Node-RED setup
 
@@ -78,7 +86,7 @@ If you have a bit of money to spend, we suggest the [Texas Instruments LAUNCHXL-
     andreas@nuc:~/smarthome$ nano docker-compose.yml
     ```
 
-    The compose file contains our three containers (Node-RED, Zigbee2MQTT, and Mosquitto).
+    The [compose file](docker-compose.yml) contains our three containers (Node-RED, Zigbee2MQTT, and Mosquitto).
     You can copy and paste this configuration. Remember to adjust the Zigbee adapter if you are using a different adapter than `/dev/ttyACM0`.
 
     ``` yml
@@ -412,8 +420,11 @@ Now that we get everything set up, we can start to define our first flow. Let's 
 
     If we deploy the changes, we can turn the lamp on and off.
 
-    ![Toggeling the lamp](img/getting-started-flow13-on-off-flow-3.png.gif)
-
+    ![Toggeling the lamp](img/getting-started-flow13-on-off-flow-3.gif)
+    
+    > **Example flow** [One lamp On/Off](../examples/getting-started/one-lamp-on-off.json) is included in the package.
+    > 
+    > Import it via: `Node-RED Menu > Import > Examples > node-red-contrib-zigbee2mqtt-devices > getting-started > one-lamp-on-off`
 
 6. **More lamps**
     Let's add another lamp and first illustrate how we would implement the lamp with the knowledge from the previous step. Add a new *generic lamp* node and define a new device config in the lamp. In my case, I configured an Ikea Trådfri blub that is warm white but dimmable. Set the State to On and the brightness to 255.
@@ -622,8 +633,14 @@ Now that we get everything set up, we can start to define our first flow. Let's 
     }
     ```
 
+    > **Example flow** [Two lamps override](../examples/getting-started/two-lamps-override.json) is included in the package.
+    > 
+    > Import it via: `Node-RED Menu > Import > Examples > node-red-contrib-zigbee2mqtt-devices > getting-started > two-lamps-override`
+
 9. **Final thoughts**
     
     The general idea with all these nodes is that they modify the message in the payload and then send the changes via the *send messages* node to the MQTT broker. All the decisions on which exact MQTT messages to send are made by the *send messages* node.
 
     What to do next? Maybe replace the inject nodes with a switch, add some colored lamps. Be creative 😊.
+
+[*← back to the index*](documentation.md)

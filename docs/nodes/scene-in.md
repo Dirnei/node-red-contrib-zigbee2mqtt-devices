@@ -14,4 +14,4 @@ Changes the display label of the node.
 
 The name of the scene which can be used within the [scene-selector](scene-selector.md)s ```set``` command.
 
-[Back to main](../../README.MD)
+[*← back to the index*](../documentation.md)

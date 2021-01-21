@@ -46,4 +46,4 @@ In some cases, you may want to send multiple messages while a button is held dow
     
 Or join our [Discord server](https://discord.gg/4qCMEhJ) and suggest a device we should support :) 
 
-[Back to main](../../README.MD)
+[*← back to the index*](../documentation.md)

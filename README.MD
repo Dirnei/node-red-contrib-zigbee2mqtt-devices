@@ -26,8 +26,13 @@ Many nodes are available right now, and there are still new node ideas that will
 - [bridge-log](docs/nodes/bridge-log.md)
 - And many more for sensors and remotes...
 
-## Getting started:
-Have a look at [this](docs/getting-started.md). All you need are some allready paired Zigbee lamps and a installed Node-RED. What are you waiting for? Find out now, how easy it is to get started.  
+## Getting started
+
+Have a look at [the getting started guide.](docs/getting-started.md). All you need are some already paired Zigbee lamps and an installed Node-RED. What are you waiting for? Find out now how easy it is to get started.
+
+## Documentation
+
+The [documentation](docs/documentation.md) for the project is located in the `docs` folder.
 
 ## You need some addition help?
 
