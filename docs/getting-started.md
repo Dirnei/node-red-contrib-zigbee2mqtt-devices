@@ -3,6 +3,14 @@
 This getting started guide shows you how to exemplary create a simple Zigbee2MQTT and Node-RED setup.
 And then how to use the "Zigbee2MQTT Nodes for Node-RED" to create a basic home automation system with a few devices.
 
+# Table of Contents
+- [Exemplary Zigbee2MQTT and Node-RED setup](#exemplary-zigbee2mqtt-and-node-red-setup)
+  * [Prerequisites](#prerequisites)
+  * [Setup Process](#setup-process)
+  * [After setup considerations](#after-setup-considerations)
+- [Pairing our devices with Zigbee2MQTT](#pairing-our-devices-with-zigbee2mqtt)
+- [Define your first flow](#define-your-first-flow)
+
 
 # Exemplary Zigbee2MQTT and Node-RED setup
 
@@ -627,3 +635,5 @@ Now that we get everything set up, we can start to define our first flow. Let's 
     The general idea with all these nodes is that they modify the message in the payload and then send the changes via the *send messages* node to the MQTT broker. All the decisions on which exact MQTT messages to send are made by the *send messages* node.
 
     What to do next? Maybe replace the inject nodes with a switch, add some colored lamps. Be creative 😊.
+
+[*← back to the index*](documentation.md)

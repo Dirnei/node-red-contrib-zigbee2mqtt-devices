@@ -26,11 +26,11 @@ section.
 - [generic-lamp](nodes/generic-lamp.md) Used to define which lamps you want to control.
 - [send-messages](nodes/send-messages.md) Prepares and sends the mqtt messages to the MQTT-Broker.
 - [override-nodes](nodes/override-nodes.md) Overrides the properties that are set a generic-lamp.
-  - [override-state](override-state.md) Overrides the `ON`/`OFF` state.
-  - [override-brightness](override-brightness.md) Overrides the brightness of a lamp.
-  - [override-temperature](override-temperature.md) Overrides light temperature of a lamp.
-  - [override-color](override-color.md) Overrides the light color of a lamp.
-  - [override-action](override-action.md) Modify brightness/color over time or in steps.
+  - [override-state](nodes/override-state.md) Overrides the `ON`/`OFF` state.
+  - [override-brightness](nodes/override-brightness.md) Overrides the brightness of a lamp.
+  - [override-temperature](nodes/override-temperature.md) Overrides light temperature of a lamp.
+  - [override-color](nodes/override-color.md) Overrides the light color of a lamp.
+  - [override-action](nodes/override-action.md) Modify brightness/color over time or in steps.
 - [button-switch](nodes/button-switch.md)  Is used after a remote node to redirect the message to a seperate output. 
 - [scene-in](nodes/scene-in.md) Configures a scene which can be activated via the scene-selector.
 - [scene-selector](nodes/scene-selector.md) Select scenes in a defined order.
