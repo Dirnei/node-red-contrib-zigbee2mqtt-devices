@@ -21,7 +21,7 @@ module.exports = function (RED) {
             });
         });
 
-        node.on("close", ()=>{
+        node.on("close", () => {
             bavaria.observer.unregister(regId);
         });
     }
@@ -45,7 +45,7 @@ module.exports = function (RED) {
             });
         });
 
-        node.on("close", ()=>{
+        node.on("close", () => {
             bavaria.observer.unregister(regId);
         });
     }
@@ -58,25 +58,36 @@ module.exports = function (RED) {
         utils.setConnectionState(bridgeNode, node);
 
         function messageReceived(message) {
+            var outputs=[message];
+
             var text = "";
             if (config.temperature === true) {
                 text += "T: " + message.temperature + "C° ";
+                outputs.push({payload: message.temperature});
             }
 
             if (config.pressure === true) {
                 text += "P: " + message.pressure + "mBar ";
+                outputs.push({payload: message.pressure});
             }
 
             if (config.humidity === true) {
                 text += "H: " + message.humidity + "%";
+                outputs.push({payload: message.humidity});
             }
 
             if (config.co2 === true) {
                 text += "CO2: " + message.co2 + "ppm";
+                outputs.push({payload: message.co2});
             }
 
             node.status({ fill: "green", text: text });
-            node.send({ payload: message, device_name: config.deviceName });
+            if (config.separateOutputs === true) {
+                node.send(outputs);
+
+            } else {
+                node.send({ payload: message, device_name: config.deviceName });
+            }
         }
 
         function subscribe() {

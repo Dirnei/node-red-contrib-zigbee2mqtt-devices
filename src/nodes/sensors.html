@@ -117,10 +117,32 @@
             temperature: { value: true },
             pressure: { value: true },
             humidity: { value: true },
-            co2: { value: false }
+            co2: { value: false },
+            separateOutputs: { value: false },
+            outputs: { value: 1 },
         },
         inputs: 0,
         outputs: 1,
+        outputLabels: function (i) {
+            var outputs = ["MQTT Message"];
+
+            if (this.separateOutputs) {
+                if (this.temperature === true) {
+                    outputs.push("Temperature");
+                }
+                if (this.pressure === true) {
+                    outputs.push("Pressure");
+                }
+                if (this.humidity === true) {
+                    outputs.push("Humidity");
+                }
+                if (this.co2 === true) {
+                    outputs.push("CO2");
+                }
+            }
+            
+            return outputs[i];
+        },
         icon: "serial.png",
         label: function () {
             return this.name || "climate sensor";
@@ -130,6 +152,34 @@
             var deviceName = node.deviceName;
 
             RED.bavaria.devices.createDeviceSelector("device-selection", deviceName, "climate");
+        },
+        oneditsave: function () {
+            var node = this;
+            var outputs = 1;
+            console.log("leberkas")
+            if ($("#node-input-separateOutputs").is(":checked")) {
+                console.log("checked separate outputs");
+                if ($("#node-input-temperature").is(":checked")) {
+                    console.log("temp");
+                    outputs++;
+                }
+                if ($("#node-input-pressure").is(":checked")) {
+                    console.log("press");
+                    outputs++;
+                }
+                if ($("#node-input-humidity").is(":checked")) {
+                    console.log("humi");
+                    outputs++;
+                }
+                if ($("#node-input-co2").is(":checked")) {
+                    console.log("co2");
+                    outputs++;
+                }
+            }
+
+            if (this.outputs !== outputs) {
+                this.outputs = outputs;
+            }
         }
     });
 </script>
@@ -163,7 +213,10 @@
             <label for="node-input-co2"><i class="fa fa-industry"></i> CO2</label>
             <input type="checkbox" id="node-input-co2" />
         </div>
-
+        <div class="form-row">
+            <label for="node-input-separateOutputs"><i class="fa fa-arrows-alt"></i> Separate Outputs</label>
+            <input type="checkbox" id="node-input-separateOutputs" />
+        </div>
     </div>
 </script>
 
