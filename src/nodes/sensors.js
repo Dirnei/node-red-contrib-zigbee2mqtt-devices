@@ -58,27 +58,27 @@ module.exports = function (RED) {
         utils.setConnectionState(bridgeNode, node);
 
         function messageReceived(message) {
-            var outputs=[message];
+            var outputs = [message];
 
             var text = "";
             if (config.temperature === true) {
                 text += "T: " + message.temperature + "C° ";
-                outputs.push({payload: message.temperature});
+                outputs.push({ payload: message.temperature, device_name: config.deviceName });
             }
 
             if (config.pressure === true) {
                 text += "P: " + message.pressure + "mBar ";
-                outputs.push({payload: message.pressure});
+                outputs.push({ payload: message.pressure, device_name: config.deviceName });
             }
 
             if (config.humidity === true) {
                 text += "H: " + message.humidity + "%";
-                outputs.push({payload: message.humidity});
+                outputs.push({ payload: message.humidity, device_name: config.deviceName });
             }
 
             if (config.co2 === true) {
                 text += "CO2: " + message.co2 + "ppm";
-                outputs.push({payload: message.co2});
+                outputs.push({ payload: message.co2, device_name: config.deviceName });
             }
 
             node.status({ fill: "green", text: text });
