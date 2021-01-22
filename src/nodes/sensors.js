@@ -76,7 +76,7 @@ module.exports = function (RED) {
             }
 
             node.status({ fill: "green", text: text });
-            node.send({ payload: message });
+            node.send({ payload: message, device_name: config.deviceName });
         }
 
         function subscribe() {
