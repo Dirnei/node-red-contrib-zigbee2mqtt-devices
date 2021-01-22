@@ -39,6 +39,11 @@
         padding: 7px;
         color: white;
         background: rgb(244, 67, 54);
+        text-align: center;
+    }
+    
+    .zigbee2mqtt-error-box button{
+        margin-left: 10px;
     }
 </style>
 
@@ -282,6 +287,24 @@
                             });
 
                             select.val(selectedDevice);
+                        }).fail(function () {
+                            $("#device-error" + inputId)
+                                .html("Failed to request device-list!")
+                                .append(
+                                    $("<button></button>")
+                                        .text("Switch to manual entry")
+                                        .click(() => {
+                                            let textbox = $("<input />", { "type": "text", "value": selectedDevice });
+                                            textbox.attr("id", inputId)
+                                                .attr("style", "margin-left: 4px;")
+                                                .attr("placeholder", "Enter friendly_name");
+                                            $("#" + inputId).replaceWith(textbox);
+                                            $("#refresh-button-" + inputId).remove();
+                                            $("#device-error" + inputId).hide();
+                                        })
+                                );
+
+                            $("#device-error" + inputId).show();
                         });
                     }
 
