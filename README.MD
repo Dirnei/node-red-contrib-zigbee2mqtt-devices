@@ -10,8 +10,7 @@
 
 This project contains Node-RED nodes that allow you to build Smart Home scenarios with your Zigbee devices connected to [ZigBee2MQTT](https://www.zigbee2mqtt.io/).
 
-![img](docs/img/overview.png)
-
+![overview](docs/img/overview.png)
 
 ## Available Nodes
 
@@ -27,6 +26,14 @@ Many nodes are available right now, and there are still new node ideas that will
 - [bridge-log](docs/nodes/bridge-log.md)
 - And many more for sensors and remotes...
 
+## Getting started
+
+Have a look at [the getting started guide.](docs/getting-started.md). All you need are some already paired Zigbee lamps and an installed Node-RED. What are you waiting for? Find out now how easy it is to get started.
+
+## Documentation
+
+The [documentation](docs/documentation.md) for the project is located in the `docs` folder.
+
 ## You need some addition help?
 
 Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth support or problems that aren't metioned anywhere :)
@@ -34,6 +41,17 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 [![node-red-contrib-zigbee2mqtt-devices](https://discordapp.com/api/guilds/760063909465686067/widget.png?style=banner2)](https://discord.gg/4qCMEhJ)
 
 ## Changelog 
+
+### Release: `0.18.1`
+
+#### Features:
+- Added the getting started guide to the documentation
+- Added a better device-type filter in device-selection for `occupancy`, `climate` and `contact` sensors. Resolves #77
+
+#### Behind the scenes
+
+- Switched generic sensor nodes to new device-selection (contact, occupancy, climate). Resolves #74
+- Removed mqtt-config.ts (file was deleted) reference in package.json that caused a warning in the update-panel
 
 ### Release: `0.18.0`
 
@@ -51,8 +69,6 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 > 
 > ![img](docs/img/0-18-update-delete-old-nodes.png)
 
-
-
 #### Features:
 
 - Removed custom MQTT Configuration and replaced it with the MQTT Configuration from the core nodes
@@ -67,7 +83,6 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 ### Older changelogs
 
 You can find all the release notes at the [Release-Page](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices/releases)
-
 
 ## You want to contribute?
 

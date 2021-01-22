@@ -8,4 +8,4 @@ RGB values can be set between 0 and 255. All lamps in the flow will be set to th
 
 ![img](img/override-nodes-example.png)
 
-[Back to main](../../README.MD)
+[*← back to the index*](../documentation.md)

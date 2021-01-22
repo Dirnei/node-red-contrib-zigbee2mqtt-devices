@@ -16,4 +16,4 @@ Color temperature in Reciprocal MegaKelvin, a.k.a. Mirek scale.
 
 ![img](img/override-nodes-example.png)
 
-[Back to main](../../README.MD)
+[*← back to the index*](../documentation.md)

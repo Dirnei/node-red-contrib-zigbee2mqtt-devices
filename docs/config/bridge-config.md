@@ -38,4 +38,4 @@ To reduce the amount of messages that will be sent, you can turn off the status 
 > Default: on
 
 
-[Back to main](../../README.MD)
+[*← back to the index*](../documentation.md)
