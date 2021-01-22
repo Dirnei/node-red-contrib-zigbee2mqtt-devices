@@ -12,7 +12,7 @@ module.exports = function (RED) {
             var broker = RED.nodes.getNode(req.params.broker.replace("_", "."));
 
             if (broker === undefined || broker === null) {
-                response.message = "Unable to find broker. Pleas deploy first and try it again.";
+                response.message = "Unable to find broker. Please deploy first and try it again.";
                 res.end(JSON.stringify(response));
                 return;
             }
