@@ -11,6 +11,8 @@
 - Documentation overview page
 - Documented examples
 
+- Show **switch to manual** button if the device-list request failed.
+
 #### Bug fixes:
 
 #### Behind the scenes
