@@ -156,7 +156,8 @@
         oneditsave: function () {
             var node = this;
             var outputs = 1;
-            console.log("leberkas")
+            
+            // Create seperate outputs
             if ($("#node-input-separateOutputs").is(":checked")) {
                 console.log("checked separate outputs");
                 if ($("#node-input-temperature").is(":checked")) {
@@ -214,12 +215,17 @@
             <input type="checkbox" id="node-input-co2" />
         </div>
         <div class="form-row">
-            <label for="node-input-separateOutputs"><i class="fa fa-arrows-alt"></i> Separate Outputs</label>
+            <label for="node-input-separateOutputs"><i class="fa fa-arrows-alt"></i> Separate outputs</label>
             <input type="checkbox" id="node-input-separateOutputs" />
         </div>
     </div>
 </script>
 
 <script type="text/html" data-help-name="climate-sensor">
-    <p>Node to trigger scenes</p>
+    <p>
+        Sends a new message when it retrieves data from a climate sensor.
+        In the configuration, you can define which values you want to display in the status of the node.
+        If the <b>separate outputs</b> option is enabled, the selected properties each get their own output,
+        which only outputs the value of the property.
+    </p>
 </script>

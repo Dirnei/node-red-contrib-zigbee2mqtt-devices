@@ -1,6 +1,6 @@
 # Climate sensor
 
-The climate sensor node can be used to retrieve data from a climate sensor. In the configuration you can define which values you want to display in the status of the node. If **separate outputs** option is enabled, the selected properties get there own output which only ouputs the value of the property.
+The climate sensor node can be used to retrieve data from a climate sensor. In the configuration, you can define which values you want to display in the status of the node. If the **separate outputs** option is enabled, the selected properties each get their own output, which only outputs the value of the property.
 
 ## Configuration
 
@@ -32,6 +32,6 @@ Displays the CO2 in the status of the node.
 
 ### Separate outputs
 
-Separates the selected properties into different outputs. If this is enabled, the first output still outputs the raw MQTT message.
+Separates the selected properties into different outputs. If this is enabled, the first output still outputs the raw MQTT message as well.
 
 [*← back to the index*](../documentation.md)
