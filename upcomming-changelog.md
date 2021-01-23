@@ -3,16 +3,9 @@
 
 > If new features are added, increase the minor version || if bug fixes are added, increase the patch version.
 
-
-### Release: `0.19.0`
+### Release: `0.20.0`
 
 #### Features:
-- Two new example flows, from the getting started guide
-- Documentation overview page
-- Documented examples
-- Show **switch to manual** button if the device-list request failed.
-- Added `deviceName` to the ouput of the climate-sensor. Resolves #75
-- Added `separateOuputs` option the the climate sensor. Resolves #75
 
 #### Bug fixes:
 

@@ -42,6 +42,16 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 
 ## Changelog 
 
+### Release: `0.19.0`
+
+#### Features:
+- Two new example flows, from the getting started guide
+- Documentation overview page
+- Documented examples
+- Show **switch to manual** button if the device-list request failed.
+- Added `deviceName` to the ouput of the climate-sensor. Resolves #75
+- Added `separateOuputs` option the the climate sensor. Resolves #75
+
 ### Release: `0.18.1`
 
 #### Features:
