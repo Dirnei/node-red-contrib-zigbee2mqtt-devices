@@ -38,6 +38,7 @@ section.
 - [get-lamp-state](nodes/get-lamp-state.md) Retrieve the current state of a lamp.
 - [ota-node](nodes/ota-node.md) Used to start OTA updates.
 - [bridge-log](nodes/bridge-log.md) Filter logs of the Zigbee2MQTT bridge.
+- [climate-sensor](nodes/climate-sensor.md) Used to get values from a climate sensor.
 
 > Note: There are a few nodes for sensors and remotes that have not been documented in the wiki yet, but you can read about them in the internal help documentation.
 

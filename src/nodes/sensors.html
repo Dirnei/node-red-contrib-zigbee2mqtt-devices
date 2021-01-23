@@ -117,10 +117,32 @@
             temperature: { value: true },
             pressure: { value: true },
             humidity: { value: true },
-            co2: { value: false }
+            co2: { value: false },
+            separateOutputs: { value: false },
+            outputs: { value: 1 },
         },
         inputs: 0,
         outputs: 1,
+        outputLabels: function (i) {
+            var outputs = ["MQTT Message"];
+
+            if (this.separateOutputs) {
+                if (this.temperature === true) {
+                    outputs.push("Temperature");
+                }
+                if (this.pressure === true) {
+                    outputs.push("Pressure");
+                }
+                if (this.humidity === true) {
+                    outputs.push("Humidity");
+                }
+                if (this.co2 === true) {
+                    outputs.push("CO2");
+                }
+            }
+            
+            return outputs[i];
+        },
         icon: "serial.png",
         label: function () {
             return this.name || "climate sensor";
@@ -130,6 +152,35 @@
             var deviceName = node.deviceName;
 
             RED.bavaria.devices.createDeviceSelector("device-selection", deviceName, "climate");
+        },
+        oneditsave: function () {
+            var node = this;
+            var outputs = 1;
+            
+            // Create seperate outputs
+            if ($("#node-input-separateOutputs").is(":checked")) {
+                console.log("checked separate outputs");
+                if ($("#node-input-temperature").is(":checked")) {
+                    console.log("temp");
+                    outputs++;
+                }
+                if ($("#node-input-pressure").is(":checked")) {
+                    console.log("press");
+                    outputs++;
+                }
+                if ($("#node-input-humidity").is(":checked")) {
+                    console.log("humi");
+                    outputs++;
+                }
+                if ($("#node-input-co2").is(":checked")) {
+                    console.log("co2");
+                    outputs++;
+                }
+            }
+
+            if (this.outputs !== outputs) {
+                this.outputs = outputs;
+            }
         }
     });
 </script>
@@ -163,10 +214,53 @@
             <label for="node-input-co2"><i class="fa fa-industry"></i> CO2</label>
             <input type="checkbox" id="node-input-co2" />
         </div>
-
+        <div class="form-row">
+            <label for="node-input-separateOutputs"><i class="fa fa-arrows-alt"></i> Separate outputs</label>
+            <input type="checkbox" id="node-input-separateOutputs" />
+        </div>
     </div>
 </script>
 
 <script type="text/html" data-help-name="climate-sensor">
-    <p>Node to trigger scenes</p>
+    <p>
+        Sends a new message when it retrieves data from a climate sensor.
+        In the configuration, you can define which values you want to display in the status of the node.
+        If the <b>separate outputs</b> option is enabled, the selected properties each get their own output,
+        which only outputs the value of the property.
+    </p>
+    
+    <h3>Output - Separate Output disabled</h3>
+    <p>It will always output the raw MQTT message sent by zigbee2mqtt. Properties are only present if the device supports it.</p>
+    <dl class="message-properties">
+        <dt> battery <span class="property-type"> number </span> </dt>
+        <dd> The battery percentage of the device </dd>
+        <dt> humidity <span class="property-type"> number </span> </dt>
+        <dd> The current humiditiy measured by the device </dd>
+        <dt> pressure <span class="property-type"> number </span> </dt>
+        <dd> The current pressure measured by the device </dd>
+        <dt> temperature <span class="property-type"> number </span> </dt>
+        <dd> The current temperature measured by the device </dd>
+        <dt> co2 <span class="property-type"> number </span> </dt>
+        <dd> The current co2 level measured by the device </dd>
+        <dt> linkquality <span class="property-type"> number </span> </dt>
+        <dd> The current linkquality of the device </dd>
+        <dt> voltage <span class="property-type"> number </span> </dt>
+        <dd> The current voltage battery in the device </dd>
+    </dl>
+    
+    <h3>Output - Separate Output enabled</h3>
+    <p>Below outputs will only be shown if you enabled it in the configuration and also have <code>Saparate outputs</code> enabled.</p>
+    <h4>Output - MQTT message</h4>
+    <p>Outputs the same mqtt message as if <code>Separate outputs</code> is disabled. For details see documented output above.</p>
+    <h4>Output - Temperature</h4>
+    <p>MQTT message is reduced to only the temperature and sets it to <code>msg.payload</code></p>
+    <h4>Output - Pressure</h4>
+    <p>MQTT message is reduced to only the pressure and sets it to <code>msg.payload</code></p>
+    <h4>Output - Humidity</h4>
+    <p>MQTT message is reduced to only the humidity and sets it to <code>msg.payload</code></p>
+    <h4>Output - CO2</h4>
+    <p>MQTT message is reduced to only the co2 level and sets it to <code>msg.payload</code></p>
+
+    <h3>Details</h3>
+    <p>In addition to all the described outputs above, you will have the property <code>msg.device_name</code> with the devicename available.</p>
 </script>
