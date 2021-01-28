@@ -23,6 +23,7 @@ module.exports = function (RED) {
                     brightness_stop: utils.createButtonOutput(4, "dimm_stop", "released"),
                 };
 
+                var output = undefined;
                 if (message.action === undefined || message.action === "") {
                     if (message.click === undefined || message.click === "") {
                         // both properties are empty -> ingore
@@ -33,7 +34,7 @@ module.exports = function (RED) {
                     }
                 } else {
                     // default property
-                    var output = ioMap[message.action];
+                    output = ioMap[message.action];
                 }
 
                 if (output !== undefined && output.index >= 0) {
@@ -81,13 +82,28 @@ module.exports = function (RED) {
                     arrow_right_release: utils.createButtonOutput(4, "arrow_right", "released")
                 };
 
-                var output = ioMap[message.action];
-                utils.sendAt(node, output.index, {
-                    payload: {
-                        button_name: output.button_name,
-                        button_type: output.button_type,
+                var output = undefined;
+                if (message.action === undefined || message.action === "") {
+                    if (message.click === undefined || message.click === "") {
+                        // both properties are empty -> ingore
+                        return;
+                    } else {
+                        // fallback if message.action was not set
+                        output = ioMap[message.click];
                     }
-                });
+                } else {
+                    // default property
+                    output = ioMap[message.action];
+                }
+
+                if (output !== undefined && output.index >= 0) {
+                    utils.sendAt(node, output.index, {
+                        payload: {
+                            button_name: output.button_name,
+                            button_type: output.button_type,
+                        }
+                    });
+                }
             });
         });
 
