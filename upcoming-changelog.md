@@ -10,3 +10,4 @@
 #### Bug fixes:
 
 #### Behind the scenes
+- Removed some unnecessary files from the package, reducing the size from 324 kB to 229 kB
