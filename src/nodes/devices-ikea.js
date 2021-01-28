@@ -23,22 +23,31 @@ module.exports = function (RED) {
                     brightness_stop: utils.createButtonOutput(4, "dimm_stop", "released"),
                 };
 
-                var output = ioMap[message.action];
-                if (output == undefined) {
-                    // fallback for legacy payload
-                    output = ioMap[message.click];
+                if (message.action === undefined || message.action === "") {
+                    if (message.click === undefined || message.click === "") {
+                        // both properties are empty -> ingore
+                        return;
+                    } else {
+                        // fallback if message.action was not set
+                        output = ioMap[message.click];
+                    }
+                } else {
+                    // default property
+                    var output = ioMap[message.action];
                 }
 
-                utils.sendAt(node, output.index, {
-                    payload: {
-                        button_name: output.button_name,
-                        button_type: output.button_type,
-                    }
-                });
+                if (output !== undefined && output.index >= 0) {
+                    utils.sendAt(node, output.index, {
+                        payload: {
+                            button_name: output.button_name,
+                            button_type: output.button_type,
+                        }
+                    });
+                }
             });
         });
 
-        node.on("close", ()=>{
+        node.on("close", () => {
             bavaria.observer.unregister(regId);
         });
     }
@@ -82,7 +91,7 @@ module.exports = function (RED) {
             });
         });
 
-        node.on("close", ()=>{
+        node.on("close", () => {
             bavaria.observer.unregister(regId);
         });
     }
