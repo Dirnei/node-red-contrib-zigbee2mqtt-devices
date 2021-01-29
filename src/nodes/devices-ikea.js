@@ -158,7 +158,7 @@ module.exports = function (RED) {
                     }
                 }
 
-                message.action = message.action.replace("-", "_");
+                message[actionNamePathFilter] = message[actionNamePathFilter].replace("-", "_");
                 const out = handler.prepareOutput(actionNamePathFilter, message);
                 node.send(out);
             });
