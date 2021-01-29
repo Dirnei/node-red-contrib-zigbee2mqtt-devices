@@ -39,15 +39,15 @@
     },
     "scripts": {
         "build": "run-script-os",
-        "build:nix": "./node_modules/.bin/tsc && rsync -rv --exclude='*.js' --exclude='*.ts' ./src/ ./dist/",
-        "build:win32": "./node_modules/.bin/tsc && robocopy.exe ./src/ ./dist/ /MIR /xf *.js /xf *.ts /NFL /NDL /NJH /NJS /nc /ns /np",
+        "build:nix": "tsc && rsync -rv --exclude='*.js' --exclude='*.ts' ./src/ ./dist/",
+        "build:win32": "tsc && @powershell -NoProfile -Command ./robocopy.ps1",
         "builddocker": "run-script-os",
         "builddocker:nix": "npm run build:nix && pwsh ./install.ps1",
-        "builddocker:win32": "npm run build:win32 || @powershell -NoProfile -Command ./install.ps1",
+        "builddocker:win32": "npm run build:win32 && @powershell -NoProfile -Command ./install.ps1",
         "createnode": "run-script-os",
         "createnode:nix": "pwsh ./createNode.ps1",
         "createnode:win32": "@powershell -NoProfile -Command ./createNode.ps1",
-        "lint": "./node_modules/.bin/eslint './src/**/*.js'"
+        "lint": "eslint ./src/**/*.js"
     },
     "devDependencies": {
         "@types/jquery": "^3.5.5",
