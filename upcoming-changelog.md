@@ -9,4 +9,8 @@
 
 #### Bug fixes:
 
+- Better handling for invalid mqtt messages from z2m. Sometimes a required/expected property is missing or empty which caused an error.
+
 #### Behind the scenes
+
+- Removed some unnecessary files from the package, reducing the size from 324 kB to 229 kB

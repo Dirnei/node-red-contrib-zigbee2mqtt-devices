@@ -23,22 +23,32 @@ module.exports = function (RED) {
                     brightness_stop: utils.createButtonOutput(4, "dimm_stop", "released"),
                 };
 
-                var output = ioMap[message.action];
-                if (output == undefined) {
-                    // fallback for legacy payload
-                    output = ioMap[message.click];
+                var output = undefined;
+                if (message.action === undefined || message.action === "") {
+                    if (message.click === undefined || message.click === "") {
+                        // both properties are empty -> ingore
+                        return;
+                    } else {
+                        // fallback if message.action was not set
+                        output = ioMap[message.click];
+                    }
+                } else {
+                    // default property
+                    output = ioMap[message.action];
                 }
 
-                utils.sendAt(node, output.index, {
-                    payload: {
-                        button_name: output.button_name,
-                        button_type: output.button_type,
-                    }
-                });
+                if (output !== undefined && output.index >= 0) {
+                    utils.sendAt(node, output.index, {
+                        payload: {
+                            button_name: output.button_name,
+                            button_type: output.button_type,
+                        }
+                    });
+                }
             });
         });
 
-        node.on("close", ()=>{
+        node.on("close", () => {
             bavaria.observer.unregister(regId);
         });
     }
@@ -72,17 +82,32 @@ module.exports = function (RED) {
                     arrow_right_release: utils.createButtonOutput(4, "arrow_right", "released")
                 };
 
-                var output = ioMap[message.action];
-                utils.sendAt(node, output.index, {
-                    payload: {
-                        button_name: output.button_name,
-                        button_type: output.button_type,
+                var output = undefined;
+                if (message.action === undefined || message.action === "") {
+                    if (message.click === undefined || message.click === "") {
+                        // both properties are empty -> ingore
+                        return;
+                    } else {
+                        // fallback if message.action was not set
+                        output = ioMap[message.click];
                     }
-                });
+                } else {
+                    // default property
+                    output = ioMap[message.action];
+                }
+
+                if (output !== undefined && output.index >= 0) {
+                    utils.sendAt(node, output.index, {
+                        payload: {
+                            button_name: output.button_name,
+                            button_type: output.button_type,
+                        }
+                    });
+                }
             });
         });
 
-        node.on("close", ()=>{
+        node.on("close", () => {
             bavaria.observer.unregister(regId);
         });
     }
@@ -90,10 +115,10 @@ module.exports = function (RED) {
 
     function ikeaDimmerV2(config) {
         RED.nodes.createNode(this, config);
-        var bridgeNode = RED.nodes.getNode(config.bridge);
-        var node = this;
+        const bridgeNode = RED.nodes.getNode(config.bridge);
+        const node = this;
 
-        var handler = new OutputHandler();
+        const handler = new OutputHandler();
 
         if (config.extendedOutput === true) {
             handler
@@ -120,8 +145,21 @@ module.exports = function (RED) {
         const regId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
-                message.action = message.action.replace("-", "_");
-                var out = handler.prepareOutput("action", message);
+                
+                // Handle broken MQTT messages
+                let actionNamePathFilter = "action";
+                if (message.action === undefined || message.action === "") {
+                    if (message.click === undefined || message.click === "") {
+                        // both properties are empty, ingore this message
+                        return;
+                    } else {
+                        // fallback if message.action was not set
+                        actionNamePathFilter = "click";
+                    }
+                }
+
+                message[actionNamePathFilter] = message[actionNamePathFilter].replace("-", "_");
+                const out = handler.prepareOutput(actionNamePathFilter, message);
                 node.send(out);
             });
         });

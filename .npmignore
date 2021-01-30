@@ -8,3 +8,6 @@ _template.html
 _template.js
 upcomming-changelog.md
 docs/
+.eslintrc.js
+dashboard/
+resources/
