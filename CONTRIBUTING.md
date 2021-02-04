@@ -1,6 +1,6 @@
 # Contributing
 
-Everyone is welcomed to create a pull request. If you are unsure what or how to do something, we can discuss it on GitHub or discord.
+Everyone is welcomed to create a pull request. If you are unsure what or how to do something, we can discuss it on [GitHub](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices) or [Discord](https://discord.gg/4qCMEhJ).
 
 
 # Development Environment
