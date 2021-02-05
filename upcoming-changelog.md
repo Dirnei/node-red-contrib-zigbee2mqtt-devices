@@ -14,3 +14,6 @@
 #### Behind the scenes
 
 - Removed some unnecessary files from the package, reducing the size from 324 kB to 229 kB
+- Removed vulnerable dependencies
+- Updated and thinned out dependencies so the installation will be faster
+- Dev feature: Cleaned up npm build scripts so there are no warnings, and they behave the same on Windows, Linux, and macOS.
