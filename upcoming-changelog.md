@@ -10,6 +10,7 @@
 #### Bug fixes:
 
 - Better handling for invalid mqtt messages from z2m. Sometimes a required/expected property is missing or empty which caused an error.
+- Hue Dimmer sitch crashed NodeRED because the power status with no action came with no action.
 
 #### Behind the scenes
 
