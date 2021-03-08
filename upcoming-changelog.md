@@ -3,18 +3,10 @@
 
 > If new features are added, increase the minor version || if bug fixes are added, increase the patch version.
 
-### Release: `0.20.0`
+### Release: `0.`
 
 #### Features:
 
 #### Bug fixes:
 
-- Better handling for invalid mqtt messages from z2m. Sometimes a required/expected property is missing or empty which caused an error.
-- Hue Dimmer sitch crashed NodeRED because the power status with no action came with no action.
-
 #### Behind the scenes
-
-- Removed some unnecessary files from the package, reducing the size from 324 kB to 229 kB
-- Removed vulnerable dependencies
-- Updated and thinned out dependencies so the installation will be faster
-- Dev feature: Cleaned up npm build scripts so there are no warnings, and they behave the same on Windows, Linux, and macOS.

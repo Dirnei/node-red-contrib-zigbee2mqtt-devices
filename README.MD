@@ -42,6 +42,20 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 
 ## Changelog 
 
+### Release: `0.19.1`
+
+#### Bug fixes:
+
+- Better handling for invalid mqtt messages from z2m. Sometimes a required/expected property is missing or empty which caused an error.
+- Hue Dimmer sitch crashed NodeRED because the power status with no action came with no action.
+
+#### Behind the scenes
+
+- Removed some unnecessary files from the package, reducing the size from 324 kB to 229 kB
+- Removed vulnerable dependencies
+- Updated and thinned out dependencies so the installation will be faster
+- Dev feature: Cleaned up npm build scripts so there are no warnings, and they behave the same on Windows, Linux, and macOS.
+
 ### Release: `0.19.0`
 
 #### Features:
@@ -51,44 +65,6 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 - Show **switch to manual** button if the device-list request failed.
 - Added `deviceName` to the ouput of the climate-sensor. Resolves #75
 - Added `separateOuputs` option the the climate sensor. Resolves #75
-
-### Release: `0.18.1`
-
-#### Features:
-- Added the getting started guide to the documentation
-- Added a better device-type filter in device-selection for `occupancy`, `climate` and `contact` sensors. Resolves #77
-
-#### Behind the scenes
-
-- Switched generic sensor nodes to new device-selection (contact, occupancy, climate). Resolves #74
-- Removed mqtt-config.ts (file was deleted) reference in package.json that caused a warning in the update-panel
-
-### Release: `0.18.0`
-
-> **IMPORTANT** This release removes the old `mqtt-config`. After you updated this pacakge, you will get many errors but you only need to fix **one** `bridge-config` and all the errors will get away. Sorry for this inconvenience!
->
-> Open the `bridge-config` and edit the broker - e.g. in the settings of a `send-messages-node`.
-> 
-> ![img](docs/img/0-18-update-reconfigue-bridge.png)
-> 
-> Reconfigure the MQTT connection. Now everything that uses that bridge uses the new MQTT broker.
-> 
-> ![img](docs/img/0.18-update-new-mqttt-config.png)
-> 
-> In case you still can't deploy delete the old now unknown `mqtt-config` nodes in the "Global Configuration Nodes" section.
-> 
-> ![img](docs/img/0-18-update-delete-old-nodes.png)
-
-#### Features:
-
-- Removed custom MQTT Configuration and replaced it with the MQTT Configuration from the core nodes
-- Added option to `bridge-config` to disable device refresh on deployment
-- Added option to `bridge-config` to log log-messages from zigbee2mqtt to the `debug tab`
-
-#### Bug fixes:
-
-- Deployment increased the refresh messages that will be sent on deployment. Fixes #45
-- Redone the device-list as payload has changed and this topic is now also retained on the mqtt broker. It should solve #32
 
 ### Older changelogs
 
