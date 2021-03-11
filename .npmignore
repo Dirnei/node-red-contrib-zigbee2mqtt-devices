@@ -6,7 +6,7 @@ docker-compose.yml
 tsconfig.json
 _template.html
 _template.js
-upcomming-changelog.md
+upcoming-changelog.md
 docs/
 .eslintrc.js
 dashboard/
