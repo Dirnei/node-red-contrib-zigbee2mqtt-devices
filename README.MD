@@ -42,6 +42,12 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 
 ## Changelog 
 
+### Release: `0.19.2`
+
+#### Bug fixes:
+
+- Local node-red installation with nodejs 12 had a problem to load the node-red dependency. Removed it for now as it is only used for logging.
+
 ### Release: `0.19.1`
 
 #### Bug fixes:
