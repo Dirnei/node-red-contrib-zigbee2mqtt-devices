@@ -6,6 +6,8 @@
 ### Release: `0.`
 
 #### Features:
+Documented Mirek scale.
+Visualize colour temperature.
 
 #### Bug fixes:
 
