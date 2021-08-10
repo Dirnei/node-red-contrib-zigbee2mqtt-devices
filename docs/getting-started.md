@@ -141,12 +141,14 @@ If you have a bit of money to spend, we suggest the [Texas Instruments LAUNCHXL-
     andreas@nuc:~/smarthome$ nano mosquitto/config/mosquitto.conf
     ```
 
-    Paste this configuration to define the logging and persistence locations.
+    Paste this configuration to define the logging and persistence locations, the port to listen to on any interface. Furthermore, this enables anonymous authentication to keep this tutorial simple. Mosquitto provides multiple [authentication methods](https://mosquitto.org/documentation/authentication-methods/) for production systems.
 
-    ```
+    ```    
     persistence true
     persistence_location /mosquitto/data/
     log_dest file /mosquitto/log/mosquitto.log
+    listener 1883
+    allow_anonymous true
     ```
 
 4. **Create and run the Docker containers**
