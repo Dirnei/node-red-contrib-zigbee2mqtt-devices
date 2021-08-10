@@ -8,5 +8,6 @@
 #### Features:
 
 #### Bug fixes:
+- Documented additional settings for upgrading to mosquitto 2.0 in the getting started guide.
 
 #### Behind the scenes
