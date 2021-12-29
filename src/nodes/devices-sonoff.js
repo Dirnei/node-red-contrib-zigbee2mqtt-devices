@@ -12,7 +12,8 @@ module.exports = function (RED) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
                 try {
-                    if (message.action === undefined) {
+                    if (message.action === undefined || message.action === "") {
+                        // Ignore message with empty action
                         return;
                     }
 
