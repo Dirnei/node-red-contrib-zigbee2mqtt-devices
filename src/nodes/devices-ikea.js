@@ -63,8 +63,7 @@ module.exports = function (RED) {
         const regId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
-                message.action = message.action.replace("-", "_");
-
+                
                 const ioMap = {
                     toggle: utils.createButtonOutput(0, "toggle", "pressed"),
                     toggle_hold: utils.createButtonOutput(0, "toggle", "released"),
@@ -93,7 +92,7 @@ module.exports = function (RED) {
                     }
                 } else {
                     // default property
-                    output = ioMap[message.action];
+                    output = ioMap[message.action.replace("-", "_")];
                 }
 
                 if (output !== undefined && output.index >= 0) {
