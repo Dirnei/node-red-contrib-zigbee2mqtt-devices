@@ -6,7 +6,7 @@
 ### Release: `0.19.3`
 
 #### Features:
-- Documented additional settings for upgrading to mosquito 2.0 in the getting started guide.
+- Documented additional settings for upgrading to mosquitto 2.0 in the getting started guide.
 - Documented Mirek scale. 
 
 #### Bug fixes:
