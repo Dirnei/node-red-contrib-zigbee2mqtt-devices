@@ -7,6 +7,7 @@
 
 #### Features:
 - Documented additional settings for upgrading to mosquitto 2.0 in the getting started guide.
+- Documented Mirek scale. 
 
 #### Bug fixes:
 - Not set property on Ikea Remote device caused a complete Node-Red restart
