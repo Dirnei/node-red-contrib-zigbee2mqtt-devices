@@ -40,15 +40,37 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 
 [![node-red-contrib-zigbee2mqtt-devices](https://discordapp.com/api/guilds/760063909465686067/widget.png?style=banner2)](https://discord.gg/4qCMEhJ)
 
+## You want to contribute?
+
+That's easy! Feel free to post suggestions, adding documentation or add new features. Every support is welcome!
+
+If you feel very generous and want to contribute with coffee, you sure can:
+
+[![Buy me a coffee][buymeacoffee-shield]][buymeacoffee]
+
+[buymeacoffee]: https://www.buymeacoffee.com/dirnei
+[buymeacoffee-shield]: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
+
 ## Changelog 
 
-### Release: `0.19.2`
+### Release: `0.19.3` - _30 Dec 2021_
+
+#### Features:
+- Documented additional settings for upgrading to mosquitto 2.0 in the getting started guide.
+- Documented Mirek scale. 
+
+#### Bug fixes:
+- Not set property on Ikea Remote device caused a complete Node-Red restart
+- Not set property on Hue Remote device caused a complete Node-Red restart
+- Preventive measure: Check action for empty string in scenic remote and sonnoff buttons
+
+### Release: `0.19.2` - 12 Mar 2021
 
 #### Bug fixes:
 
 - Local node-red installation with nodejs 12 had a problem to load the node-red dependency. Removed it for now as it is only used for logging.
 
-### Release: `0.19.1`
+### Release: `0.19.1` - 8 Mar 2021
 
 #### Bug fixes:
 
@@ -62,7 +84,7 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 - Updated and thinned out dependencies so the installation will be faster
 - Dev feature: Cleaned up npm build scripts so there are no warnings, and they behave the same on Windows, Linux, and macOS.
 
-### Release: `0.19.0`
+### Release: `0.19.0` - 23 Jan 2021
 
 #### Features:
 - Two new example flows, from the getting started guide
@@ -75,14 +97,3 @@ Join the [Discord server](https://discord.gg/4qCMEhJ) for a more in depth suppor
 ### Older changelogs
 
 You can find all the release notes at the [Release-Page](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices/releases)
-
-## You want to contribute?
-
-That's easy! Feel free to post suggestions, adding documentation or add new features. Every support is welcome!
-
-If you feel very generous and want to contribute with coffee, you sure can:
-
-[![Buy me a coffee][buymeacoffee-shield]][buymeacoffee]
-
-[buymeacoffee]: https://www.buymeacoffee.com/dirnei
-[buymeacoffee-shield]: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
