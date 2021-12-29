@@ -6,6 +6,7 @@
 ### Release: `0.`
 
 #### Features:
+- Documented Mirek scale. 
 
 #### Bug fixes:
 - Documented additional settings for upgrading to mosquitto 2.0 in the getting started guide.
