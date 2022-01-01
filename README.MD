@@ -53,6 +53,14 @@ If you feel very generous and want to contribute with coffee, you sure can:
 
 ## Changelog 
 
+### Release: `0.19.4` - _01 Jan 2022_
+
+Happy new year to all!
+
+#### Bug fixes:
+- @itupsk fixed the issue #114, where we forgot a null check on the ikea bugfix in the last release. Thanks a lot!
+- Also fixed the same issue in hue, scenic and sonoff devices
+
 ### Release: `0.19.3` - _30 Dec 2021_
 
 #### Features:
