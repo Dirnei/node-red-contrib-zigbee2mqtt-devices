@@ -24,7 +24,7 @@ module.exports = function (RED) {
                 };
 
                 var output = undefined;
-                if (message.action === undefined || message.action === "") {
+                if (message.action === undefined || message.action === "" || message.action === null) {
                     if (message.click === undefined || message.click === "") {
                         // both properties are empty -> ingore
                         return;
@@ -82,7 +82,7 @@ module.exports = function (RED) {
                 };
 
                 var output = undefined;
-                if (message.action === undefined || message.action === "") {
+                if (message.action === undefined || message.action === "" || message.action === null) {
                     if (message.click === undefined || message.click === "") {
                         // both properties are empty -> ingore
                         return;
@@ -147,7 +147,7 @@ module.exports = function (RED) {
                 
                 // Handle broken MQTT messages
                 let actionNamePathFilter = "action";
-                if (message.action === undefined || message.action === "") {
+                if (message.action === undefined || message.action === "" || message.action === null) {
                     if (message.click === undefined || message.click === "") {
                         // both properties are empty, ingore this message
                         return;
