@@ -11,7 +11,7 @@ module.exports = function (RED) {
         const regId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
             node.status({ fill: "green", text: "connected" });
             bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
-                if (message.action === undefined || message.action === "") {
+                if (message.action === undefined || message.action === "" || message.action === null) {
                     // Ignore message with empty action
                     return;
                 }
