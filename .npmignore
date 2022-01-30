@@ -11,3 +11,5 @@ docs/
 .eslintrc.js
 dashboard/
 resources/
+node-red-contrib-zigbee2mqtt-devices*.tgz
+CONTRIBUTING.md

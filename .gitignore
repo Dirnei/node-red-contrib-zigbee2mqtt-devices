@@ -2,3 +2,4 @@
 debug
 node_modules
 dist
+node-red-contrib-zigbee2mqtt-devices*.tgz
