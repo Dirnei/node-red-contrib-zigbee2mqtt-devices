@@ -189,7 +189,7 @@
             devices: {
                 loadDevices: function (selectedDevice, deviceType, vendor, model, emptyOption = false, inputId = "#node-input-deviceName") {
                     var bridgeId = $("#node-input-bridge").val().replace(".", "_");
-                    $.getJSON(`/z2m/devices/${bridgeId}/${deviceType}/${vendor}/${model}`, function (data) {
+                    $.getJSON(`z2m/devices/${bridgeId}/${deviceType}/${vendor}/${model}`, function (data) {
                         $(inputId).empty();
                         if (emptyOption === true) {
                             $(inputId).append("<option disabled selected value> -- select an option -- </option>");
@@ -254,7 +254,7 @@
 
                     let loadDevices = function (inputId, htmlBridgeId, selectedDevice, deviceType = "all", vendor = "all", model = "all") {
                         var bridgeId = $("#" + htmlBridgeId).val().replace(".", "_");
-                        $.getJSON(`/z2m/devices/${bridgeId}/${deviceType}/${vendor}/${model}`, function (data) {
+                        $.getJSON(`z2m/devices/${bridgeId}/${deviceType}/${vendor}/${model}`, function (data) {
                             let select = $("#" + inputId);
                             select.empty();
 
