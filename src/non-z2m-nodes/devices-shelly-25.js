@@ -1,3 +1,5 @@
+const { notEqual } = require("assert");
+
 module.exports = function (RED) {
     const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
@@ -21,16 +23,25 @@ module.exports = function (RED) {
         var status = context.get("status") || { relay: [{ state: "off", energy: 0, power: 0 }, { state: "off", energy: 0, power: 0 }] };
         var channel = parseInt(config.channel);
 
-        function subscribe(channel, offset) {
-            broker.subscribe(node.id + offset, shelly.prefix + "/relay/" + channel, (msg) => { setRelay(channel, msg); });
-            broker.subscribe(node.id + 1 + offset, shelly.prefix + "/relay/" + channel + "/power", (msg) => { setPower(channel, msg); });
-            broker.subscribe(node.id + 2 + offset, shelly.prefix + "/relay/" + channel + "/energy", (msg) => { setEnergy(channel, msg); });
-            broker.subscribe(node.id + 3 + offset, shelly.prefix + "/input/" + channel, (msg) => { inputReceived(msg, channel); });
+        //broker.register(this);
+
+        function subscribe(channel) {
+            subscribeRaw(node.id, shelly.prefix + "/relay/" + channel, (msg) => { setRelay(channel, msg); });
+            subscribeRaw(node.id, shelly.prefix + "/relay/" + channel + "/power", (msg) => { setPower(channel, msg); });
+            subscribeRaw(node.id, shelly.prefix + "/relay/" + channel + "/energy", (msg) => { setEnergy(channel, msg); });
+            subscribeRaw(node.id, shelly.prefix + "/input/" + channel, (msg) => { inputReceived(msg, channel); });
+        }
+
+        function subscribeRaw(id, topic, callback)
+        {
+            broker.subscribe(topic, 0, (topic, payload, packet) => {
+                callback(payload.toString("utf8"));
+            }, id);
         }
 
         if (channel === 2) {
-            subscribe(0, 0);
-            subscribe(1, 1);
+            subscribe(0);
+            subscribe(1);
         } else {
             subscribe(channel, 0);
         }
@@ -113,7 +124,14 @@ module.exports = function (RED) {
         }
 
         node.on("close", function () {
+            node.warn(broker);
+            node.debug(broker);
+            node.error(broker);
+            node.log(broker);
 
+            broker.deregister(this, ()=>{
+                node.warn("deregister => done");
+            });
         });
     }
 
