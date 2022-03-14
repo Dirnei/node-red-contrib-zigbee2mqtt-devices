@@ -53,7 +53,7 @@ If you feel very generous and want to contribute with coffee, you sure can:
 
 ## Changelog 
 
-### Release: `0.19.5`
+### Release: `0.19.5` - _14 Mar 2022_
 
 #### Bug fixes:
 
