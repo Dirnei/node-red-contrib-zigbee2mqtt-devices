@@ -22,20 +22,27 @@
             var deviceName = node.deviceName;
             var windowSensor = node.windowSensor;
 
-            this.leberkas= "semmebresl";
-            RED.bavaria.devices.createDeviceSelector("thermnostat-selection", deviceName, "EndDevice", "Eurotronic", "SPZB0001");
+            RED.bavaria.devices.createDeviceSelector("thermostat-selection", deviceName, "EndDevice", "Eurotronic", "SPZB0001");
             RED.bavaria.devices.createDeviceSelector("window-selection", windowSensor, "contact", "all", "all", false, "windowSensor");
 
             $("#removeSensor").click(function () {
-                document.getElementById("node-input-windowSensor").selectedIndex = -1;
+                if ($('#node-input-windowSensor')[0].nodeName === "INPUT") {
+                    $("#node-input-windowSensor").val("");
+                } else {
+                    document.getElementById("node-input-windowSensor").selectedIndex = -1;
+                }
+            });
+
+            $("#removeSensorThermostat").click(function () {
+                if ($('#node-input-deviceName')[0].nodeName === "INPUT") {
+                    $("#node-input-deviceName").val("");
+                } else {
+                    document.getElementById("node-input-deviceName").selectedIndex = -1;
+                }
             });
         },
-        oneditsave: function () {
-            if (document.getElementById("node-input-windowSensor").selectedIndex == -1) {
-                this.windowSensor = "";
-            }
-        },
-        oneditcancel: function () {
+        onEditSave: function () {
+            console.log
         }
     });
 </script>
@@ -50,8 +57,11 @@
             <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
             <input type="text" id="node-input-bridge" placeholder="bridge" />
         </div>
-        <div id="thermnostat-selection" class="form-row">
+        <div id="thermostat-selection" class="form-row">
 
+        </div>
+        <div id="thermostat-selection" class="form-row">
+            <button type="button" id="removeSensorThermostat" class="red-ui-button">remove</button>
         </div>
         <div class="form-row">
             <label for="node-input-mirrorDisplay"><i class="fa fa-arrows-h"></i> Mirror Display</label>
