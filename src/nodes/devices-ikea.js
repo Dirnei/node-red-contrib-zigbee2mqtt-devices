@@ -1,3 +1,4 @@
+const utils = require("../lib/utils");
 module.exports = function (RED) {
     const OutputHandler = require("../lib/outputHandler.js");
     const utils = require("../lib/utils.js");
@@ -111,6 +112,63 @@ module.exports = function (RED) {
         });
     }
     RED.nodes.registerType("ikea-remote", ikeaRemote);
+
+
+    // https://www.zigbee2mqtt.io/devices/E2001_E2002.html
+    function ikeaRemoteV2(config) {
+        RED.nodes.createNode(this, config);
+        var bridgeNode = RED.nodes.getNode(config.bridge);
+        var node = this;
+
+        utils.setConnectionState(bridgeNode, node);
+        const regId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+            node.status({ fill: "green", text: "connected" });
+            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
+
+                const ioMap = {
+                    on: utils.createButtonOutput(0, "on", "pressed"),
+                    off: utils.createButtonOutput(1, "off", "pressed"),
+                    brightness_move_up: utils.createButtonOutput(2, "brightness_up", "pressed"),
+                    brightness_move_down: utils.createButtonOutput(3, "brightness_down", "pressed"),
+                    arrow_left_click: utils.createButtonOutput(4, "arrow_left", "pressed"),
+                    arrow_left_hold: utils.createButtonOutput(4, "arrow_left", "hold"),
+                    arrow_left_release: utils.createButtonOutput(4, "arrow_left", "released"),
+                    arrow_right_click: utils.createButtonOutput(5, "arrow_right", "pressed"),
+                    arrow_right_hold: utils.createButtonOutput(5, "arrow_right", "hold"),
+                    arrow_right_release: utils.createButtonOutput(5, "arrow_right", "released")
+                };
+
+                var output = undefined;
+                if (message.action === undefined || message.action === "" || message.action === null) {
+                    if (message.click === undefined || message.click === "") {
+                        // both properties are empty -> ingore
+                        return;
+                    } else {
+                        // fallback if message.action was not set
+                        output = ioMap[message.click];
+                    }
+                } else {
+                    // default property
+                    output = ioMap[message.action.replace("-", "_")];
+                }
+
+                if (output !== undefined && output.index >= 0) {
+                    utils.sendAt(node, output.index, {
+                        payload: {
+                            button_name: output.button_name,
+                            button_type: output.button_type,
+                        }
+                    });
+                }
+            });
+        });
+
+        node.on("close", () => {
+            bavaria.observer.unregister(regId);
+        });
+    }
+    RED.nodes.registerType("ikea-remote-v2", ikeaRemote);
+
 
     function ikeaDimmerV2(config) {
         RED.nodes.createNode(this, config);
