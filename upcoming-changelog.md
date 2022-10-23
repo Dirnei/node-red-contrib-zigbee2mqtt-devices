@@ -10,3 +10,4 @@
 #### Bug fixes:
 
 #### Behind the scenes
+- Add mocha and first unit test examples
