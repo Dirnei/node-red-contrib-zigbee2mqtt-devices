@@ -23,13 +23,13 @@ module.exports = function (RED) {
         var status = context.get("status") || { relay: [{ state: "off", energy: 0, power: 0 }, { state: "off", energy: 0, power: 0 }] };
         var channel = parseInt(config.channel);
 
-        //broker.register(this);
+        broker.register(this);
 
         function subscribe(channel) {
-            subscribeRaw(node.id, shelly.prefix + "/relay/" + channel, (msg) => { setRelay(channel, msg); });
-            subscribeRaw(node.id, shelly.prefix + "/relay/" + channel + "/power", (msg) => { setPower(channel, msg); });
-            subscribeRaw(node.id, shelly.prefix + "/relay/" + channel + "/energy", (msg) => { setEnergy(channel, msg); });
-            subscribeRaw(node.id, shelly.prefix + "/input/" + channel, (msg) => { inputReceived(msg, channel); });
+            subscribeRaw(node.id, `${shelly.prefix}/relay/${channel}/power`,  (msg) => { setPower(channel, msg); });
+            subscribeRaw(node.id, `${shelly.prefix}/relay/${channel}`,        (msg) => { setRelay(channel, msg); });
+            subscribeRaw(node.id, `${shelly.prefix}/relay/${channel}/energy`, (msg) => { setEnergy(channel, msg); });
+            subscribeRaw(node.id, `${shelly.prefix}/input/${channel}`,        (msg) => { inputReceived(msg, channel); });
         }
 
         function subscribeRaw(id, topic, callback)
@@ -90,7 +90,7 @@ module.exports = function (RED) {
         node.on("input", function (msg) {
             function getOutputPayload(msg, channel, state) {
                 return utils.payloads.devices.addDevice(msg, {
-                    topic: shelly.prefix + "/relay/" + channel + "/command",
+                    topic: `${shelly.prefix}/relay/${channel}/command`,
                     state: utils.payloads.convertToOnOff(state),
                     target: "mqtt",
                     payloadGenerator: preparePayload
@@ -124,13 +124,8 @@ module.exports = function (RED) {
         }
 
         node.on("close", function () {
-            node.warn(broker);
-            node.debug(broker);
-            node.error(broker);
-            node.log(broker);
-
             broker.deregister(this, ()=>{
-                node.warn("deregister => done");
+                 node.debug("deregister => done");
             });
         });
     }
