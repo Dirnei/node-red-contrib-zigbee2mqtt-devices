@@ -125,7 +125,6 @@ module.exports = function (RED) {
 
         node.on("close", function () {
             broker.deregister(this, ()=>{
-                 node.debug("deregister => done");
             });
         });
     }
