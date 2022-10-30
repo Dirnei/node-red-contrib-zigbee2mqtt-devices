@@ -1,5 +1,3 @@
-const { notEqual } = require("assert");
-
 module.exports = function (RED) {
     const utils = require("../lib/utils.js");
     const bavaria = utils.bavaria();
@@ -15,13 +13,13 @@ module.exports = function (RED) {
 
     function createShelly25(config) {
         RED.nodes.createNode(this, config);
-        var node = this;
-        var broker = RED.nodes.getNode(config.mqtt);
-        var shelly = RED.nodes.getNode(config.shelly);
+        const node = this;
+        const broker = RED.nodes.getNode(config.mqtt);
+        const shelly = RED.nodes.getNode(config.shelly);
 
-        var context = node.context();
-        var status = context.get("status") || { relay: [{ state: "off", energy: 0, power: 0 }, { state: "off", energy: 0, power: 0 }] };
-        var channel = parseInt(config.channel);
+        const context = node.context();
+        const status = context.get("status") || { relay: [{ state: "off", energy: 0, power: 0 }, { state: "off", energy: 0, power: 0 }] };
+        const channel = parseInt(config.channel);
 
         broker.register(this);
 
@@ -51,8 +49,8 @@ module.exports = function (RED) {
                 payload: msg
             };
             if (config.customPayload === true) {
-                var data = config["payloadInput" + channel];
-                var type = config["typeInput" + channel];
+                const data = config["payloadInput" + channel];
+                const type = config["typeInput" + channel];
                 msg.payload = utils.ui.input.getPayload(data, type);
             }
 
