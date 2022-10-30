@@ -11,3 +11,4 @@
 - Bridge did not connect in newer z2m versions, because z2m changed the format of 'bridge/state' froms string to JSON.
 
 #### Behind the scenes
+- Add mocha and first unit test examples
