@@ -3,7 +3,8 @@ module.exports = {
         "browser": true,
         "es2021": true,
         "node": true,
-        "amd": true
+        "amd": true,
+        "mocha": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
