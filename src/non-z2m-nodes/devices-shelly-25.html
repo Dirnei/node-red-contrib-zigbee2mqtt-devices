@@ -161,6 +161,82 @@
 
 <script type="text/html" data-help-name="shelly-25">
     <p>
-        Configure your shelly device
+        The shelly 2.5 node controls the relays on a shelly and receives input, relay, and status changes.
     </p>
+    <p>Tested with the following Shellies: Shelly 1, Shelly 2.5</p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload
+            <span class="property-type">any</span>
+        </dt>
+        <dd> Any input triggers the node to switch the relay. </dd>
+    </dl>
+
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Command or relay
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">string</span></dt>
+                <dd>Emits messages when the shelly's relay changes.</dd>
+            </dl>
+        </li>
+        <li>Input
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">string</span></dt>
+                <dd>Emits messages when the shelly's input changes.</dd>
+            </dl>
+        </li>
+        <li>Message
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">object</span></dt>
+                <dd>Emits messages that shall be published to the shelly via connected send-messages node.</dd>
+            </dl>
+        </li>
+    </ol>
+
+    <h3>Configuration</h3>
+    <dl class="message-properties">
+        <h4>Broker</h4>
+        <p>
+            Configures the MQTT broker the shelly publishes to.
+        </p>
+
+        <h4>Device</h4>
+        <p>
+            The device section configures a shelly's MQTT topic and, optionally, its friendly name.
+            For example, <code>shellies/my-device</code>. The shelly node will subscribe and publish on this topic.
+        </p>
+
+        <h4>Channel</h4>
+        <p>
+            The channel configures which relay will be triggered when the node receives an input. Furthermore, the node only publishes relay and input changes for the selected input.
+            Possible options are:
+            <ul>
+                <li><code>Channel 1</code>: Switches and subscribes to channel 1 (MQTT topic <code>`relay/0`</code> and <code>`input/0`</code>).</li>
+                <li><code>Channel 2</code>: Switches and subscribes to channel 2 (MQTT topic <code>`relay/1`</code> and <code>`input/1`</code>).</li>
+                <li><code>Both</code>: Switches and subscribes to channels 1 and 2.</li>
+            </ul>
+        </p>
+
+        <h4>State</h4>
+        <p>
+            The state is used to control the relay when the node receives an input.
+            <ul>
+                <li><code>On</code>: Switches the relay for the selected channel to on.</li>
+                <li><code>Off</code>: Switches the relay for the selected channel to off.</li>
+                <li><code>Toggle</code>: Switches the relay for the selected channel on if it is off and vice versa.</li>
+            </ul>
+        </p>
+
+        <h4>Enable Input</h4>
+        <p>
+            This option enables the input connector on the node. Only when it is enabled is it possible to switch the relays.
+        </p>
+
+        <h4>Custom payload</h4>
+        <p>
+            The custom payload allows you to define a specific payload to be published when the shelly's input state changes since the default are <code>0</code> and <code>1</code>, which might not be too helpful, primarily if two channels are used.
+        </p>
+    </dl>
 </script>
