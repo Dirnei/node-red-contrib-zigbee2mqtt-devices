@@ -23,8 +23,23 @@
 
 <script type="text/html" data-help-name="shelly-config">
     <p>
-        Configure your shelly device
+        Configure your shelly device's MQTT topic.
     </p>
+
+    <h3>Configuration</h3>
+    <dl class="message-properties">
+        <h4>Name</h4>
+        <p>
+            Optional friendly name for the shelly.
+        </p>
+
+        <h4>MQTT Prefix</h4>
+        <p>
+            The shelly's MQTT topic it listens and publishes to.
+            Usually, shellies publish under the "shellies" topic directly in the root followed by their unique name.<br>
+            Example: <code>shellies/my-device</code>.
+        </p>
+    </dl>
 </script>
 
 <!--- SHELLY NODE --->
@@ -161,9 +176,8 @@
 
 <script type="text/html" data-help-name="shelly-25">
     <p>
-        The shelly 2.5 node controls the relays on a shelly and receives input, relay, and status changes.
+        The shelly 2.5 node controls the relays on a shelly and receives input, relay, and status changes. Tested with Shelly 1 and Shelly 2.5.
     </p>
-    <p>Tested with the following Shellies: Shelly 1, Shelly 2.5</p>
 
     <h3>Inputs</h3>
     <dl class="message-properties">
@@ -175,7 +189,7 @@
 
     <h3>Outputs</h3>
     <ol class="node-ports">
-        <li>Command or relay
+        <li>Relay
             <dl class="message-properties">
                 <dt>payload <span class="property-type">string</span></dt>
                 <dd>Emits messages when the shelly's relay changes.</dd>
@@ -213,8 +227,8 @@
             The channel configures which relay will be triggered when the node receives an input. Furthermore, the node only publishes relay and input changes for the selected input.
             Possible options are:
             <ul>
-                <li><code>Channel 1</code>: Switches and subscribes to channel 1 (MQTT topic <code>`relay/0`</code> and <code>`input/0`</code>).</li>
-                <li><code>Channel 2</code>: Switches and subscribes to channel 2 (MQTT topic <code>`relay/1`</code> and <code>`input/1`</code>).</li>
+                <li><code>Channel 1</code>: Switches and subscribes to channel 1 (MQTT topic <code>relay/0</code> and <code>input/0</code>).</li>
+                <li><code>Channel 2</code>: Switches and subscribes to channel 2 (MQTT topic <code>relay/1</code> and <code>input/1</code>).</li>
                 <li><code>Both</code>: Switches and subscribes to channels 1 and 2.</li>
             </ul>
         </p>
