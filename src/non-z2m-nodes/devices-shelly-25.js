@@ -21,7 +21,9 @@ module.exports = function (RED) {
         const status = context.get("status") || { relay: [{ state: "off", energy: 0, power: 0 }, { state: "off", energy: 0, power: 0 }] };
         const channel = parseInt(config.channel);
 
-        broker.register(this);
+        let subscribedTopics = [];
+
+        broker.register(node);
 
         function subscribe(channel) {
             subscribeRaw(node.id, `${shelly.prefix}/relay/${channel}/power`,  (msg) => { setPower(channel, msg); });
@@ -35,6 +37,18 @@ module.exports = function (RED) {
             broker.subscribe(topic, 0, (topic, payload, packet) => {
                 callback(payload.toString("utf8"));
             }, id);
+            subscribedTopics.push(topic);
+        }
+
+        /**
+         * Unsubscribe from all topics
+         */
+        function unsubscribeAll(){
+            for(const topic of subscribedTopics){
+                broker.unsubscribe(topic, node.id, true);
+            }
+
+            subscribedTopics = [];
         }
 
         if (channel === 2) {
@@ -122,8 +136,8 @@ module.exports = function (RED) {
         }
 
         node.on("close", function () {
-            broker.deregister(this, ()=>{
-            });
+            unsubscribeAll();
+            broker.deregister(node, ()=>{});
         });
     }
 
