@@ -485,7 +485,7 @@ describe("shelly-25 Node", () => {
                     const device = msg.payload.devices[0];
                     device.should.have.property("topic", `${shellyTopic}/relay/0/command`);
                     device.should.have.property("state", "ON");
-                    device.should.have.property("target", `mqtt`);
+                    device.should.have.property("target", "mqtt");
 
                     done();
                 } catch (err) {
@@ -520,7 +520,7 @@ describe("shelly-25 Node", () => {
                     const device = msg.payload.devices[0];
                     device.should.have.property("topic", `${shellyTopic}/relay/1/command`);
                     device.should.have.property("state", "ON");
-                    device.should.have.property("target", `mqtt`);
+                    device.should.have.property("target", "mqtt");
 
                     done();
                 } catch (err) {
@@ -558,7 +558,7 @@ describe("shelly-25 Node", () => {
                     const validateDevice = (device, channel) => {
                         device.should.have.property("topic", `${shellyTopic}/relay/${channel}/command`);
                         device.should.have.property("state", "OFF");
-                        device.should.have.property("target", `mqtt`);
+                        device.should.have.property("target", "mqtt");
                     };
                     validateDevice(msg.payload.devices[0], 0);
                     validateDevice(msg.payload.devices[1], 1);
@@ -603,7 +603,7 @@ describe("shelly-25 Node", () => {
                     const validateDevice = (device, channel) => {
                         device.should.have.property("topic", `${shellyTopic}/relay/${channel}/command`);
                         device.should.have.property("state", "ON");
-                        device.should.have.property("target", `mqtt`);
+                        device.should.have.property("target", "mqtt");
                     };
                     validateDevice(msg.payload.devices[0], 0);
                     validateDevice(msg.payload.devices[1], 1);
