@@ -49,7 +49,8 @@
         "createnode:nix": "pwsh ./createNode.ps1",
         "createnode:win32": "@powershell -NoProfile -Command ./createNode.ps1",
         "lint": "eslint ./src/**/*.js ./test/**/*.js ./test-integration/**/*.js",
-        "test": "mocha \"test/**/*_spec.js\""
+        "test": "mocha \"test/**/*_spec.js\"",
+        "testintegration": "mocha \"test-integration/**/*_spec.js\""
     },
     "devDependencies": {
         "@types/jquery": "^3.5.13",
