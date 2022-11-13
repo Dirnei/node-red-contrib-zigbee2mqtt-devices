@@ -1,6 +1,4 @@
-
-version: "3.8"
-name: "z2m-devices-integration-tests"
+version: "3.9"
 
 services:
   mosquitto:
