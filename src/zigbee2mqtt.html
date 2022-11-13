@@ -416,7 +416,7 @@
                     node.deviceName = "---";
                 } else {
                     $("#fullMqttTopic").hide()
-                    node.deviceName = "";
+                    $("#node-config-input-deviceName").val(deviceName);
                 }
             })
         }
@@ -434,11 +434,6 @@
             <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
             <input type="text" id="node-input-bridge" placeholder="bridge" />
         </div>
-        <!--
-        <div class="form-row">
-            <label for="node-input-deviceName"><i class="fa fa-microchip"></i> Device</label>
-            <select id="node-input-deviceName"></select>
-        </div>-->
         <div id="device-selection" class="form-row">
 
         </div>

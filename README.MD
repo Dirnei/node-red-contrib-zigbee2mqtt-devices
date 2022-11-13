@@ -53,6 +53,13 @@ If you feel very generous and want to contribute with coffee, you sure can:
 
 ## Changelog 
 
+### Release: `0.19.5` - _14 Mar 2022_
+
+#### Bug fixes:
+
+- Hosting the Node-RED UI under a different root path than `http://localhost:1880/` resulted in failing web requests to load the device list. For example, when the UI was set to `http://localhost:1880/admin` or Node-RED was running as a Home Assistant plugin.
+- Fixed a bug where the configured device name gets deleted, when the device list couldn't be loaded. Further details in #105 and #119
+
 ### Release: `0.19.4` - _01 Jan 2022_
 
 Happy new year to all!

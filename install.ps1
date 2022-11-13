@@ -75,7 +75,7 @@ if (Test-Path $destRoot/package.json) {
     Write-Output "Comparing package.json ..."
     $packageModified = (Get-FileHash ./package.json).hash -ne (Get-FileHash $destRoot/package.json).hash
     if ($packageModified) {
-        Write-Host "package.json was modified. Reinstall again after copy!" -ForegroundColor Red
+        Write-Host "package.json was modified. Reinstall again after copy!" -ForegroundColor Yellow
     }
     else {
         Write-Host "Unmodified. No reinstallation needed!" -ForegroundColor Green

@@ -26,6 +26,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run build
-    # Include test run as soon as unit tests are added
-    #- run: npm test
+    - run: npm test
     - run: npm run lint
+    - run: npm install -g node-red-dev
+    - run: node-red-dev validate
+
