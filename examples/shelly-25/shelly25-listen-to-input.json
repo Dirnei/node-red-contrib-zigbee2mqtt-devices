@@ -1,0 +1,97 @@
+[
+  {
+    "id": "ddc73c09685b6ca2",
+    "type": "debug",
+    "z": "d6c6189e516c5861",
+    "name": "Log shelly input",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 440,
+    "y": 200,
+    "wires": []
+  },
+  {
+    "id": "876f6827a210a969",
+    "type": "shelly-25",
+    "z": "d6c6189e516c5861",
+    "name": "Shelly 1 Terrace Light",
+    "mqtt": "b1503ab27dfa3ccd",
+    "shelly": "daf62c0c2a5c1ebd",
+    "enableInput": false,
+    "state": "on",
+    "channel": "2",
+    "inputs": 0,
+    "outputs": 2,
+    "customPayload": true,
+    "payloadInput0": "",
+    "typeInput0": "str",
+    "payloadInput1": "",
+    "typeInput1": "str",
+    "x": 200,
+    "y": 180,
+    "wires": [
+      [
+        "2212d8cf185ffa8e"
+      ],
+      [
+        "ddc73c09685b6ca2"
+      ]
+    ]
+  },
+  {
+    "id": "2212d8cf185ffa8e",
+    "type": "debug",
+    "z": "d6c6189e516c5861",
+    "name": "Log shelly relay",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 440,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "b1503ab27dfa3ccd",
+    "type": "mqtt-broker",
+    "name": "Mosquitto",
+    "broker": "127.0.0.1",
+    "port": "1883",
+    "clientid": "",
+    "autoConnect": true,
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": "",
+    "birthMsg": {},
+    "closeTopic": "",
+    "closeQos": "0",
+    "closePayload": "",
+    "closeMsg": {},
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": "",
+    "willMsg": {},
+    "sessionExpiry": "",
+    "credentials": {}
+  },
+  {
+    "id": "daf62c0c2a5c1ebd",
+    "type": "shelly-config",
+    "name": "terrace-light",
+    "prefix": "shellies/terrace-light"
+  }
+]

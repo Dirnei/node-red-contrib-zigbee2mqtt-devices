@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  mosquitto:
+      image: eclipse-mosquitto:latest
+      volumes:
+        - ./mosquitto:/mosquitto
+        - ./mosquitto/data:/mosquitto/data
+        - ./mosquitto/log:/mosquitto/log
+      ports:
+        - "1883:1883"
+      restart: unless-stopped

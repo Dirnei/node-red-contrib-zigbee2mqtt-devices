@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-zigbee2mqtt-devices",
-    "version": "0.19.5",
+    "version": "0.19.6",
     "description": "Nodes to interact with zigbee2mqtt for Node-RED",
     "author": "Christian Dirnhofer",
     "license": "MIT",
@@ -48,8 +48,9 @@
         "createnode": "run-script-os",
         "createnode:nix": "pwsh ./createNode.ps1",
         "createnode:win32": "@powershell -NoProfile -Command ./createNode.ps1",
-        "lint": "eslint ./src/**/*.js",
-        "test": "mocha \"test/**/*_spec.js\""
+        "lint": "eslint ./src/**/*.js ./test/**/*.js ./test-integration/**/*.js",
+        "test": "mocha \"test/**/*_spec.js\"",
+        "testintegration": "docker-compose -f  test-integration/docker/docker-compose.yml up -d && mocha \"test-integration/**/*_spec.js\""
     },
     "devDependencies": {
         "@types/jquery": "^3.5.13",

@@ -53,6 +53,19 @@ If you feel very generous and want to contribute with coffee, you sure can:
 
 ## Changelog 
 
+### Release: `0.19.6` _13 Nov 2022_
+
+#### Features:
+
+#### Bug fixes:
+- Bridge did not connect in newer z2m versions because z2m changed the format of 'bridge/state' from string to JSON.
+- Shelly 2.5 did not connect to the broker, because it used an old configuration node.
+- Shelly 2.5 node did not unsubscribe from the old channel with no full redeploy.
+
+#### Behind the scenes
+- Add mocha and first-unit test examples
+- Add integration tests to test with a real MQTT broker
+
 ### Release: `0.19.5` - _14 Mar 2022_
 
 #### Bug fixes:

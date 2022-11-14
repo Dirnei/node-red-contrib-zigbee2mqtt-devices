@@ -13,24 +13,47 @@ module.exports = function (RED) {
 
     function createShelly25(config) {
         RED.nodes.createNode(this, config);
-        var node = this;
-        var broker = RED.nodes.getNode(config.mqtt);
-        var shelly = RED.nodes.getNode(config.shelly);
+        const node = this;
+        const broker = RED.nodes.getNode(config.mqtt);
+        const shelly = RED.nodes.getNode(config.shelly);
 
-        var context = node.context();
-        var status = context.get("status") || { relay: [{ state: "off", energy: 0, power: 0 }, { state: "off", energy: 0, power: 0 }] };
-        var channel = parseInt(config.channel);
+        const context = node.context();
+        const status = context.get("status") || { relay: [{ state: "off", energy: 0, power: 0 }, { state: "off", energy: 0, power: 0 }] };
+        const channel = parseInt(config.channel);
 
-        function subscribe(channel, offset) {
-            broker.subscribe(node.id + offset, shelly.prefix + "/relay/" + channel, (msg) => { setRelay(channel, msg); });
-            broker.subscribe(node.id + 1 + offset, shelly.prefix + "/relay/" + channel + "/power", (msg) => { setPower(channel, msg); });
-            broker.subscribe(node.id + 2 + offset, shelly.prefix + "/relay/" + channel + "/energy", (msg) => { setEnergy(channel, msg); });
-            broker.subscribe(node.id + 3 + offset, shelly.prefix + "/input/" + channel, (msg) => { inputReceived(msg, channel); });
+        let subscribedTopics = [];
+
+        broker.register(node);
+
+        function subscribe(channel) {
+            subscribeRaw(node.id, `${shelly.prefix}/relay/${channel}/power`,  (msg) => { setPower(channel, msg); });
+            subscribeRaw(node.id, `${shelly.prefix}/relay/${channel}`,        (msg) => { setRelay(channel, msg); });
+            subscribeRaw(node.id, `${shelly.prefix}/relay/${channel}/energy`, (msg) => { setEnergy(channel, msg); });
+            subscribeRaw(node.id, `${shelly.prefix}/input/${channel}`,        (msg) => { inputReceived(msg, channel); });
+        }
+
+        function subscribeRaw(id, topic, callback)
+        {
+            broker.subscribe(topic, 0, (topic, payload, packet) => {
+                callback(payload.toString("utf8"));
+            }, id);
+            subscribedTopics.push(topic);
+        }
+
+        /**
+         * Unsubscribe from all topics
+         */
+        function unsubscribeAll(){
+            for(const topic of subscribedTopics){
+                broker.unsubscribe(topic, node.id, true);
+            }
+
+            subscribedTopics = [];
         }
 
         if (channel === 2) {
-            subscribe(0, 0);
-            subscribe(1, 1);
+            subscribe(0);
+            subscribe(1);
         } else {
             subscribe(channel, 0);
         }
@@ -40,8 +63,8 @@ module.exports = function (RED) {
                 payload: msg
             };
             if (config.customPayload === true) {
-                var data = config["payloadInput" + channel];
-                var type = config["typeInput" + channel];
+                const data = config["payloadInput" + channel];
+                const type = config["typeInput" + channel];
                 msg.payload = utils.ui.input.getPayload(data, type);
             }
 
@@ -79,7 +102,7 @@ module.exports = function (RED) {
         node.on("input", function (msg) {
             function getOutputPayload(msg, channel, state) {
                 return utils.payloads.devices.addDevice(msg, {
-                    topic: shelly.prefix + "/relay/" + channel + "/command",
+                    topic: `${shelly.prefix}/relay/${channel}/command`,
                     state: utils.payloads.convertToOnOff(state),
                     target: "mqtt",
                     payloadGenerator: preparePayload
@@ -113,7 +136,8 @@ module.exports = function (RED) {
         }
 
         node.on("close", function () {
-
+            unsubscribeAll();
+            broker.deregister(node, ()=>{});
         });
     }
 
