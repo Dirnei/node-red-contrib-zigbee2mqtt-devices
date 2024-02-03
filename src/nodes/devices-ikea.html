@@ -217,3 +217,84 @@
         <dd>When the extended output is enabled, each button is assigned to its own output. It will send the button-events to each output with empty payload. Only <code>msg.action.name</code> (e.g. "on") and <code>msg.action.description</code>(e.g. "pressed") is set.</dd>
     </dl>
 </script>
+
+<!--- IKEA STYRBAR NODE --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('ikea-styrbar', {
+        category: 'zigbee2mqtt_remotes-ikea',
+        color: '#feca1e',
+        defaults: {
+            name: { value: "" },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
+            outputs: { value: 2 },
+        },
+        inputs: 0,
+        outputs: 2,
+        outputLabels: function (e) {
+            var outputs = ["lights", "scenes"];
+            return outputs[e];
+        },
+        icon: "remote.svg",
+        label: function () {
+            return this.name || "Ikea Styrbar";
+        },
+        oneditprepare: function () {
+            var node = this;
+            var deviceName = node.deviceName;
+
+            RED.bavaria.devices.createDeviceSelector("device-selection", deviceName, "EndDevice", "IKEA", "E2001");
+        },
+        oneditsave: function () {
+            
+        }
+    });
+
+</script>
+
+<script type="text/html" data-template-name="ikea-styrbar">
+    <div class="zigbee2mqtt-devices-properties">
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div id="device-selection" class="form-row">
+        </div>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="ikea-styrbar">
+    <p>Sends a new message when an Ikea Styrbar is used.</p>
+    <p>This node supports the Styrbar (Model: <code>E2001</code>)</p>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt> "on"-button pressed</dt>
+        <dd> Sends a <code>state-override</code> message with full brightness.</dd>
+        <dt> "on"-button hold</dt>
+        <dd> Sends a <code>brightness-move</code> action with positive <code>move</code> value. (Dimm up)</dd>
+        <dt> "off"-button pressed</dt>
+        <dd> Sends a <code>state-override</code> message with 0 brightness.</dd>
+        <dt> "off"-button hold</dt>
+        <dd> Sends a <code>brightness-move</code> action with negative <code>move</code> value. (Dimm down)</dd>
+        <dt> "on/off"-button released</dt>
+        <dd> Sends a <code>brightness-move</code> action with 0 <code>move</code> value. (Dimm stop)</dd>
+        <dt> "left"-button pressed</dt>
+        <dd> Send a <code>{"command": "previous"}</code></dd>
+        <dt> "left"-button hold</dt>
+        <dd> Send a <code>{"command": "previous_hold"}</code></dd>
+        <dt> "left"-button released</dt>
+        <dd> Send a <code>{"command": "previous_released"}</code></dd>
+        <dt> "right"-button pressed</dt>
+        <dd> Send a <code>{"command": "next"}</code></dd>
+        <dt> "right"-button hold</dt>
+        <dd> Send a <code>{"command": "next_hold"}</code></dd>
+        <dt> "right"-button released</dt>
+        <dd> Send a <code>{"command": "next_released"}</code></dd>
+    </dl>
+</script>
