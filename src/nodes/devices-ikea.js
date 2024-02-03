@@ -170,4 +170,57 @@ module.exports = function (RED) {
     }
 
     RED.nodes.registerType("ikea-dimmer-v2", ikeaDimmerV2);
+
+    function ikeaStyrbar(config) {
+        RED.nodes.createNode(this, config);
+        const bridgeNode = RED.nodes.getNode(config.bridge);
+        const node = this;
+
+        const handler = new OutputHandler();
+
+
+        handler
+            .addOutput(0, "lights", "on", "pressed", utils.payloads.overrides.createStateOverride("ON"))
+            .addOutput(0, "lights", "brightness_move_up", "hold", (msg) => { return utils.payloads.createBrightnessMove(msg.action_rate); })
+            .addOutput(0, "lights", "off", "pressed", utils.payloads.overrides.createStateOverride("OFF"))
+            .addOutput(0, "lights", "brightness_move_down", "hold", (msg) => { return utils.payloads.createBrightnessMove(-msg.action_rate); })
+            .addOutput(0, "lights", "brightness_stop", "released", utils.payloads.createBrightnessMove("stop"))
+            .addOutput(1, "scenes", "arrow_left_click", "pressed", { command: "previous" })
+            .addOutput(1, "scenes", "arrow_left_hold", "hold", { command: "previous_hold"})
+            .addOutput(1, "scenes", "arrow_left_released", "released", { command: "previous_released"})
+            .addOutput(1, "scenes", "arrow_right_click", "pressed", { command: "next" })
+            .addOutput(1, "scenes", "arrow_right_hold", "hold", { command: "next_hold"})
+            .addOutput(1, "scenes", "arrow_right_released", "released", { command: "next_released"});
+
+
+        utils.setConnectionState(bridgeNode, node);
+        const regId = bavaria.observer.register(bridgeNode.id + "_connected", function (message) {
+            node.status({ fill: "green", text: "connected" });
+            bridgeNode.subscribeDevice(node.id, config.deviceName, function (message) {
+                
+                // Handle broken MQTT messages
+                let actionNamePathFilter = "action";
+                if (message.action === undefined || message.action === "" || message.action === null) {
+                    if (message.click === undefined || message.click === "") {
+                        // both properties are empty, ingore this message
+                        return;
+                    } else {
+                        // fallback if message.action was not set
+                        actionNamePathFilter = "click";
+                    }
+                }
+
+                message[actionNamePathFilter] = message[actionNamePathFilter].replace("-", "_");
+                const out = handler.prepareOutput(actionNamePathFilter, message);
+                node.send(out);
+            });
+        });
+
+        node.on("close", function () {
+            bavaria.observer.unregister(regId);
+            bridgeNode.unsubscribe(node.id);
+        });
+    }
+
+    RED.nodes.registerType("ikea-styrbar", ikeaStyrbar);
 };

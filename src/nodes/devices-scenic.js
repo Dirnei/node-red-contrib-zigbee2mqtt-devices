@@ -18,18 +18,18 @@ module.exports = function (RED) {
                 }
 
                 var ioMap = {
-                    recall_scene_0: utils.createButtonOutput(0, "A0", "pressed"),
-                    recall_scene_4: utils.createButtonOutput(0, "A0", "released"),
-                    recall_scene_1: utils.createButtonOutput(1, "A1", "pressed"),
-                    recall_scene_5: utils.createButtonOutput(1, "A1", "released"),
-                    recall_scene_3: utils.createButtonOutput(2, "B0", "pressed"),
-                    recall_scene_7: utils.createButtonOutput(2, "B0", "released"),
-                    recall_scene_2: utils.createButtonOutput(3, "B1", "pressed"),
-                    recall_scene_6: utils.createButtonOutput(3, "B1", "released"),
-                    press_2_of_2: utils.createButtonOutput(4, "UP", "pressed"),
-                    release_2_of_2: utils.createButtonOutput(4, "UP", "released"),
-                    press_1_of_2: utils.createButtonOutput(5, "DOWN", "pressed"),
-                    release_1_of_2: utils.createButtonOutput(5, "DOWN", "released"),
+                    press_1: utils.createButtonOutput(0, "A0", "pressed"),
+                    release_1: utils.createButtonOutput(0, "A0", "released"),
+                    press_2: utils.createButtonOutput(1, "A1", "pressed"),
+                    release_2: utils.createButtonOutput(1, "A1", "released"),
+                    press_3: utils.createButtonOutput(2, "B0", "pressed"),
+                    release_3: utils.createButtonOutput(2, "B0", "released"),
+                    press_4: utils.createButtonOutput(3, "B1", "pressed"),
+                    release_4: utils.createButtonOutput(3, "B1", "released"),
+                    press_1_and_3: utils.createButtonOutput(4, "UP", "pressed"),
+                    release_1_and_3: utils.createButtonOutput(4, "UP", "released"),
+                    press_2_and_4: utils.createButtonOutput(5, "DOWN", "pressed"),
+                    release_2_and_4: utils.createButtonOutput(5, "DOWN", "released"),
                 };
 
                 var output = ioMap[message.action];

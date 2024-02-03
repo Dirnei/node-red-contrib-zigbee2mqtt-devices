@@ -78,6 +78,7 @@ const nodeInit: NodeInitializer = (RED): void => {
 
         this.isConnected = () => broker.connected;
         this.publish = (topic, payload) => {
+
             let msg: NodeMqttMessage = {
                 qos: 0,
                 retain: false,
