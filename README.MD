@@ -53,6 +53,17 @@ If you feel very generous and want to contribute with coffee, you sure can:
 
 ## Changelog 
 
+### Release: `0.20.0` _3 Jan 2024_
+
+#### Features:
+
+- Add support for Ikea Styrbar (E2001) remote control
+
+#### Bug fixes:
+
+- Setting brightnes to 0 did not turn it off. Now it will override the state to "OFF"
+- Fixed Scenic Friend of Hue switch. Property names has changed between versions
+
 ### Release: `0.19.6` _13 Nov 2022_
 
 #### Features:
