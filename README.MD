@@ -6,9 +6,7 @@
 
 
 <p align="center">
-  <div style="background:white;text-align:center">
-     <img width="256" height="256" src="resources/logo.svg">
-  </div>
+     <img width="256" height="256" src="resources/logo_white_bg.svg">
 </p>
 
 This project contains Node-RED nodes that allow you to build Smart Home scenarios with your Zigbee devices connected to [ZigBee2MQTT](https://www.zigbee2mqtt.io/).
