@@ -125,6 +125,70 @@
     </dl>
 </script>
 
+<!--- IKEA REMOTE v2 --->
+<script type="text/javascript">
+
+    RED.nodes.registerType('ikea-remote-v2', {
+        category: 'zigbee2mqtt_remotes-ikea',
+        color: '#feca1e',
+        defaults: {
+            name: { value: "" },
+            bridge: { value: "", type: "zigbee2mqtt-bridge-config" },
+            deviceName: { value: "", required: true },
+        },
+        inputs: 0,
+        outputs: 5,
+        icon: "remote.svg",
+        label: function () {
+            return this.name || "Ikea Remote v2";
+        },
+        outputLabels: ["on", "off", "brightness_up", "brightness_down", "arrow_left", "arrow_right"],
+        oneditprepare: function () {
+            var node = this;
+            var deviceName = node.deviceName;
+
+            RED.bavaria.devices.createDeviceSelector("device-selection", deviceName, "EndDevice", "IKEA", "E2001%2FE2002");
+        }
+    });
+
+</script>
+
+<script type="text/html" data-template-name="ikea-remote-v2">
+    <div class="zigbee2mqtt-devices-properties">
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+            <input type="text" id="node-input-name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-bridge"><i class="fa fa-server"></i> Bridge</label>
+            <input type="text" id="node-input-bridge" placeholder="bridge" />
+        </div>
+        <div id="device-selection" class="form-row">
+        </div>
+
+    </div>
+</script>
+
+<script type="text/html" data-help-name="ikea-remote-v2">
+    <p> </p>
+    <p>It is only compatible with Ikea remotes (Model: E2001/E2002)</p>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt> button_name <span class="property-type"> string </span> </dt>
+        <dd> The name of the button that was pressed </dd>
+        <dt> button_type  <span class="property-type"> string </span> </dt>
+        <dd>
+            The type in wich way the button was pressed. Following types are available:
+            <ul>
+                <li><code>pressed</code> - single press</li>
+                <li><code>hold</code> - when a button is hold down for a bit</li>
+                <li><code>released</code> - when a hold down button was being released</li>
+            </ul>
+        </dd>
+    </dl>
+</script>
+
 <!--- IKEA DIMMER V2 NODE --->
 <script type="text/javascript">
 
