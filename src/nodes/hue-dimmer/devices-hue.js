@@ -31,8 +31,17 @@ module.exports = function (RED) {
                 ioMap["down_press"] = utils.createButtonOutput(3, "down", "pressed");
                 ioMap["down_hold"] = utils.createButtonOutput(3, "down", "hold");
                 ioMap["down_hold_release"] = utils.createButtonOutput(3, "down", "released");
+		ioMap["on_press_release"]   = utils.createButtonOutput(0,"on","released");
+		ioMap["off_press_release"]  = utils.createButtonOutput(1,"off","released");
+		ioMap["up_press_release"]   = utils.createButtonOutput(2,"up","released");
+		ioMap["down_press_release"] = utils.createButtonOutput(3,"down","released");
 
                 var output = ioMap[message.action];
+
+		if (!output) {
+  			node.warn(`Unhandled action: ${message.action}`);
+  			return;
+		}
                 utils.sendAt(node, output.index, {
                     payload: {
                         button_name: output.button_name,
