@@ -1,11 +1,11 @@
 # Contributing
 
-Everyone is welcomed to create a pull request. If you are unsure what or how to do something, we can discuss it on [GitHub](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices) or [Discord](https://discord.gg/4qCMEhJ).
+Everyone is welcome to create a pull request. If you are unsure what or how to do something, we can discuss it on [GitHub](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices) or [Discord](https://discord.gg/4qCMEhJ).
 
 
 # Development Environment
 
-The project is written in JavaScript, HTML, and Typescript. We are currently in the process of migrating towards Typescript for new nodes.
+The project is written in JavaScript, HTML, and Typescript.
 
 For easier development, we have a couple of npm tasks:
 
@@ -17,6 +17,10 @@ In VS-Code you can also press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> 
 `npm run lint` calls eslint.
 
 `npm run createnode` to create a new JavaScript node. There is no template for a Typescript node yet.
+
+`npm test` runs the unit tests in the `test` folder.
+
+`npm testintegration` runs the integration tests in the `test-integration` folder. It starts the services in `test-integration/docker` and runs the integration tests against those services.
 
 # System requirements
 Developing is possible on Windows, Linux, and macOS. The IDE is up to you; we use VS-Code.

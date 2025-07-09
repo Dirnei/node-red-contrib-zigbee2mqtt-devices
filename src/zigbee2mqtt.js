@@ -220,6 +220,11 @@ module.exports = function (RED) {
                             message.payload = JSON.stringify(message.payload);
                         }
 
+                        if (message.brightness === 0)
+                        {
+                            message.state = "OFF";
+                        }
+
                         bridgeNode.publish(message.topic, message.payload);
                     } catch (err) {
                         node.error(err);

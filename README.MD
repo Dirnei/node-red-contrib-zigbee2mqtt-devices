@@ -1,12 +1,13 @@
-<p align="center">
-  <img width="128" height="128" src="resources/logo.svg">
-</p>
-
 # Zigbee2MQTT Nodes for Node-RED
 
 [![npm](https://img.shields.io/npm/v/node-red-contrib-zigbee2mqtt-devices?style=for-the-badge)](https://www.npmjs.com/package/node-red-contrib-zigbee2mqtt-devices)
 [![img](https://img.shields.io/badge/Node--RED-node--red--contrib--zigbee2mqtt--devices-%23aa4444?style=for-the-badge)](https://flows.nodered.org/node/node-red-contrib-zigbee2mqtt-devices)
 [![GitHub license](https://img.shields.io/github/license/Dirnei/node-red-contrib-zigbee2mqtt-devices?style=for-the-badge)](https://github.com/Dirnei/node-red-contrib-zigbee2mqtt-devices/blob/master/LICENSE)
+
+
+<p align="center">
+     <img width="256" height="256" src="resources/logo_white_bg.svg">
+</p>
 
 This project contains Node-RED nodes that allow you to build Smart Home scenarios with your Zigbee devices connected to [ZigBee2MQTT](https://www.zigbee2mqtt.io/).
 
@@ -52,6 +53,30 @@ If you feel very generous and want to contribute with coffee, you sure can:
 [buymeacoffee-shield]: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
 
 ## Changelog 
+
+### Release: `0.20.0` _3 Jan 2024_
+
+#### Features:
+
+- Add support for Ikea Styrbar (E2001) remote control
+
+#### Bug fixes:
+
+- Setting brightnes to 0 did not turn it off. Now it will override the state to "OFF"
+- Fixed Scenic Friend of Hue switch. Property names has changed between versions
+
+### Release: `0.19.6` _13 Nov 2022_
+
+#### Features:
+
+#### Bug fixes:
+- Bridge did not connect in newer z2m versions because z2m changed the format of 'bridge/state' from string to JSON.
+- Shelly 2.5 did not connect to the broker, because it used an old configuration node.
+- Shelly 2.5 node did not unsubscribe from the old channel with no full redeploy.
+
+#### Behind the scenes
+- Add mocha and first-unit test examples
+- Add integration tests to test with a real MQTT broker
 
 ### Release: `0.19.5` - _14 Mar 2022_
 

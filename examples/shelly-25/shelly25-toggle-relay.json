@@ -1,0 +1,109 @@
+[
+  {
+    "id": "8bcc1c584da5c6f6",
+    "type": "shelly-25",
+    "z": "d6c6189e516c5861",
+    "name": "Shelly 1 Terrace Light",
+    "mqtt": "b1503ab27dfa3ccd",
+    "shelly": "daf62c0c2a5c1ebd",
+    "enableInput": true,
+    "state": "toggle",
+    "channel": "0",
+    "inputs": 1,
+    "outputs": 3,
+    "customPayload": false,
+    "payloadInput0": "",
+    "typeInput0": "str",
+    "payloadInput1": "",
+    "typeInput1": "str",
+    "x": 440,
+    "y": 400,
+    "wires": [
+      [],
+      [],
+      [
+        "0e5a9766c04a1a6a"
+      ]
+    ]
+  },
+  {
+    "id": "2b95eb1c49dc7662",
+    "type": "inject",
+    "z": "d6c6189e516c5861",
+    "name": "Virtual light switch",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 170,
+    "y": 400,
+    "wires": [
+      [
+        "8bcc1c584da5c6f6"
+      ]
+    ]
+  },
+  {
+    "id": "0e5a9766c04a1a6a",
+    "type": "send-messages",
+    "z": "d6c6189e516c5861",
+    "name": "",
+    "bridge": "11358734e0ff49d5",
+    "x": 660,
+    "y": 400,
+    "wires": []
+  },
+  {
+    "id": "b1503ab27dfa3ccd",
+    "type": "mqtt-broker",
+    "name": "Mosquitto",
+    "broker": "127.0.0.1",
+    "port": "1883",
+    "clientid": "",
+    "autoConnect": true,
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": "",
+    "birthMsg": {},
+    "closeTopic": "",
+    "closeQos": "0",
+    "closePayload": "",
+    "closeMsg": {},
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": "",
+    "willMsg": {},
+    "sessionExpiry": ""
+  },
+  {
+    "id": "daf62c0c2a5c1ebd",
+    "type": "shelly-config",
+    "name": "terrace-light",
+    "prefix": "shellies/terrace-light"
+  },
+  {
+    "id": "11358734e0ff49d5",
+    "type": "zigbee2mqtt-bridge-config",
+    "name": "Mosquitto",
+    "broker": "b1503ab27dfa3ccd",
+    "baseTopic": "zigbee2mqtt",
+    "enabledLogging": false,
+    "allowDeviceStatusRefresh": true
+  }
+]

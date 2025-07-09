@@ -78,6 +78,7 @@ const nodeInit: NodeInitializer = (RED): void => {
 
         this.isConnected = () => broker.connected;
         this.publish = (topic, payload) => {
+
             let msg: NodeMqttMessage = {
                 qos: 0,
                 retain: false,
@@ -172,7 +173,20 @@ const nodeInit: NodeInitializer = (RED): void => {
         }
 
         this.subscribe(node.id, `${config.baseTopic}/bridge/state`, (message) => {
-            if (message === "online") {
+            
+            function getState(message : any){
+                try {
+                    // In newer versions the state topic has an object with a state property
+                    const messageObj = JSON.parse(message);
+                    return messageObj.state;
+                } catch (e) {
+                    // Backwards compability: in previous versions the state topic was just a string "online"
+                    return message;   
+                }
+            }
+            
+            const state = getState(message);
+            if (state === "online") {
                 bavaria.observer.notify(node.id + "_connected");
             }
         }, false);
